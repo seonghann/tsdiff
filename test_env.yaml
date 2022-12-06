@@ -1,4 +1,4 @@
-name: geodiff
+name: tsdiff
 channels:
   - rusty1s
   - iwatobipen
