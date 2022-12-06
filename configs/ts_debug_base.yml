@@ -1,0 +1,57 @@
+model:
+  type: diffusion # dsm and diffusion
+    #network: dualenc_ver3_base_global
+  network: dualenc_ver3_base_global
+  TS: True
+    #network: dualenc_ver3_newedge_nolocal
+    #network: mixed2denc_ver1
+  feat_dim: 25
+  hidden_dim: 128
+  num_convs: 6
+  num_convs_local: 4
+  cutoff: 10.0
+  mlp_act: ReLU
+  beta_schedule: sigmoid
+  beta_start: 1.e-7
+  beta_end: 2.e-3
+  num_diffusion_timesteps: 5000
+  edge_order: 3
+  edge_encoder: mlp
+  smooth_conv: true
+  edge_cat_act: swish
+  num_radial: 3
+  num_spherical: 3
+  dropout: 0.1
+
+train:
+  seed: 2021
+  batch_size: 1
+  val_freq: 1000
+  log_freq: 1
+  max_iters: 10000
+    #val_freq: 5000
+    #max_iters: 3000000
+  max_grad_norm: 30000.0  # Different from QM9
+  anneal_power: 2.0
+  optimizer:
+    type: adam
+    lr: 1.e-3
+    weight_decay: 0.
+    beta1: 0.95
+    beta2: 0.999
+  scheduler:
+    type: plateau
+    factor: 0.6
+    patience: 10
+    min_lr: 0.00001
+
+dataset:
+  #train: ./data/GEOM/Drugs/debug_1.pkl
+  #val: ./data/GEOM/Drugs/debug_1.pkl
+  #test: ./data/GEOM/Drugs/debug_1.pkl
+  train: ./data/TS/b97d3/debug_1.pkl
+  val: ./data/TS/b97d3/debug_1.pkl
+  test: ./data/TS/b97d3/debug_1.pkl
+    #train: data/TS/b97d3/train_data.pkl
+    #val: data/TS/b97d3/val_data.pkl
+    #test: data/TS/b97d3/test_data.pkl

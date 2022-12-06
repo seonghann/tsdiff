@@ -1,0 +1,25 @@
+[2022-11-05 05:14:14,172::train::INFO] Namespace(config='configs/exp8/ts_dv3_newedge_nolocal.yml', device='cuda', fn='_', logdir='./logs', name='exp8_nolocal', pretrain='', project='TS-geom-exp8', resume_iter=None, tag='exp8_nolocal')
+[2022-11-05 05:14:14,173::train::INFO] {'model': {'type': 'diffusion', 'network': 'dualenc_ver3_newedge_nolocal', 'hidden_dim': 128, 'num_convs': 6, 'num_convs_local': 4, 'cutoff': 6.0, 'mlp_act': 'ReLU', 'beta_schedule': 'sigmoid', 'beta_start': 1e-07, 'beta_end': 0.002, 'num_diffusion_timesteps': 5000, 'edge_order': 3, 'edge_encoder': 'mlp', 'smooth_conv': True, 'TS': True, 'feat_dim': 25, 'edge_cat_act': 'swish', 'dropout': 0.1}, 'train': {'seed': 2022, 'batch_size': 200, 'val_freq': 1000, 'max_iters': 300000, 'max_grad_norm': 3000.0, 'anneal_power': 2.0, 'optimizer': {'type': 'adam', 'lr': 0.001, 'weight_decay': 0.0, 'beta1': 0.95, 'beta2': 0.999}, 'scheduler': {'type': 'plateau', 'factor': 0.8, 'patience': 10, 'min_lr': 2e-05}}, 'dataset': {'train': 'data/TS/b97d3/scaffold_split/train_data.pkl', 'val': 'data/TS/b97d3/scaffold_split/val_data.pkl', 'test': 'data/TS/b97d3/scaffold_split/test_data.pkl'}}
+wandb: Currently logged in as: seonghann. Use `wandb login --relogin` to force relogin
+wandb: wandb version 0.13.5 is available!  To upgrade, please run:
+wandb:  $ pip install wandb --upgrade
+wandb: Tracking run with wandb version 0.13.4
+wandb: Run data is saved locally in /home/ksh/MolDiff/GeoDiff/wandb/run-20221105_051416-u5dvpt1w
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run exp8_nolocal
+wandb: ⭐️ View project at https://wandb.ai/seonghann/TS-geom-exp8
+wandb: 🚀 View run at https://wandb.ai/seonghann/TS-geom-exp8/runs/u5dvpt1w
+[2022-11-05 05:14:21,894::train::INFO] Loading datasets...
+[2022-11-05 05:14:32,678::train::INFO] Building model...
+[2022-11-05 05:17:24,438::train::INFO] [Train] Iter 01000 | Loss 94.46 | Loss(Global) 94.46 | Loss(Local) 0.00 | Grad 629.90 | LR 0.001000
+[2022-11-05 05:17:25,523::train::INFO] [Validate] Iter 01000 | Loss 64.231475 | Loss(Global) 64.231475 | Loss(Local) 0.000000
+[2022-11-05 05:20:19,551::train::INFO] [Train] Iter 02000 | Loss 64.95 | Loss(Global) 64.95 | Loss(Local) 0.00 | Grad 595.80 | LR 0.001000
+[2022-11-05 05:20:20,570::train::INFO] [Validate] Iter 02000 | Loss 60.919120 | Loss(Global) 60.919120 | Loss(Local) 0.000000
+[2022-11-05 05:23:10,640::train::INFO] [Train] Iter 03000 | Loss 60.00 | Loss(Global) 60.00 | Loss(Local) 0.00 | Grad 530.03 | LR 0.001000
+[2022-11-05 05:23:11,650::train::INFO] [Validate] Iter 03000 | Loss 55.046940 | Loss(Global) 55.046940 | Loss(Local) 0.000000
+[2022-11-05 05:26:00,377::train::INFO] [Train] Iter 04000 | Loss 57.74 | Loss(Global) 57.74 | Loss(Local) 0.00 | Grad 534.40 | LR 0.001000
+[2022-11-05 05:26:01,433::train::INFO] [Validate] Iter 04000 | Loss 53.965500 | Loss(Global) 53.965500 | Loss(Local) 0.000000
+[2022-11-05 05:28:53,251::train::INFO] [Train] Iter 05000 | Loss 54.78 | Loss(Global) 54.78 | Loss(Local) 0.00 | Grad 504.33 | LR 0.001000
+[2022-11-05 05:28:54,260::train::INFO] [Validate] Iter 05000 | Loss 54.289177 | Loss(Global) 54.289177 | Loss(Local) 0.000000
+[2022-11-05 05:31:43,469::train::INFO] [Train] Iter 06000 | Loss 54.29 | Loss(Global) 54.29 | Loss(Local) 0.00 | Grad 467.11 | LR 0.001000
+[2022-11-05 05:31:44,463::train::INFO] [Validate] Iter 06000 | Loss 52.861059 | Loss(Global) 52.861059 | Loss(Local) 0.000000

@@ -1,0 +1,3 @@
+exp9 : isomerization dataset 을 random split해서 training한다.
+
+old-edge는 굳이 학습할 필요 없고, new-edge만 학습한다.

@@ -1,0 +1,41 @@
+dataset:
+  test: data/TS/b97d3/test_data.pkl
+  train: data/TS/b97d3/train_data.pkl
+  val: data/TS/b97d3/val_data.pkl
+model:
+  TS: true
+  beta_end: 0.002
+  beta_schedule: sigmoid
+  beta_start: 1.0e-07
+  cutoff: 10.0
+  dropout: 0.1
+  edge_cat_act: swish
+  edge_encoder: mlp
+  edge_order: 3
+  hidden_dim: 128
+  mlp_act: ReLU
+  network: dualenc_sch_come
+  num_convs: 6
+  num_convs_local: 4
+  num_diffusion_timesteps: 5000
+  num_radial: 4
+  num_spherical: 8
+  smooth_conv: true
+  type: diffusion
+train:
+  anneal_power: 2.0
+  batch_size: 32
+  max_grad_norm: 30000.0
+  max_iters: 3000000
+  optimizer:
+    beta1: 0.95
+    beta2: 0.999
+    lr: 0.001
+    type: adam
+    weight_decay: 0.0
+  scheduler:
+    factor: 0.75
+    patience: 10
+    type: plateau
+  seed: 2022
+  val_freq: 7500

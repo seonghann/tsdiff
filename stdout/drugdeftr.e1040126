@@ -1,0 +1,709 @@
+[2022-11-01 04:45:09,071::train::INFO] Namespace(config='configs/drugs_default.yml', device='cuda', fn='_', logdir='./logs', name='drugs', pretrain='', project='default_train', resume_iter=None, tag='drugs')
+[2022-11-01 04:45:09,072::train::INFO] {'model': {'type': 'diffusion', 'network': 'dualenc', 'hidden_dim': 128, 'num_convs': 6, 'num_convs_local': 4, 'cutoff': 10.0, 'mlp_act': 'ReLU', 'beta_schedule': 'sigmoid', 'beta_start': 1e-07, 'beta_end': 0.002, 'num_diffusion_timesteps': 5000, 'edge_order': 3, 'edge_encoder': 'mlp', 'smooth_conv': True}, 'train': {'seed': 2021, 'batch_size': 32, 'val_freq': 5000, 'max_iters': 3000000, 'max_grad_norm': 30000.0, 'anneal_power': 2.0, 'optimizer': {'type': 'adam', 'lr': 0.001, 'weight_decay': 0.0, 'beta1': 0.95, 'beta2': 0.999}, 'scheduler': {'type': 'plateau', 'min_lr': 2e-05, 'factor': 0.6, 'patience': 10}}, 'dataset': {'train': './data/GEOM/Drugs/train_data_40k.pkl', 'val': './data/GEOM/Drugs/val_data_5k.pkl', 'test': './data/GEOM/Drugs/test_data_1k.pkl'}}
+wandb: Currently logged in as: seonghann. Use `wandb login --relogin` to force relogin
+wandb: Tracking run with wandb version 0.13.4
+wandb: Run data is saved locally in /home/ksh/MolDiff/GeoDiff/wandb/run-20221101_044511-au4nmrug
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run drugs
+wandb: ⭐️ View project at https://wandb.ai/seonghann/default_train
+wandb: 🚀 View run at https://wandb.ai/seonghann/default_train/runs/au4nmrug
+[2022-11-01 04:45:15,161::train::INFO] Loading datasets...
+[2022-11-01 04:47:19,886::train::INFO] Building model...
+[2022-11-01 04:54:00,782::train::INFO] [Train] Iter 05000 | Loss 131578.88 | Loss(Global) 417.77 | Loss(Local) 184024.52 | Grad 12066549.00 | LR(Global) 0.001000 | LR(Local) 0.001000
+[2022-11-01 04:54:35,043::train::INFO] [Validate] Iter 05000 | Loss 107.086576 | Loss(Global) 326.622254 | Loss(Local) 19.272298
+[2022-11-01 05:01:27,195::train::INFO] [Train] Iter 10000 | Loss 99.10 | Loss(Global) 304.53 | Loss(Local) 16.92 | Grad 640.18 | LR(Global) 0.001000 | LR(Local) 0.001000
+[2022-11-01 05:02:00,861::train::INFO] [Validate] Iter 10000 | Loss 93.153802 | Loss(Global) 287.968623 | Loss(Local) 15.227868
+[2022-11-01 05:08:46,602::train::INFO] [Train] Iter 15000 | Loss 89.38 | Loss(Global) 276.32 | Loss(Local) 14.60 | Grad 612.08 | LR(Global) 0.001000 | LR(Local) 0.001000
+[2022-11-01 05:09:20,901::train::INFO] [Validate] Iter 15000 | Loss 84.978439 | Loss(Global) 263.096244 | Loss(Local) 13.731312
+[2022-11-01 05:16:05,930::train::INFO] [Train] Iter 20000 | Loss 83.95 | Loss(Global) 260.00 | Loss(Local) 13.53 | Grad 626.73 | LR(Global) 0.001000 | LR(Local) 0.001000
+[2022-11-01 05:16:40,527::train::INFO] [Validate] Iter 20000 | Loss 80.538488 | Loss(Global) 245.119910 | Loss(Local) 14.705914
+[2022-11-01 05:23:27,512::train::INFO] [Train] Iter 25000 | Loss 80.04 | Loss(Global) 247.61 | Loss(Local) 13.01 | Grad 660.07 | LR(Global) 0.001000 | LR(Local) 0.001000
+[2022-11-01 05:24:00,835::train::INFO] [Validate] Iter 25000 | Loss 79.061414 | Loss(Global) 248.168473 | Loss(Local) 11.418586
+[2022-11-01 05:30:44,562::train::INFO] [Train] Iter 30000 | Loss 77.19 | Loss(Global) 240.08 | Loss(Local) 12.03 | Grad 667.47 | LR(Global) 0.001000 | LR(Local) 0.001000
+[2022-11-01 05:31:18,527::train::INFO] [Validate] Iter 30000 | Loss 75.568292 | Loss(Global) 229.776577 | Loss(Local) 13.884973
+[2022-11-01 05:38:01,570::train::INFO] [Train] Iter 35000 | Loss 75.16 | Loss(Global) 234.16 | Loss(Local) 11.57 | Grad 680.82 | LR(Global) 0.001000 | LR(Local) 0.001000
+[2022-11-01 05:38:36,027::train::INFO] [Validate] Iter 35000 | Loss 77.826234 | Loss(Global) 247.960395 | Loss(Local) 9.772565
+[2022-11-01 05:45:18,236::train::INFO] [Train] Iter 40000 | Loss 73.62 | Loss(Global) 229.34 | Loss(Local) 11.34 | Grad 708.71 | LR(Global) 0.001000 | LR(Local) 0.001000
+[2022-11-01 05:45:51,956::train::INFO] [Validate] Iter 40000 | Loss 73.698972 | Loss(Global) 231.374136 | Loss(Local) 10.628901
+[2022-11-01 05:52:40,497::train::INFO] [Train] Iter 45000 | Loss 73.23 | Loss(Global) 225.37 | Loss(Local) 12.38 | Grad 898.18 | LR(Global) 0.001000 | LR(Local) 0.001000
+[2022-11-01 05:53:29,412::train::INFO] [Validate] Iter 45000 | Loss 70.410920 | Loss(Global) 217.872634 | Loss(Local) 11.426230
+[2022-11-01 05:59:56,435::train::INFO] [Train] Iter 50000 | Loss 71.14 | Loss(Global) 221.76 | Loss(Local) 10.89 | Grad 762.78 | LR(Global) 0.001000 | LR(Local) 0.001000
+[2022-11-01 06:00:43,925::train::INFO] [Validate] Iter 50000 | Loss 68.594600 | Loss(Global) 216.632056 | Loss(Local) 9.379614
+[2022-11-01 06:07:13,223::train::INFO] [Train] Iter 55000 | Loss 70.25 | Loss(Global) 219.31 | Loss(Local) 10.62 | Grad 762.99 | LR(Global) 0.001000 | LR(Local) 0.001000
+[2022-11-01 06:08:02,222::train::INFO] [Validate] Iter 55000 | Loss 68.336020 | Loss(Global) 211.683030 | Loss(Local) 10.997212
+[2022-11-01 06:14:45,490::train::INFO] [Train] Iter 60000 | Loss 69.16 | Loss(Global) 216.08 | Loss(Local) 10.39 | Grad 771.25 | LR(Global) 0.001000 | LR(Local) 0.001000
+[2022-11-01 06:15:18,146::train::INFO] [Validate] Iter 60000 | Loss 69.578879 | Loss(Global) 218.698078 | Loss(Local) 9.931194
+[2022-11-01 06:21:58,320::train::INFO] [Train] Iter 65000 | Loss 68.47 | Loss(Global) 214.07 | Loss(Local) 10.23 | Grad 781.70 | LR(Global) 0.001000 | LR(Local) 0.001000
+[2022-11-01 06:22:32,600::train::INFO] [Validate] Iter 65000 | Loss 68.132479 | Loss(Global) 211.442619 | Loss(Local) 10.808418
+[2022-11-01 06:29:10,443::train::INFO] [Train] Iter 70000 | Loss 67.73 | Loss(Global) 211.89 | Loss(Local) 10.06 | Grad 784.81 | LR(Global) 0.001000 | LR(Local) 0.001000
+[2022-11-01 06:29:43,482::train::INFO] [Validate] Iter 70000 | Loss 68.098857 | Loss(Global) 213.929210 | Loss(Local) 9.766711
+[2022-11-01 06:36:25,472::train::INFO] [Train] Iter 75000 | Loss 67.54 | Loss(Global) 211.08 | Loss(Local) 10.12 | Grad 822.26 | LR(Global) 0.001000 | LR(Local) 0.001000
+[2022-11-01 06:36:58,668::train::INFO] [Validate] Iter 75000 | Loss 67.805423 | Loss(Global) 205.696669 | Loss(Local) 12.648919
+[2022-11-01 06:43:41,042::train::INFO] [Train] Iter 80000 | Loss 66.55 | Loss(Global) 208.53 | Loss(Local) 9.76 | Grad 811.48 | LR(Global) 0.001000 | LR(Local) 0.001000
+[2022-11-01 06:44:14,468::train::INFO] [Validate] Iter 80000 | Loss 64.275917 | Loss(Global) 201.104953 | Loss(Local) 9.544299
+[2022-11-01 06:50:59,692::train::INFO] [Train] Iter 85000 | Loss 66.07 | Loss(Global) 207.08 | Loss(Local) 9.67 | Grad 810.01 | LR(Global) 0.001000 | LR(Local) 0.001000
+[2022-11-01 06:51:32,461::train::INFO] [Validate] Iter 85000 | Loss 69.068732 | Loss(Global) 218.450381 | Loss(Local) 9.316068
+[2022-11-01 06:58:21,507::train::INFO] [Train] Iter 90000 | Loss 65.68 | Loss(Global) 205.69 | Loss(Local) 9.67 | Grad 832.62 | LR(Global) 0.001000 | LR(Local) 0.001000
+[2022-11-01 06:58:55,533::train::INFO] [Validate] Iter 90000 | Loss 65.459487 | Loss(Global) 205.687037 | Loss(Local) 9.368463
+[2022-11-01 07:05:36,038::train::INFO] [Train] Iter 95000 | Loss 65.70 | Loss(Global) 205.99 | Loss(Local) 9.59 | Grad 837.95 | LR(Global) 0.001000 | LR(Local) 0.001000
+[2022-11-01 07:06:12,298::train::INFO] [Validate] Iter 95000 | Loss 63.167534 | Loss(Global) 197.460989 | Loss(Local) 9.450148
+[2022-11-01 07:12:27,585::train::INFO] [Train] Iter 100000 | Loss 64.90 | Loss(Global) 203.58 | Loss(Local) 9.43 | Grad 850.32 | LR(Global) 0.001000 | LR(Local) 0.001000
+[2022-11-01 07:13:03,921::train::INFO] [Validate] Iter 100000 | Loss 67.842174 | Loss(Global) 198.335536 | Loss(Local) 15.644824
+[2022-11-01 07:19:17,924::train::INFO] [Train] Iter 105000 | Loss 65.39 | Loss(Global) 202.80 | Loss(Local) 10.42 | Grad 961.88 | LR(Global) 0.001000 | LR(Local) 0.001000
+[2022-11-01 07:19:53,906::train::INFO] [Validate] Iter 105000 | Loss 62.338510 | Loss(Global) 195.001149 | Loss(Local) 9.273450
+[2022-11-01 07:26:08,684::train::INFO] [Train] Iter 110000 | Loss 65.45 | Loss(Global) 202.70 | Loss(Local) 10.55 | Grad 984.81 | LR(Global) 0.001000 | LR(Local) 0.001000
+[2022-11-01 07:26:44,590::train::INFO] [Validate] Iter 110000 | Loss 65.376756 | Loss(Global) 201.185065 | Loss(Local) 11.053428
+[2022-11-01 07:33:08,509::train::INFO] [Train] Iter 115000 | Loss 64.43 | Loss(Global) 200.99 | Loss(Local) 9.81 | Grad 950.02 | LR(Global) 0.001000 | LR(Local) 0.001000
+[2022-11-01 07:33:36,188::train::INFO] [Validate] Iter 115000 | Loss 66.203797 | Loss(Global) 207.753539 | Loss(Local) 9.583896
+[2022-11-01 07:40:03,046::train::INFO] [Train] Iter 120000 | Loss 64.12 | Loss(Global) 200.93 | Loss(Local) 9.39 | Grad 900.53 | LR(Global) 0.001000 | LR(Local) 0.001000
+[2022-11-01 07:40:31,352::train::INFO] [Validate] Iter 120000 | Loss 64.667335 | Loss(Global) 201.981373 | Loss(Local) 9.741716
+[2022-11-01 07:46:52,274::train::INFO] [Train] Iter 125000 | Loss 63.58 | Loss(Global) 199.62 | Loss(Local) 9.16 | Grad 893.67 | LR(Global) 0.001000 | LR(Local) 0.001000
+[2022-11-01 07:47:20,462::train::INFO] [Validate] Iter 125000 | Loss 62.041870 | Loss(Global) 193.014281 | Loss(Local) 9.652901
+[2022-11-01 07:53:39,838::train::INFO] [Train] Iter 130000 | Loss 63.43 | Loss(Global) 199.14 | Loss(Local) 9.15 | Grad 892.57 | LR(Global) 0.001000 | LR(Local) 0.001000
+[2022-11-01 07:54:08,131::train::INFO] [Validate] Iter 130000 | Loss 69.935243 | Loss(Global) 223.417997 | Loss(Local) 8.542137
+[2022-11-01 08:00:24,210::train::INFO] [Train] Iter 135000 | Loss 63.35 | Loss(Global) 198.42 | Loss(Local) 9.32 | Grad 934.26 | LR(Global) 0.001000 | LR(Local) 0.001000
+[2022-11-01 08:00:52,510::train::INFO] [Validate] Iter 135000 | Loss 61.551715 | Loss(Global) 192.420150 | Loss(Local) 9.204337
+[2022-11-01 08:07:10,824::train::INFO] [Train] Iter 140000 | Loss 63.21 | Loss(Global) 198.41 | Loss(Local) 9.13 | Grad 908.04 | LR(Global) 0.001000 | LR(Local) 0.001000
+[2022-11-01 08:07:39,136::train::INFO] [Validate] Iter 140000 | Loss 59.873608 | Loss(Global) 188.450872 | Loss(Local) 8.442698
+[2022-11-01 08:14:05,651::train::INFO] [Train] Iter 145000 | Loss 62.90 | Loss(Global) 197.60 | Loss(Local) 9.01 | Grad 916.34 | LR(Global) 0.001000 | LR(Local) 0.001000
+[2022-11-01 08:14:33,924::train::INFO] [Validate] Iter 145000 | Loss 60.861655 | Loss(Global) 190.549225 | Loss(Local) 8.986623
+[2022-11-01 08:20:57,778::train::INFO] [Train] Iter 150000 | Loss 62.47 | Loss(Global) 196.34 | Loss(Local) 8.92 | Grad 913.56 | LR(Global) 0.001000 | LR(Local) 0.001000
+[2022-11-01 08:21:26,133::train::INFO] [Validate] Iter 150000 | Loss 61.108517 | Loss(Global) 192.708182 | Loss(Local) 8.468646
+[2022-11-01 08:27:45,514::train::INFO] [Train] Iter 155000 | Loss 62.43 | Loss(Global) 196.43 | Loss(Local) 8.83 | Grad 907.28 | LR(Global) 0.001000 | LR(Local) 0.001000
+[2022-11-01 08:28:21,601::train::INFO] [Validate] Iter 155000 | Loss 61.931710 | Loss(Global) 194.393373 | Loss(Local) 8.947040
+[2022-11-01 08:34:34,046::train::INFO] [Train] Iter 160000 | Loss 62.61 | Loss(Global) 196.83 | Loss(Local) 8.92 | Grad 914.72 | LR(Global) 0.001000 | LR(Local) 0.001000
+[2022-11-01 08:35:11,974::train::INFO] [Validate] Iter 160000 | Loss 59.654835 | Loss(Global) 187.385750 | Loss(Local) 8.562466
+[2022-11-01 08:41:26,020::train::INFO] [Train] Iter 165000 | Loss 62.09 | Loss(Global) 195.28 | Loss(Local) 8.82 | Grad 921.75 | LR(Global) 0.001000 | LR(Local) 0.001000
+[2022-11-01 08:42:02,406::train::INFO] [Validate] Iter 165000 | Loss 59.257005 | Loss(Global) 186.703457 | Loss(Local) 8.278420
+[2022-11-01 08:48:25,746::train::INFO] [Train] Iter 170000 | Loss 61.85 | Loss(Global) 194.74 | Loss(Local) 8.69 | Grad 920.91 | LR(Global) 0.001000 | LR(Local) 0.001000
+[2022-11-01 08:48:53,528::train::INFO] [Validate] Iter 170000 | Loss 59.833666 | Loss(Global) 189.094889 | Loss(Local) 8.129173
+[2022-11-01 08:55:14,700::train::INFO] [Train] Iter 175000 | Loss 61.70 | Loss(Global) 194.12 | Loss(Local) 8.73 | Grad 914.19 | LR(Global) 0.001000 | LR(Local) 0.001000
+[2022-11-01 08:55:42,819::train::INFO] [Validate] Iter 175000 | Loss 60.622626 | Loss(Global) 190.447988 | Loss(Local) 8.692478
+[2022-11-01 09:01:55,361::train::INFO] [Train] Iter 180000 | Loss 61.51 | Loss(Global) 193.89 | Loss(Local) 8.56 | Grad 914.73 | LR(Global) 0.001000 | LR(Local) 0.001000
+[2022-11-01 09:02:23,583::train::INFO] [Validate] Iter 180000 | Loss 60.788943 | Loss(Global) 191.406421 | Loss(Local) 8.541947
+[2022-11-01 09:08:39,407::train::INFO] [Train] Iter 185000 | Loss 61.39 | Loss(Global) 193.35 | Loss(Local) 8.61 | Grad 921.65 | LR(Global) 0.001000 | LR(Local) 0.001000
+[2022-11-01 09:09:07,377::train::INFO] [Validate] Iter 185000 | Loss 62.807756 | Loss(Global) 200.732418 | Loss(Local) 7.637888
+[2022-11-01 09:15:29,914::train::INFO] [Train] Iter 190000 | Loss 61.17 | Loss(Global) 192.11 | Loss(Local) 8.80 | Grad 931.91 | LR(Global) 0.001000 | LR(Local) 0.001000
+[2022-11-01 09:15:58,333::train::INFO] [Validate] Iter 190000 | Loss 59.673512 | Loss(Global) 187.800464 | Loss(Local) 8.422728
+[2022-11-01 09:22:13,781::train::INFO] [Train] Iter 195000 | Loss 61.25 | Loss(Global) 192.88 | Loss(Local) 8.60 | Grad 940.38 | LR(Global) 0.001000 | LR(Local) 0.001000
+[2022-11-01 09:22:41,799::train::INFO] [Validate] Iter 195000 | Loss 61.628112 | Loss(Global) 194.009548 | Loss(Local) 8.675533
+[2022-11-01 09:28:56,454::train::INFO] [Train] Iter 200000 | Loss 60.93 | Loss(Global) 192.04 | Loss(Local) 8.48 | Grad 931.52 | LR(Global) 0.001000 | LR(Local) 0.001000
+[2022-11-01 09:29:24,724::train::INFO] [Validate] Iter 200000 | Loss 60.236485 | Loss(Global) 189.792645 | Loss(Local) 8.414018
+[2022-11-01 09:35:33,025::train::INFO] [Train] Iter 205000 | Loss 61.11 | Loss(Global) 192.48 | Loss(Local) 8.56 | Grad 934.61 | LR(Global) 0.001000 | LR(Local) 0.001000
+[2022-11-01 09:36:00,871::train::INFO] [Validate] Iter 205000 | Loss 58.267292 | Loss(Global) 183.640519 | Loss(Local) 8.117998
+[2022-11-01 09:42:23,112::train::INFO] [Train] Iter 210000 | Loss 60.70 | Loss(Global) 191.42 | Loss(Local) 8.41 | Grad 950.83 | LR(Global) 0.001000 | LR(Local) 0.001000
+[2022-11-01 09:42:59,151::train::INFO] [Validate] Iter 210000 | Loss 57.583089 | Loss(Global) 181.763882 | Loss(Local) 7.910768
+[2022-11-01 09:49:09,885::train::INFO] [Train] Iter 215000 | Loss 60.48 | Loss(Global) 190.46 | Loss(Local) 8.48 | Grad 928.17 | LR(Global) 0.001000 | LR(Local) 0.001000
+[2022-11-01 09:49:46,844::train::INFO] [Validate] Iter 215000 | Loss 64.403483 | Loss(Global) 203.194068 | Loss(Local) 8.887245
+[2022-11-01 09:56:00,603::train::INFO] [Train] Iter 220000 | Loss 60.35 | Loss(Global) 190.31 | Loss(Local) 8.36 | Grad 935.20 | LR(Global) 0.001000 | LR(Local) 0.001000
+[2022-11-01 09:56:37,000::train::INFO] [Validate] Iter 220000 | Loss 58.980385 | Loss(Global) 184.127315 | Loss(Local) 8.921610
+[2022-11-01 10:02:53,295::train::INFO] [Train] Iter 225000 | Loss 60.32 | Loss(Global) 190.36 | Loss(Local) 8.31 | Grad 938.91 | LR(Global) 0.001000 | LR(Local) 0.001000
+[2022-11-01 10:03:20,741::train::INFO] [Validate] Iter 225000 | Loss 61.972854 | Loss(Global) 195.687852 | Loss(Local) 8.486852
+[2022-11-01 10:09:34,906::train::INFO] [Train] Iter 230000 | Loss 60.09 | Loss(Global) 189.49 | Loss(Local) 8.32 | Grad 943.95 | LR(Global) 0.001000 | LR(Local) 0.001000
+[2022-11-01 10:10:02,954::train::INFO] [Validate] Iter 230000 | Loss 61.099871 | Loss(Global) 193.865294 | Loss(Local) 7.993699
+[2022-11-01 10:16:18,924::train::INFO] [Train] Iter 235000 | Loss 60.05 | Loss(Global) 189.45 | Loss(Local) 8.28 | Grad 948.24 | LR(Global) 0.001000 | LR(Local) 0.001000
+[2022-11-01 10:16:47,166::train::INFO] [Validate] Iter 235000 | Loss 59.780392 | Loss(Global) 188.624756 | Loss(Local) 8.242642
+[2022-11-01 10:23:03,892::train::INFO] [Train] Iter 240000 | Loss 60.27 | Loss(Global) 190.32 | Loss(Local) 8.26 | Grad 965.65 | LR(Global) 0.001000 | LR(Local) 0.001000
+[2022-11-01 10:23:32,221::train::INFO] [Validate] Iter 240000 | Loss 59.968027 | Loss(Global) 190.233956 | Loss(Local) 7.861652
+[2022-11-01 10:29:52,027::train::INFO] [Train] Iter 245000 | Loss 59.47 | Loss(Global) 188.90 | Loss(Local) 7.69 | Grad 925.35 | LR(Global) 0.001000 | LR(Local) 0.000600
+[2022-11-01 10:30:20,574::train::INFO] [Validate] Iter 245000 | Loss 61.326517 | Loss(Global) 195.597431 | Loss(Local) 7.618147
+[2022-11-01 10:36:44,480::train::INFO] [Train] Iter 250000 | Loss 59.48 | Loss(Global) 189.11 | Loss(Local) 7.63 | Grad 939.86 | LR(Global) 0.001000 | LR(Local) 0.000600
+[2022-11-01 10:37:12,495::train::INFO] [Validate] Iter 250000 | Loss 59.025077 | Loss(Global) 188.222587 | Loss(Local) 7.346069
+[2022-11-01 10:43:33,760::train::INFO] [Train] Iter 255000 | Loss 59.94 | Loss(Global) 188.51 | Loss(Local) 8.51 | Grad 1088.32 | LR(Global) 0.001000 | LR(Local) 0.000600
+[2022-11-01 10:44:01,965::train::INFO] [Validate] Iter 255000 | Loss 58.199957 | Loss(Global) 184.802325 | Loss(Local) 7.559006
+[2022-11-01 10:50:16,829::train::INFO] [Train] Iter 260000 | Loss 59.34 | Loss(Global) 188.67 | Loss(Local) 7.60 | Grad 951.03 | LR(Global) 0.001000 | LR(Local) 0.000600
+[2022-11-01 10:50:52,949::train::INFO] [Validate] Iter 260000 | Loss 59.197836 | Loss(Global) 188.006891 | Loss(Local) 7.674211
+[2022-11-01 10:56:59,726::train::INFO] [Train] Iter 265000 | Loss 59.45 | Loss(Global) 189.20 | Loss(Local) 7.55 | Grad 950.79 | LR(Global) 0.001000 | LR(Local) 0.000600
+[2022-11-01 10:57:35,816::train::INFO] [Validate] Iter 265000 | Loss 57.288711 | Loss(Global) 181.820600 | Loss(Local) 7.475952
+[2022-11-01 11:03:50,915::train::INFO] [Train] Iter 270000 | Loss 56.67 | Loss(Global) 174.46 | Loss(Local) 9.55 | Grad 1493.49 | LR(Global) 0.000600 | LR(Local) 0.000600
+[2022-11-01 11:04:27,430::train::INFO] [Validate] Iter 270000 | Loss 55.239348 | Loss(Global) 173.185794 | Loss(Local) 8.060766
+[2022-11-01 11:10:41,486::train::INFO] [Train] Iter 275000 | Loss 54.41 | Loss(Global) 171.47 | Loss(Local) 7.58 | Grad 904.96 | LR(Global) 0.000600 | LR(Local) 0.000600
+[2022-11-01 11:11:17,345::train::INFO] [Validate] Iter 275000 | Loss 53.655966 | Loss(Global) 168.277327 | Loss(Local) 7.807419
+[2022-11-01 11:17:41,889::train::INFO] [Train] Iter 280000 | Loss 54.19 | Loss(Global) 170.76 | Loss(Local) 7.56 | Grad 906.99 | LR(Global) 0.000600 | LR(Local) 0.000600
+[2022-11-01 11:18:09,702::train::INFO] [Validate] Iter 280000 | Loss 52.189535 | Loss(Global) 164.776221 | Loss(Local) 7.154857
+[2022-11-01 11:24:41,693::train::INFO] [Train] Iter 285000 | Loss 54.55 | Loss(Global) 170.60 | Loss(Local) 8.13 | Grad 1029.18 | LR(Global) 0.000600 | LR(Local) 0.000600
+[2022-11-01 11:25:09,713::train::INFO] [Validate] Iter 285000 | Loss 53.775219 | Loss(Global) 169.755173 | Loss(Local) 7.383234
+[2022-11-01 11:31:26,043::train::INFO] [Train] Iter 290000 | Loss 54.33 | Loss(Global) 171.26 | Loss(Local) 7.56 | Grad 951.96 | LR(Global) 0.000600 | LR(Local) 0.000600
+[2022-11-01 11:31:54,261::train::INFO] [Validate] Iter 290000 | Loss 54.852808 | Loss(Global) 172.648267 | Loss(Local) 7.734621
+[2022-11-01 11:38:13,327::train::INFO] [Train] Iter 295000 | Loss 53.99 | Loss(Global) 170.16 | Loss(Local) 7.52 | Grad 937.93 | LR(Global) 0.000600 | LR(Local) 0.000600
+[2022-11-01 11:38:41,450::train::INFO] [Validate] Iter 295000 | Loss 52.769594 | Loss(Global) 167.248846 | Loss(Local) 6.977891
+[2022-11-01 11:45:01,832::train::INFO] [Train] Iter 300000 | Loss 53.78 | Loss(Global) 169.45 | Loss(Local) 7.51 | Grad 933.59 | LR(Global) 0.000600 | LR(Local) 0.000600
+[2022-11-01 11:45:29,931::train::INFO] [Validate] Iter 300000 | Loss 53.390453 | Loss(Global) 167.203567 | Loss(Local) 7.865204
+[2022-11-01 11:51:50,403::train::INFO] [Train] Iter 305000 | Loss 53.88 | Loss(Global) 169.97 | Loss(Local) 7.45 | Grad 945.99 | LR(Global) 0.000600 | LR(Local) 0.000600
+[2022-11-01 11:52:18,591::train::INFO] [Validate] Iter 305000 | Loss 52.345554 | Loss(Global) 165.070280 | Loss(Local) 7.255661
+[2022-11-01 11:58:35,668::train::INFO] [Train] Iter 310000 | Loss 53.52 | Loss(Global) 168.68 | Loss(Local) 7.46 | Grad 937.07 | LR(Global) 0.000600 | LR(Local) 0.000600
+[2022-11-01 11:59:03,755::train::INFO] [Validate] Iter 310000 | Loss 52.767687 | Loss(Global) 164.705925 | Loss(Local) 7.992388
+[2022-11-01 12:05:22,053::train::INFO] [Train] Iter 315000 | Loss 53.76 | Loss(Global) 169.49 | Loss(Local) 7.47 | Grad 954.75 | LR(Global) 0.000600 | LR(Local) 0.000600
+[2022-11-01 12:05:58,182::train::INFO] [Validate] Iter 315000 | Loss 52.170985 | Loss(Global) 163.656674 | Loss(Local) 7.576707
+[2022-11-01 12:12:15,041::train::INFO] [Train] Iter 320000 | Loss 53.46 | Loss(Global) 168.68 | Loss(Local) 7.37 | Grad 949.68 | LR(Global) 0.000600 | LR(Local) 0.000600
+[2022-11-01 12:12:51,225::train::INFO] [Validate] Iter 320000 | Loss 53.933468 | Loss(Global) 170.487847 | Loss(Local) 7.311713
+[2022-11-01 12:19:00,185::train::INFO] [Train] Iter 325000 | Loss 53.61 | Loss(Global) 168.95 | Loss(Local) 7.47 | Grad 944.91 | LR(Global) 0.000600 | LR(Local) 0.000600
+[2022-11-01 12:19:36,190::train::INFO] [Validate] Iter 325000 | Loss 55.651878 | Loss(Global) 174.650362 | Loss(Local) 8.052480
+[2022-11-01 12:25:49,725::train::INFO] [Train] Iter 330000 | Loss 53.25 | Loss(Global) 167.82 | Loss(Local) 7.43 | Grad 944.38 | LR(Global) 0.000600 | LR(Local) 0.000600
+[2022-11-01 12:26:25,363::train::INFO] [Validate] Iter 330000 | Loss 52.998157 | Loss(Global) 168.440428 | Loss(Local) 6.821245
+[2022-11-01 12:32:48,705::train::INFO] [Train] Iter 335000 | Loss 53.24 | Loss(Global) 167.74 | Loss(Local) 7.45 | Grad 934.80 | LR(Global) 0.000600 | LR(Local) 0.000600
+[2022-11-01 12:33:16,637::train::INFO] [Validate] Iter 335000 | Loss 52.153867 | Loss(Global) 163.566770 | Loss(Local) 7.588703
+[2022-11-01 12:39:37,578::train::INFO] [Train] Iter 340000 | Loss 53.47 | Loss(Global) 168.69 | Loss(Local) 7.38 | Grad 947.31 | LR(Global) 0.000600 | LR(Local) 0.000600
+[2022-11-01 12:40:05,949::train::INFO] [Validate] Iter 340000 | Loss 53.939354 | Loss(Global) 167.739806 | Loss(Local) 8.419169
+[2022-11-01 12:46:28,886::train::INFO] [Train] Iter 345000 | Loss 53.22 | Loss(Global) 167.87 | Loss(Local) 7.36 | Grad 951.40 | LR(Global) 0.000600 | LR(Local) 0.000600
+[2022-11-01 12:46:56,987::train::INFO] [Validate] Iter 345000 | Loss 51.727051 | Loss(Global) 162.631826 | Loss(Local) 7.365138
+[2022-11-01 12:53:15,106::train::INFO] [Train] Iter 350000 | Loss 53.36 | Loss(Global) 168.14 | Loss(Local) 7.44 | Grad 957.98 | LR(Global) 0.000600 | LR(Local) 0.000600
+[2022-11-01 12:53:43,021::train::INFO] [Validate] Iter 350000 | Loss 52.842423 | Loss(Global) 166.627504 | Loss(Local) 7.328387
+[2022-11-01 12:59:57,721::train::INFO] [Train] Iter 355000 | Loss 52.90 | Loss(Global) 166.83 | Loss(Local) 7.33 | Grad 957.62 | LR(Global) 0.000600 | LR(Local) 0.000600
+[2022-11-01 13:00:25,873::train::INFO] [Validate] Iter 355000 | Loss 53.349218 | Loss(Global) 167.571336 | Loss(Local) 7.660367
+[2022-11-01 13:06:43,557::train::INFO] [Train] Iter 360000 | Loss 53.18 | Loss(Global) 167.67 | Loss(Local) 7.38 | Grad 954.46 | LR(Global) 0.000600 | LR(Local) 0.000600
+[2022-11-01 13:07:11,599::train::INFO] [Validate] Iter 360000 | Loss 51.819140 | Loss(Global) 163.091624 | Loss(Local) 7.310144
+[2022-11-01 13:13:37,491::train::INFO] [Train] Iter 365000 | Loss 53.23 | Loss(Global) 167.79 | Loss(Local) 7.41 | Grad 952.74 | LR(Global) 0.000600 | LR(Local) 0.000600
+[2022-11-01 13:14:05,667::train::INFO] [Validate] Iter 365000 | Loss 51.982418 | Loss(Global) 162.821958 | Loss(Local) 7.646599
+[2022-11-01 13:20:29,606::train::INFO] [Train] Iter 370000 | Loss 53.19 | Loss(Global) 167.80 | Loss(Local) 7.34 | Grad 958.79 | LR(Global) 0.000600 | LR(Local) 0.000600
+[2022-11-01 13:21:06,149::train::INFO] [Validate] Iter 370000 | Loss 52.161844 | Loss(Global) 164.185125 | Loss(Local) 7.352529
+[2022-11-01 13:27:15,968::train::INFO] [Train] Iter 375000 | Loss 52.88 | Loss(Global) 166.65 | Loss(Local) 7.37 | Grad 956.89 | LR(Global) 0.000600 | LR(Local) 0.000600
+[2022-11-01 13:27:52,087::train::INFO] [Validate] Iter 375000 | Loss 52.544094 | Loss(Global) 165.903850 | Loss(Local) 7.200188
+[2022-11-01 13:34:04,988::train::INFO] [Train] Iter 380000 | Loss 53.02 | Loss(Global) 166.84 | Loss(Local) 7.49 | Grad 988.31 | LR(Global) 0.000600 | LR(Local) 0.000600
+[2022-11-01 13:34:40,743::train::INFO] [Validate] Iter 380000 | Loss 51.782075 | Loss(Global) 163.364973 | Loss(Local) 7.148913
+[2022-11-01 13:41:10,707::train::INFO] [Train] Iter 385000 | Loss 52.96 | Loss(Global) 167.09 | Loss(Local) 7.31 | Grad 963.38 | LR(Global) 0.000600 | LR(Local) 0.000600
+[2022-11-01 13:41:38,335::train::INFO] [Validate] Iter 385000 | Loss 52.191736 | Loss(Global) 164.067243 | Loss(Local) 7.441530
+[2022-11-01 13:48:08,478::train::INFO] [Train] Iter 390000 | Loss 52.48 | Loss(Global) 166.43 | Loss(Local) 6.89 | Grad 937.61 | LR(Global) 0.000600 | LR(Local) 0.000360
+[2022-11-01 13:48:36,497::train::INFO] [Validate] Iter 390000 | Loss 52.145817 | Loss(Global) 166.081724 | Loss(Local) 6.571451
+[2022-11-01 13:55:02,927::train::INFO] [Train] Iter 395000 | Loss 52.55 | Loss(Global) 166.46 | Loss(Local) 6.98 | Grad 945.92 | LR(Global) 0.000600 | LR(Local) 0.000360
+[2022-11-01 13:55:30,978::train::INFO] [Validate] Iter 395000 | Loss 51.390215 | Loss(Global) 162.465333 | Loss(Local) 6.960165
+[2022-11-01 14:01:57,578::train::INFO] [Train] Iter 400000 | Loss 52.44 | Loss(Global) 166.35 | Loss(Local) 6.87 | Grad 945.75 | LR(Global) 0.000600 | LR(Local) 0.000360
+[2022-11-01 14:02:25,858::train::INFO] [Validate] Iter 400000 | Loss 52.017059 | Loss(Global) 164.924424 | Loss(Local) 6.854109
+[2022-11-01 14:08:45,694::train::INFO] [Train] Iter 405000 | Loss 52.38 | Loss(Global) 166.08 | Loss(Local) 6.90 | Grad 948.98 | LR(Global) 0.000600 | LR(Local) 0.000360
+[2022-11-01 14:09:13,626::train::INFO] [Validate] Iter 405000 | Loss 51.297858 | Loss(Global) 162.875549 | Loss(Local) 6.666778
+[2022-11-01 14:15:33,313::train::INFO] [Train] Iter 410000 | Loss 52.36 | Loss(Global) 165.96 | Loss(Local) 6.92 | Grad 935.71 | LR(Global) 0.000600 | LR(Local) 0.000360
+[2022-11-01 14:16:01,374::train::INFO] [Validate] Iter 410000 | Loss 50.721133 | Loss(Global) 160.360514 | Loss(Local) 6.865378
+[2022-11-01 14:22:21,928::train::INFO] [Train] Iter 415000 | Loss 52.26 | Loss(Global) 165.82 | Loss(Local) 6.84 | Grad 947.11 | LR(Global) 0.000600 | LR(Local) 0.000360
+[2022-11-01 14:22:49,893::train::INFO] [Validate] Iter 415000 | Loss 51.757859 | Loss(Global) 164.329506 | Loss(Local) 6.729196
+[2022-11-01 14:29:10,062::train::INFO] [Train] Iter 420000 | Loss 52.05 | Loss(Global) 165.00 | Loss(Local) 6.87 | Grad 944.54 | LR(Global) 0.000600 | LR(Local) 0.000360
+[2022-11-01 14:29:38,130::train::INFO] [Validate] Iter 420000 | Loss 50.600377 | Loss(Global) 160.623680 | Loss(Local) 6.591053
+[2022-11-01 14:35:55,163::train::INFO] [Train] Iter 425000 | Loss 52.19 | Loss(Global) 165.49 | Loss(Local) 6.88 | Grad 952.49 | LR(Global) 0.000600 | LR(Local) 0.000360
+[2022-11-01 14:36:31,695::train::INFO] [Validate] Iter 425000 | Loss 55.248959 | Loss(Global) 176.296110 | Loss(Local) 6.830096
+[2022-11-01 14:42:40,898::train::INFO] [Train] Iter 430000 | Loss 52.24 | Loss(Global) 165.64 | Loss(Local) 6.87 | Grad 945.10 | LR(Global) 0.000600 | LR(Local) 0.000360
+[2022-11-01 14:43:16,780::train::INFO] [Validate] Iter 430000 | Loss 52.087133 | Loss(Global) 165.376824 | Loss(Local) 6.771254
+[2022-11-01 14:49:25,848::train::INFO] [Train] Iter 435000 | Loss 52.12 | Loss(Global) 165.51 | Loss(Local) 6.77 | Grad 947.69 | LR(Global) 0.000600 | LR(Local) 0.000360
+[2022-11-01 14:50:02,160::train::INFO] [Validate] Iter 435000 | Loss 53.365344 | Loss(Global) 169.399092 | Loss(Local) 6.951841
+[2022-11-01 14:56:12,092::train::INFO] [Train] Iter 440000 | Loss 51.97 | Loss(Global) 164.73 | Loss(Local) 6.87 | Grad 942.84 | LR(Global) 0.000600 | LR(Local) 0.000360
+[2022-11-01 14:56:39,881::train::INFO] [Validate] Iter 440000 | Loss 51.340670 | Loss(Global) 163.304313 | Loss(Local) 6.555210
+[2022-11-01 15:03:04,037::train::INFO] [Train] Iter 445000 | Loss 52.25 | Loss(Global) 165.76 | Loss(Local) 6.84 | Grad 959.46 | LR(Global) 0.000600 | LR(Local) 0.000360
+[2022-11-01 15:03:32,009::train::INFO] [Validate] Iter 445000 | Loss 51.460191 | Loss(Global) 162.342260 | Loss(Local) 7.107360
+[2022-11-01 15:09:59,020::train::INFO] [Train] Iter 450000 | Loss 51.82 | Loss(Global) 164.25 | Loss(Local) 6.85 | Grad 941.01 | LR(Global) 0.000600 | LR(Local) 0.000360
+[2022-11-01 15:10:27,244::train::INFO] [Validate] Iter 450000 | Loss 51.287803 | Loss(Global) 162.666947 | Loss(Local) 6.736142
+[2022-11-01 15:16:45,589::train::INFO] [Train] Iter 455000 | Loss 51.92 | Loss(Global) 164.58 | Loss(Local) 6.85 | Grad 956.76 | LR(Global) 0.000600 | LR(Local) 0.000360
+[2022-11-01 15:17:13,909::train::INFO] [Validate] Iter 455000 | Loss 51.437037 | Loss(Global) 163.126184 | Loss(Local) 6.761376
+[2022-11-01 15:23:30,480::train::INFO] [Train] Iter 460000 | Loss 52.19 | Loss(Global) 165.61 | Loss(Local) 6.82 | Grad 969.97 | LR(Global) 0.000600 | LR(Local) 0.000360
+[2022-11-01 15:23:58,529::train::INFO] [Validate] Iter 460000 | Loss 51.140696 | Loss(Global) 162.191317 | Loss(Local) 6.720444
+[2022-11-01 15:30:20,799::train::INFO] [Train] Iter 465000 | Loss 52.14 | Loss(Global) 165.41 | Loss(Local) 6.83 | Grad 971.08 | LR(Global) 0.000600 | LR(Local) 0.000360
+[2022-11-01 15:30:48,694::train::INFO] [Validate] Iter 465000 | Loss 51.916356 | Loss(Global) 163.406254 | Loss(Local) 7.320394
+[2022-11-01 15:37:15,844::train::INFO] [Train] Iter 470000 | Loss 49.36 | Loss(Global) 155.75 | Loss(Local) 6.80 | Grad 936.59 | LR(Global) 0.000360 | LR(Local) 0.000360
+[2022-11-01 15:37:44,070::train::INFO] [Validate] Iter 470000 | Loss 49.721700 | Loss(Global) 157.042896 | Loss(Local) 6.793218
+[2022-11-01 15:44:06,891::train::INFO] [Train] Iter 475000 | Loss 49.05 | Loss(Global) 154.64 | Loss(Local) 6.81 | Grad 933.28 | LR(Global) 0.000360 | LR(Local) 0.000360
+[2022-11-01 15:44:35,222::train::INFO] [Validate] Iter 475000 | Loss 48.605908 | Loss(Global) 152.268661 | Loss(Local) 7.140803
+[2022-11-01 15:50:55,592::train::INFO] [Train] Iter 480000 | Loss 48.56 | Loss(Global) 153.04 | Loss(Local) 6.77 | Grad 925.04 | LR(Global) 0.000360 | LR(Local) 0.000360
+[2022-11-01 15:51:31,535::train::INFO] [Validate] Iter 480000 | Loss 50.878595 | Loss(Global) 159.443646 | Loss(Local) 7.452572
+[2022-11-01 15:57:48,020::train::INFO] [Train] Iter 485000 | Loss 48.80 | Loss(Global) 153.70 | Loss(Local) 6.83 | Grad 954.22 | LR(Global) 0.000360 | LR(Local) 0.000360
+[2022-11-01 15:58:24,014::train::INFO] [Validate] Iter 485000 | Loss 48.947447 | Loss(Global) 154.321055 | Loss(Local) 6.798001
+[2022-11-01 16:04:37,499::train::INFO] [Train] Iter 490000 | Loss 48.73 | Loss(Global) 153.54 | Loss(Local) 6.81 | Grad 946.77 | LR(Global) 0.000360 | LR(Local) 0.000360
+[2022-11-01 16:05:13,471::train::INFO] [Validate] Iter 490000 | Loss 47.740988 | Loss(Global) 149.268521 | Loss(Local) 7.129972
+[2022-11-01 16:11:26,893::train::INFO] [Train] Iter 495000 | Loss 48.48 | Loss(Global) 152.87 | Loss(Local) 6.73 | Grad 929.47 | LR(Global) 0.000360 | LR(Local) 0.000360
+[2022-11-01 16:11:54,552::train::INFO] [Validate] Iter 495000 | Loss 46.904724 | Loss(Global) 147.781398 | Loss(Local) 6.554052
+[2022-11-01 16:18:12,150::train::INFO] [Train] Iter 500000 | Loss 48.41 | Loss(Global) 152.56 | Loss(Local) 6.75 | Grad 950.50 | LR(Global) 0.000360 | LR(Local) 0.000360
+[2022-11-01 16:18:40,105::train::INFO] [Validate] Iter 500000 | Loss 46.739312 | Loss(Global) 147.172643 | Loss(Local) 6.565977
+[2022-11-01 16:25:03,731::train::INFO] [Train] Iter 505000 | Loss 48.54 | Loss(Global) 153.04 | Loss(Local) 6.74 | Grad 943.43 | LR(Global) 0.000360 | LR(Local) 0.000360
+[2022-11-01 16:25:32,231::train::INFO] [Validate] Iter 505000 | Loss 47.823835 | Loss(Global) 150.559930 | Loss(Local) 6.729395
+[2022-11-01 16:31:45,848::train::INFO] [Train] Iter 510000 | Loss 48.46 | Loss(Global) 152.66 | Loss(Local) 6.78 | Grad 953.32 | LR(Global) 0.000360 | LR(Local) 0.000360
+[2022-11-01 16:32:13,932::train::INFO] [Validate] Iter 510000 | Loss 47.321681 | Loss(Global) 148.813614 | Loss(Local) 6.724905
+[2022-11-01 16:38:30,822::train::INFO] [Train] Iter 515000 | Loss 48.36 | Loss(Global) 152.27 | Loss(Local) 6.80 | Grad 949.30 | LR(Global) 0.000360 | LR(Local) 0.000360
+[2022-11-01 16:38:58,977::train::INFO] [Validate] Iter 515000 | Loss 47.830560 | Loss(Global) 150.994980 | Loss(Local) 6.564789
+[2022-11-01 16:45:20,771::train::INFO] [Train] Iter 520000 | Loss 48.38 | Loss(Global) 152.46 | Loss(Local) 6.74 | Grad 946.94 | LR(Global) 0.000360 | LR(Local) 0.000360
+[2022-11-01 16:45:48,945::train::INFO] [Validate] Iter 520000 | Loss 48.959844 | Loss(Global) 154.585032 | Loss(Local) 6.709765
+[2022-11-01 16:52:03,594::train::INFO] [Train] Iter 525000 | Loss 48.40 | Loss(Global) 152.54 | Loss(Local) 6.74 | Grad 954.38 | LR(Global) 0.000360 | LR(Local) 0.000360
+[2022-11-01 16:52:31,696::train::INFO] [Validate] Iter 525000 | Loss 46.393443 | Loss(Global) 146.085163 | Loss(Local) 6.516753
+[2022-11-01 16:58:54,668::train::INFO] [Train] Iter 530000 | Loss 48.37 | Loss(Global) 152.35 | Loss(Local) 6.78 | Grad 948.95 | LR(Global) 0.000360 | LR(Local) 0.000360
+[2022-11-01 16:59:30,879::train::INFO] [Validate] Iter 530000 | Loss 47.398936 | Loss(Global) 149.212282 | Loss(Local) 6.673594
+[2022-11-01 17:05:40,138::train::INFO] [Train] Iter 535000 | Loss 48.34 | Loss(Global) 152.34 | Loss(Local) 6.74 | Grad 950.37 | LR(Global) 0.000360 | LR(Local) 0.000360
+[2022-11-01 17:06:16,204::train::INFO] [Validate] Iter 535000 | Loss 47.168553 | Loss(Global) 147.762482 | Loss(Local) 6.930978
+[2022-11-01 17:12:28,369::train::INFO] [Train] Iter 540000 | Loss 48.21 | Loss(Global) 151.96 | Loss(Local) 6.71 | Grad 953.46 | LR(Global) 0.000360 | LR(Local) 0.000360
+[2022-11-01 17:13:04,162::train::INFO] [Validate] Iter 540000 | Loss 48.789524 | Loss(Global) 153.820280 | Loss(Local) 6.777218
+[2022-11-01 17:19:23,847::train::INFO] [Train] Iter 545000 | Loss 48.30 | Loss(Global) 152.16 | Loss(Local) 6.76 | Grad 965.55 | LR(Global) 0.000360 | LR(Local) 0.000360
+[2022-11-01 17:19:51,587::train::INFO] [Validate] Iter 545000 | Loss 47.920929 | Loss(Global) 150.268024 | Loss(Local) 6.982089
+[2022-11-01 17:26:08,814::train::INFO] [Train] Iter 550000 | Loss 48.02 | Loss(Global) 151.26 | Loss(Local) 6.73 | Grad 961.71 | LR(Global) 0.000360 | LR(Local) 0.000360
+[2022-11-01 17:26:36,492::train::INFO] [Validate] Iter 550000 | Loss 49.750048 | Loss(Global) 157.106955 | Loss(Local) 6.807282
+[2022-11-01 17:32:55,896::train::INFO] [Train] Iter 555000 | Loss 48.14 | Loss(Global) 151.64 | Loss(Local) 6.74 | Grad 959.36 | LR(Global) 0.000360 | LR(Local) 0.000360
+[2022-11-01 17:33:23,806::train::INFO] [Validate] Iter 555000 | Loss 47.412556 | Loss(Global) 149.417869 | Loss(Local) 6.610428
+[2022-11-01 17:39:42,562::train::INFO] [Train] Iter 560000 | Loss 48.16 | Loss(Global) 151.83 | Loss(Local) 6.69 | Grad 966.72 | LR(Global) 0.000360 | LR(Local) 0.000360
+[2022-11-01 17:40:10,846::train::INFO] [Validate] Iter 560000 | Loss 47.649796 | Loss(Global) 150.066210 | Loss(Local) 6.683228
+[2022-11-01 17:46:20,841::train::INFO] [Train] Iter 565000 | Loss 47.91 | Loss(Global) 150.99 | Loss(Local) 6.67 | Grad 967.85 | LR(Global) 0.000360 | LR(Local) 0.000360
+[2022-11-01 17:46:49,139::train::INFO] [Validate] Iter 565000 | Loss 46.723780 | Loss(Global) 146.746181 | Loss(Local) 6.714816
+[2022-11-01 17:53:14,855::train::INFO] [Train] Iter 570000 | Loss 48.22 | Loss(Global) 151.86 | Loss(Local) 6.76 | Grad 964.05 | LR(Global) 0.000360 | LR(Local) 0.000360
+[2022-11-01 17:53:42,944::train::INFO] [Validate] Iter 570000 | Loss 47.554993 | Loss(Global) 149.415572 | Loss(Local) 6.810758
+[2022-11-01 18:00:09,570::train::INFO] [Train] Iter 575000 | Loss 48.05 | Loss(Global) 151.45 | Loss(Local) 6.69 | Grad 946.01 | LR(Global) 0.000360 | LR(Local) 0.000360
+[2022-11-01 18:00:37,692::train::INFO] [Validate] Iter 575000 | Loss 47.131790 | Loss(Global) 148.525487 | Loss(Local) 6.574309
+[2022-11-01 18:07:04,699::train::INFO] [Train] Iter 580000 | Loss 48.53 | Loss(Global) 151.91 | Loss(Local) 7.18 | Grad 1107.08 | LR(Global) 0.000360 | LR(Local) 0.000360
+[2022-11-01 18:07:32,659::train::INFO] [Validate] Iter 580000 | Loss 49.110171 | Loss(Global) 155.663109 | Loss(Local) 6.488993
+[2022-11-01 18:13:56,252::train::INFO] [Train] Iter 585000 | Loss 46.26 | Loss(Global) 145.21 | Loss(Local) 6.68 | Grad 924.92 | LR(Global) 0.000216 | LR(Local) 0.000360
+[2022-11-01 18:14:32,616::train::INFO] [Validate] Iter 585000 | Loss 45.720760 | Loss(Global) 142.539634 | Loss(Local) 6.993208
+[2022-11-01 18:20:38,395::train::INFO] [Train] Iter 590000 | Loss 46.20 | Loss(Global) 144.79 | Loss(Local) 6.76 | Grad 944.90 | LR(Global) 0.000216 | LR(Local) 0.000360
+[2022-11-01 18:21:14,599::train::INFO] [Validate] Iter 590000 | Loss 44.830357 | Loss(Global) 140.724084 | Loss(Local) 6.472863
+[2022-11-01 18:27:18,771::train::INFO] [Train] Iter 595000 | Loss 45.88 | Loss(Global) 143.80 | Loss(Local) 6.72 | Grad 947.54 | LR(Global) 0.000216 | LR(Local) 0.000360
+[2022-11-01 18:27:54,745::train::INFO] [Validate] Iter 595000 | Loss 45.035074 | Loss(Global) 141.814485 | Loss(Local) 6.323307
+[2022-11-01 18:34:21,524::train::INFO] [Train] Iter 600000 | Loss 45.93 | Loss(Global) 143.94 | Loss(Local) 6.72 | Grad 966.60 | LR(Global) 0.000216 | LR(Local) 0.000360
+[2022-11-01 18:34:49,078::train::INFO] [Validate] Iter 600000 | Loss 46.529960 | Loss(Global) 145.347942 | Loss(Local) 7.002765
+[2022-11-01 18:41:10,255::train::INFO] [Train] Iter 605000 | Loss 45.82 | Loss(Global) 143.63 | Loss(Local) 6.70 | Grad 945.55 | LR(Global) 0.000216 | LR(Local) 0.000360
+[2022-11-01 18:41:38,290::train::INFO] [Validate] Iter 605000 | Loss 45.528339 | Loss(Global) 142.860857 | Loss(Local) 6.595329
+[2022-11-01 18:48:02,812::train::INFO] [Train] Iter 610000 | Loss 45.68 | Loss(Global) 143.14 | Loss(Local) 6.70 | Grad 946.08 | LR(Global) 0.000216 | LR(Local) 0.000360
+[2022-11-01 18:48:30,780::train::INFO] [Validate] Iter 610000 | Loss 44.812933 | Loss(Global) 140.380438 | Loss(Local) 6.585929
+[2022-11-01 18:54:48,367::train::INFO] [Train] Iter 615000 | Loss 45.76 | Loss(Global) 143.53 | Loss(Local) 6.65 | Grad 941.49 | LR(Global) 0.000216 | LR(Local) 0.000360
+[2022-11-01 18:55:16,418::train::INFO] [Validate] Iter 615000 | Loss 45.738568 | Loss(Global) 143.191486 | Loss(Local) 6.757397
+[2022-11-01 19:01:29,720::train::INFO] [Train] Iter 620000 | Loss 45.80 | Loss(Global) 143.55 | Loss(Local) 6.70 | Grad 969.59 | LR(Global) 0.000216 | LR(Local) 0.000360
+[2022-11-01 19:01:57,808::train::INFO] [Validate] Iter 620000 | Loss 45.896207 | Loss(Global) 144.119981 | Loss(Local) 6.606695
+[2022-11-01 19:08:21,810::train::INFO] [Train] Iter 625000 | Loss 45.78 | Loss(Global) 143.39 | Loss(Local) 6.74 | Grad 952.33 | LR(Global) 0.000216 | LR(Local) 0.000360
+[2022-11-01 19:08:49,759::train::INFO] [Validate] Iter 625000 | Loss 45.272646 | Loss(Global) 141.671030 | Loss(Local) 6.713289
+[2022-11-01 19:15:05,536::train::INFO] [Train] Iter 630000 | Loss 45.52 | Loss(Global) 142.66 | Loss(Local) 6.66 | Grad 977.68 | LR(Global) 0.000216 | LR(Local) 0.000360
+[2022-11-01 19:15:33,506::train::INFO] [Validate] Iter 630000 | Loss 46.875470 | Loss(Global) 147.549495 | Loss(Local) 6.605856
+[2022-11-01 19:21:49,047::train::INFO] [Train] Iter 635000 | Loss 45.84 | Loss(Global) 143.77 | Loss(Local) 6.67 | Grad 979.13 | LR(Global) 0.000216 | LR(Local) 0.000360
+[2022-11-01 19:22:17,163::train::INFO] [Validate] Iter 635000 | Loss 48.393624 | Loss(Global) 152.837382 | Loss(Local) 6.616118
+[2022-11-01 19:28:37,121::train::INFO] [Train] Iter 640000 | Loss 45.68 | Loss(Global) 143.22 | Loss(Local) 6.66 | Grad 973.21 | LR(Global) 0.000216 | LR(Local) 0.000360
+[2022-11-01 19:29:13,127::train::INFO] [Validate] Iter 640000 | Loss 45.018427 | Loss(Global) 141.363477 | Loss(Local) 6.480404
+[2022-11-01 19:35:22,747::train::INFO] [Train] Iter 645000 | Loss 45.64 | Loss(Global) 143.03 | Loss(Local) 6.69 | Grad 956.38 | LR(Global) 0.000216 | LR(Local) 0.000360
+[2022-11-01 19:35:59,060::train::INFO] [Validate] Iter 645000 | Loss 46.100750 | Loss(Global) 143.836418 | Loss(Local) 7.006479
+[2022-11-01 19:42:15,111::train::INFO] [Train] Iter 650000 | Loss 45.46 | Loss(Global) 142.57 | Loss(Local) 6.61 | Grad 942.90 | LR(Global) 0.000216 | LR(Local) 0.000360
+[2022-11-01 19:42:51,541::train::INFO] [Validate] Iter 650000 | Loss 45.453660 | Loss(Global) 142.795138 | Loss(Local) 6.517066
+[2022-11-01 19:48:56,365::train::INFO] [Train] Iter 655000 | Loss 45.22 | Loss(Global) 142.25 | Loss(Local) 6.41 | Grad 953.86 | LR(Global) 0.000216 | LR(Local) 0.000216
+[2022-11-01 19:49:32,252::train::INFO] [Validate] Iter 655000 | Loss 44.647477 | Loss(Global) 140.360701 | Loss(Local) 6.362184
+[2022-11-01 19:55:42,357::train::INFO] [Train] Iter 660000 | Loss 45.29 | Loss(Global) 142.45 | Loss(Local) 6.43 | Grad 947.93 | LR(Global) 0.000216 | LR(Local) 0.000216
+[2022-11-01 19:56:10,133::train::INFO] [Validate] Iter 660000 | Loss 44.281030 | Loss(Global) 139.317520 | Loss(Local) 6.266431
+[2022-11-01 20:02:22,798::train::INFO] [Train] Iter 665000 | Loss 45.26 | Loss(Global) 142.38 | Loss(Local) 6.41 | Grad 959.84 | LR(Global) 0.000216 | LR(Local) 0.000216
+[2022-11-01 20:02:51,143::train::INFO] [Validate] Iter 665000 | Loss 45.288598 | Loss(Global) 142.053559 | Loss(Local) 6.582611
+[2022-11-01 20:09:16,924::train::INFO] [Train] Iter 670000 | Loss 45.30 | Loss(Global) 142.60 | Loss(Local) 6.38 | Grad 966.40 | LR(Global) 0.000216 | LR(Local) 0.000216
+[2022-11-01 20:09:45,129::train::INFO] [Validate] Iter 670000 | Loss 44.963094 | Loss(Global) 141.041971 | Loss(Local) 6.531539
+[2022-11-01 20:16:07,946::train::INFO] [Train] Iter 675000 | Loss 45.26 | Loss(Global) 142.41 | Loss(Local) 6.40 | Grad 949.89 | LR(Global) 0.000216 | LR(Local) 0.000216
+[2022-11-01 20:16:36,149::train::INFO] [Validate] Iter 675000 | Loss 44.572946 | Loss(Global) 140.441055 | Loss(Local) 6.225699
+[2022-11-01 20:22:57,564::train::INFO] [Train] Iter 680000 | Loss 45.19 | Loss(Global) 142.31 | Loss(Local) 6.34 | Grad 977.54 | LR(Global) 0.000216 | LR(Local) 0.000216
+[2022-11-01 20:23:25,503::train::INFO] [Validate] Iter 680000 | Loss 46.679673 | Loss(Global) 147.660387 | Loss(Local) 6.287384
+[2022-11-01 20:29:50,153::train::INFO] [Train] Iter 685000 | Loss 45.06 | Loss(Global) 141.79 | Loss(Local) 6.37 | Grad 940.99 | LR(Global) 0.000216 | LR(Local) 0.000216
+[2022-11-01 20:30:18,395::train::INFO] [Validate] Iter 685000 | Loss 44.601351 | Loss(Global) 139.512675 | Loss(Local) 6.636819
+[2022-11-01 20:36:36,144::train::INFO] [Train] Iter 690000 | Loss 45.38 | Loss(Global) 142.88 | Loss(Local) 6.38 | Grad 969.07 | LR(Global) 0.000216 | LR(Local) 0.000216
+[2022-11-01 20:37:04,383::train::INFO] [Validate] Iter 690000 | Loss 44.638683 | Loss(Global) 140.606092 | Loss(Local) 6.251717
+[2022-11-01 20:43:23,492::train::INFO] [Train] Iter 695000 | Loss 45.34 | Loss(Global) 142.69 | Loss(Local) 6.40 | Grad 966.72 | LR(Global) 0.000216 | LR(Local) 0.000216
+[2022-11-01 20:44:00,074::train::INFO] [Validate] Iter 695000 | Loss 44.968088 | Loss(Global) 141.195518 | Loss(Local) 6.477114
+[2022-11-01 20:50:08,380::train::INFO] [Train] Iter 700000 | Loss 45.15 | Loss(Global) 142.08 | Loss(Local) 6.37 | Grad 963.55 | LR(Global) 0.000216 | LR(Local) 0.000216
+[2022-11-01 20:50:45,149::train::INFO] [Validate] Iter 700000 | Loss 45.057526 | Loss(Global) 142.089226 | Loss(Local) 6.244843
+[2022-11-01 20:56:50,022::train::INFO] [Train] Iter 705000 | Loss 45.40 | Loss(Global) 142.87 | Loss(Local) 6.41 | Grad 970.42 | LR(Global) 0.000216 | LR(Local) 0.000216
+[2022-11-01 20:57:26,038::train::INFO] [Validate] Iter 705000 | Loss 44.316436 | Loss(Global) 139.721825 | Loss(Local) 6.154277
+[2022-11-01 21:03:40,980::train::INFO] [Train] Iter 710000 | Loss 44.94 | Loss(Global) 141.45 | Loss(Local) 6.34 | Grad 942.18 | LR(Global) 0.000216 | LR(Local) 0.000216
+[2022-11-01 21:04:08,307::train::INFO] [Validate] Iter 710000 | Loss 44.999318 | Loss(Global) 141.155316 | Loss(Local) 6.536916
+[2022-11-01 21:10:33,171::train::INFO] [Train] Iter 715000 | Loss 45.21 | Loss(Global) 142.32 | Loss(Local) 6.37 | Grad 992.45 | LR(Global) 0.000216 | LR(Local) 0.000216
+[2022-11-01 21:11:00,857::train::INFO] [Validate] Iter 715000 | Loss 45.108155 | Loss(Global) 141.929466 | Loss(Local) 6.379628
+[2022-11-01 21:17:20,335::train::INFO] [Train] Iter 720000 | Loss 43.97 | Loss(Global) 137.99 | Loss(Local) 6.37 | Grad 925.55 | LR(Global) 0.000130 | LR(Local) 0.000216
+[2022-11-01 21:17:48,256::train::INFO] [Validate] Iter 720000 | Loss 43.402740 | Loss(Global) 135.898766 | Loss(Local) 6.404327
+[2022-11-01 21:24:03,809::train::INFO] [Train] Iter 725000 | Loss 43.79 | Loss(Global) 137.35 | Loss(Local) 6.37 | Grad 941.27 | LR(Global) 0.000130 | LR(Local) 0.000216
+[2022-11-01 21:24:31,804::train::INFO] [Validate] Iter 725000 | Loss 43.678111 | Loss(Global) 137.302855 | Loss(Local) 6.228211
+[2022-11-01 21:30:57,569::train::INFO] [Train] Iter 730000 | Loss 43.89 | Loss(Global) 137.66 | Loss(Local) 6.38 | Grad 957.06 | LR(Global) 0.000130 | LR(Local) 0.000216
+[2022-11-01 21:31:25,632::train::INFO] [Validate] Iter 730000 | Loss 43.803561 | Loss(Global) 137.333056 | Loss(Local) 6.391761
+[2022-11-01 21:37:48,065::train::INFO] [Train] Iter 735000 | Loss 43.85 | Loss(Global) 137.53 | Loss(Local) 6.38 | Grad 956.75 | LR(Global) 0.000130 | LR(Local) 0.000216
+[2022-11-01 21:38:16,165::train::INFO] [Validate] Iter 735000 | Loss 44.329638 | Loss(Global) 139.195617 | Loss(Local) 6.383243
+[2022-11-01 21:44:42,450::train::INFO] [Train] Iter 740000 | Loss 43.64 | Loss(Global) 136.83 | Loss(Local) 6.37 | Grad 946.64 | LR(Global) 0.000130 | LR(Local) 0.000216
+[2022-11-01 21:45:10,512::train::INFO] [Validate] Iter 740000 | Loss 43.745691 | Loss(Global) 137.070759 | Loss(Local) 6.415662
+[2022-11-01 21:51:14,521::train::INFO] [Train] Iter 745000 | Loss 43.70 | Loss(Global) 137.05 | Loss(Local) 6.37 | Grad 944.66 | LR(Global) 0.000130 | LR(Local) 0.000216
+[2022-11-01 21:51:42,655::train::INFO] [Validate] Iter 745000 | Loss 45.387061 | Loss(Global) 143.037914 | Loss(Local) 6.326717
+[2022-11-01 21:58:08,625::train::INFO] [Train] Iter 750000 | Loss 43.79 | Loss(Global) 137.34 | Loss(Local) 6.38 | Grad 971.48 | LR(Global) 0.000130 | LR(Local) 0.000216
+[2022-11-01 21:58:44,940::train::INFO] [Validate] Iter 750000 | Loss 43.155668 | Loss(Global) 135.520260 | Loss(Local) 6.209829
+[2022-11-01 22:04:48,792::train::INFO] [Train] Iter 755000 | Loss 43.54 | Loss(Global) 136.51 | Loss(Local) 6.35 | Grad 957.15 | LR(Global) 0.000130 | LR(Local) 0.000216
+[2022-11-01 22:05:25,329::train::INFO] [Validate] Iter 755000 | Loss 43.418516 | Loss(Global) 135.840213 | Loss(Local) 6.449834
+[2022-11-01 22:11:30,002::train::INFO] [Train] Iter 760000 | Loss 43.59 | Loss(Global) 136.69 | Loss(Local) 6.35 | Grad 964.06 | LR(Global) 0.000130 | LR(Local) 0.000216
+[2022-11-01 22:12:06,046::train::INFO] [Validate] Iter 760000 | Loss 43.411424 | Loss(Global) 136.235469 | Loss(Local) 6.281803
+[2022-11-01 22:18:19,782::train::INFO] [Train] Iter 765000 | Loss 43.54 | Loss(Global) 136.94 | Loss(Local) 6.18 | Grad 950.68 | LR(Global) 0.000130 | LR(Local) 0.000130
+[2022-11-01 22:18:55,858::train::INFO] [Validate] Iter 765000 | Loss 43.660222 | Loss(Global) 137.245056 | Loss(Local) 6.226285
+[2022-11-01 22:25:26,051::train::INFO] [Train] Iter 770000 | Loss 43.31 | Loss(Global) 136.25 | Loss(Local) 6.14 | Grad 957.59 | LR(Global) 0.000130 | LR(Local) 0.000130
+[2022-11-01 22:25:53,721::train::INFO] [Validate] Iter 770000 | Loss 43.332246 | Loss(Global) 136.188669 | Loss(Local) 6.189674
+[2022-11-01 22:32:18,332::train::INFO] [Train] Iter 775000 | Loss 43.44 | Loss(Global) 136.54 | Loss(Local) 6.20 | Grad 953.84 | LR(Global) 0.000130 | LR(Local) 0.000130
+[2022-11-01 22:32:46,630::train::INFO] [Validate] Iter 775000 | Loss 42.910837 | Loss(Global) 134.883821 | Loss(Local) 6.121641
+[2022-11-01 22:39:03,163::train::INFO] [Train] Iter 780000 | Loss 43.46 | Loss(Global) 136.67 | Loss(Local) 6.18 | Grad 956.89 | LR(Global) 0.000130 | LR(Local) 0.000130
+[2022-11-01 22:39:30,864::train::INFO] [Validate] Iter 780000 | Loss 43.336369 | Loss(Global) 136.297570 | Loss(Local) 6.151887
+[2022-11-01 22:45:44,751::train::INFO] [Train] Iter 785000 | Loss 43.17 | Loss(Global) 135.74 | Loss(Local) 6.14 | Grad 939.13 | LR(Global) 0.000130 | LR(Local) 0.000130
+[2022-11-01 22:46:12,580::train::INFO] [Validate] Iter 785000 | Loss 43.935411 | Loss(Global) 138.239536 | Loss(Local) 6.213759
+[2022-11-01 22:52:26,839::train::INFO] [Train] Iter 790000 | Loss 43.28 | Loss(Global) 136.10 | Loss(Local) 6.16 | Grad 947.28 | LR(Global) 0.000130 | LR(Local) 0.000130
+[2022-11-01 22:52:54,629::train::INFO] [Validate] Iter 790000 | Loss 43.113300 | Loss(Global) 135.447163 | Loss(Local) 6.179753
+[2022-11-01 22:59:10,292::train::INFO] [Train] Iter 795000 | Loss 43.28 | Loss(Global) 136.00 | Loss(Local) 6.19 | Grad 971.14 | LR(Global) 0.000130 | LR(Local) 0.000130
+[2022-11-01 22:59:38,158::train::INFO] [Validate] Iter 795000 | Loss 43.052808 | Loss(Global) 135.402461 | Loss(Local) 6.112945
+[2022-11-01 23:05:47,378::train::INFO] [Train] Iter 800000 | Loss 43.24 | Loss(Global) 135.91 | Loss(Local) 6.18 | Grad 974.77 | LR(Global) 0.000130 | LR(Local) 0.000130
+[2022-11-01 23:06:15,124::train::INFO] [Validate] Iter 800000 | Loss 42.587402 | Loss(Global) 134.002764 | Loss(Local) 6.021254
+[2022-11-01 23:12:30,662::train::INFO] [Train] Iter 805000 | Loss 43.21 | Loss(Global) 135.87 | Loss(Local) 6.14 | Grad 963.50 | LR(Global) 0.000130 | LR(Local) 0.000130
+[2022-11-01 23:13:05,888::train::INFO] [Validate] Iter 805000 | Loss 42.845833 | Loss(Global) 134.516417 | Loss(Local) 6.177597
+[2022-11-01 23:19:08,657::train::INFO] [Train] Iter 810000 | Loss 43.39 | Loss(Global) 136.44 | Loss(Local) 6.17 | Grad 971.27 | LR(Global) 0.000130 | LR(Local) 0.000130
+[2022-11-01 23:19:44,442::train::INFO] [Validate] Iter 810000 | Loss 43.345305 | Loss(Global) 136.129851 | Loss(Local) 6.231484
+[2022-11-01 23:25:49,283::train::INFO] [Train] Iter 815000 | Loss 43.35 | Loss(Global) 136.22 | Loss(Local) 6.20 | Grad 971.49 | LR(Global) 0.000130 | LR(Local) 0.000130
+[2022-11-01 23:26:24,593::train::INFO] [Validate] Iter 815000 | Loss 42.695337 | Loss(Global) 133.917755 | Loss(Local) 6.206367
+[2022-11-01 23:32:38,821::train::INFO] [Train] Iter 820000 | Loss 43.25 | Loss(Global) 136.02 | Loss(Local) 6.14 | Grad 958.28 | LR(Global) 0.000130 | LR(Local) 0.000130
+[2022-11-01 23:33:06,065::train::INFO] [Validate] Iter 820000 | Loss 42.821342 | Loss(Global) 134.492005 | Loss(Local) 6.153074
+[2022-11-01 23:39:17,130::train::INFO] [Train] Iter 825000 | Loss 43.30 | Loss(Global) 136.12 | Loss(Local) 6.18 | Grad 979.50 | LR(Global) 0.000130 | LR(Local) 0.000130
+[2022-11-01 23:39:44,581::train::INFO] [Validate] Iter 825000 | Loss 43.257130 | Loss(Global) 135.560024 | Loss(Local) 6.335970
+[2022-11-01 23:45:58,066::train::INFO] [Train] Iter 830000 | Loss 43.19 | Loss(Global) 135.80 | Loss(Local) 6.14 | Grad 961.42 | LR(Global) 0.000130 | LR(Local) 0.000130
+[2022-11-01 23:46:25,651::train::INFO] [Validate] Iter 830000 | Loss 43.003208 | Loss(Global) 134.819951 | Loss(Local) 6.276509
+[2022-11-01 23:52:40,301::train::INFO] [Train] Iter 835000 | Loss 43.13 | Loss(Global) 135.56 | Loss(Local) 6.16 | Grad 968.23 | LR(Global) 0.000130 | LR(Local) 0.000130
+[2022-11-01 23:53:07,918::train::INFO] [Validate] Iter 835000 | Loss 43.396791 | Loss(Global) 136.667043 | Loss(Local) 6.088688
+[2022-11-01 23:59:21,163::train::INFO] [Train] Iter 840000 | Loss 43.30 | Loss(Global) 136.17 | Loss(Local) 6.15 | Grad 960.31 | LR(Global) 0.000130 | LR(Local) 0.000130
+[2022-11-01 23:59:49,014::train::INFO] [Validate] Iter 840000 | Loss 43.413047 | Loss(Global) 136.683720 | Loss(Local) 6.104775
+[2022-11-02 00:06:01,184::train::INFO] [Train] Iter 845000 | Loss 43.19 | Loss(Global) 135.85 | Loss(Local) 6.13 | Grad 953.95 | LR(Global) 0.000130 | LR(Local) 0.000130
+[2022-11-02 00:06:29,056::train::INFO] [Validate] Iter 845000 | Loss 42.886063 | Loss(Global) 134.808066 | Loss(Local) 6.117260
+[2022-11-02 00:12:41,772::train::INFO] [Train] Iter 850000 | Loss 43.32 | Loss(Global) 136.21 | Loss(Local) 6.16 | Grad 982.96 | LR(Global) 0.000130 | LR(Local) 0.000130
+[2022-11-02 00:13:09,478::train::INFO] [Validate] Iter 850000 | Loss 43.254096 | Loss(Global) 136.272187 | Loss(Local) 6.046857
+[2022-11-02 00:19:23,949::train::INFO] [Train] Iter 855000 | Loss 43.04 | Loss(Global) 135.34 | Loss(Local) 6.11 | Grad 971.83 | LR(Global) 0.000130 | LR(Local) 0.000130
+[2022-11-02 00:19:51,779::train::INFO] [Validate] Iter 855000 | Loss 43.122652 | Loss(Global) 134.986748 | Loss(Local) 6.377011
+[2022-11-02 00:26:05,625::train::INFO] [Train] Iter 860000 | Loss 43.06 | Loss(Global) 135.70 | Loss(Local) 6.00 | Grad 982.51 | LR(Global) 0.000130 | LR(Local) 0.000078
+[2022-11-02 00:26:41,367::train::INFO] [Validate] Iter 860000 | Loss 42.797061 | Loss(Global) 134.642433 | Loss(Local) 6.058909
+[2022-11-02 00:32:42,565::train::INFO] [Train] Iter 865000 | Loss 43.10 | Loss(Global) 135.68 | Loss(Local) 6.07 | Grad 981.91 | LR(Global) 0.000130 | LR(Local) 0.000078
+[2022-11-02 00:33:18,135::train::INFO] [Validate] Iter 865000 | Loss 42.275074 | Loss(Global) 133.099485 | Loss(Local) 5.945306
+[2022-11-02 00:39:21,120::train::INFO] [Train] Iter 870000 | Loss 43.03 | Loss(Global) 135.56 | Loss(Local) 6.02 | Grad 959.34 | LR(Global) 0.000130 | LR(Local) 0.000078
+[2022-11-02 00:39:56,741::train::INFO] [Validate] Iter 870000 | Loss 43.085676 | Loss(Global) 135.670990 | Loss(Local) 6.051547
+[2022-11-02 00:46:06,716::train::INFO] [Train] Iter 875000 | Loss 43.07 | Loss(Global) 135.70 | Loss(Local) 6.02 | Grad 979.69 | LR(Global) 0.000130 | LR(Local) 0.000078
+[2022-11-02 00:46:34,146::train::INFO] [Validate] Iter 875000 | Loss 43.396166 | Loss(Global) 136.787531 | Loss(Local) 6.039617
+[2022-11-02 00:52:50,381::train::INFO] [Train] Iter 880000 | Loss 43.02 | Loss(Global) 135.44 | Loss(Local) 6.05 | Grad 981.71 | LR(Global) 0.000130 | LR(Local) 0.000078
+[2022-11-02 00:53:18,041::train::INFO] [Validate] Iter 880000 | Loss 42.633976 | Loss(Global) 134.107636 | Loss(Local) 6.044509
+[2022-11-02 00:59:33,686::train::INFO] [Train] Iter 885000 | Loss 43.02 | Loss(Global) 135.51 | Loss(Local) 6.02 | Grad 983.83 | LR(Global) 0.000130 | LR(Local) 0.000078
+[2022-11-02 01:00:01,632::train::INFO] [Validate] Iter 885000 | Loss 42.460798 | Loss(Global) 133.585714 | Loss(Local) 6.010828
+[2022-11-02 01:06:17,912::train::INFO] [Train] Iter 890000 | Loss 43.10 | Loss(Global) 135.70 | Loss(Local) 6.07 | Grad 979.83 | LR(Global) 0.000130 | LR(Local) 0.000078
+[2022-11-02 01:06:45,641::train::INFO] [Validate] Iter 890000 | Loss 42.491243 | Loss(Global) 133.969752 | Loss(Local) 5.899837
+[2022-11-02 01:12:56,900::train::INFO] [Train] Iter 895000 | Loss 43.00 | Loss(Global) 135.37 | Loss(Local) 6.05 | Grad 967.91 | LR(Global) 0.000130 | LR(Local) 0.000078
+[2022-11-02 01:13:24,748::train::INFO] [Validate] Iter 895000 | Loss 42.828549 | Loss(Global) 134.880475 | Loss(Local) 6.007776
+[2022-11-02 01:19:37,924::train::INFO] [Train] Iter 900000 | Loss 43.17 | Loss(Global) 136.03 | Loss(Local) 6.02 | Grad 978.11 | LR(Global) 0.000130 | LR(Local) 0.000078
+[2022-11-02 01:20:05,768::train::INFO] [Validate] Iter 900000 | Loss 41.987609 | Loss(Global) 132.080882 | Loss(Local) 5.950298
+[2022-11-02 01:26:18,324::train::INFO] [Train] Iter 905000 | Loss 42.97 | Loss(Global) 135.27 | Loss(Local) 6.05 | Grad 982.50 | LR(Global) 0.000130 | LR(Local) 0.000078
+[2022-11-02 01:26:46,049::train::INFO] [Validate] Iter 905000 | Loss 42.594469 | Loss(Global) 134.018059 | Loss(Local) 6.025030
+[2022-11-02 01:32:56,715::train::INFO] [Train] Iter 910000 | Loss 42.88 | Loss(Global) 135.00 | Loss(Local) 6.04 | Grad 981.56 | LR(Global) 0.000130 | LR(Local) 0.000078
+[2022-11-02 01:33:24,466::train::INFO] [Validate] Iter 910000 | Loss 42.175195 | Loss(Global) 132.447278 | Loss(Local) 6.066359
+[2022-11-02 01:39:41,061::train::INFO] [Train] Iter 915000 | Loss 43.14 | Loss(Global) 135.94 | Loss(Local) 6.02 | Grad 992.65 | LR(Global) 0.000130 | LR(Local) 0.000078
+[2022-11-02 01:40:16,853::train::INFO] [Validate] Iter 915000 | Loss 42.337688 | Loss(Global) 133.270659 | Loss(Local) 5.964497
+[2022-11-02 01:46:26,171::train::INFO] [Train] Iter 920000 | Loss 43.12 | Loss(Global) 135.72 | Loss(Local) 6.09 | Grad 982.86 | LR(Global) 0.000130 | LR(Local) 0.000078
+[2022-11-02 01:47:01,326::train::INFO] [Validate] Iter 920000 | Loss 42.082281 | Loss(Global) 132.516261 | Loss(Local) 5.908686
+[2022-11-02 01:53:01,664::train::INFO] [Train] Iter 925000 | Loss 42.83 | Loss(Global) 134.88 | Loss(Local) 6.02 | Grad 991.60 | LR(Global) 0.000130 | LR(Local) 0.000078
+[2022-11-02 01:53:37,194::train::INFO] [Validate] Iter 925000 | Loss 43.133322 | Loss(Global) 136.005744 | Loss(Local) 5.984351
+[2022-11-02 01:59:49,989::train::INFO] [Train] Iter 930000 | Loss 42.83 | Loss(Global) 134.95 | Loss(Local) 5.98 | Grad 998.23 | LR(Global) 0.000130 | LR(Local) 0.000078
+[2022-11-02 02:00:17,139::train::INFO] [Validate] Iter 930000 | Loss 42.163678 | Loss(Global) 132.702248 | Loss(Local) 5.948247
+[2022-11-02 02:06:26,545::train::INFO] [Train] Iter 935000 | Loss 42.76 | Loss(Global) 134.61 | Loss(Local) 6.01 | Grad 982.73 | LR(Global) 0.000130 | LR(Local) 0.000078
+[2022-11-02 02:06:54,176::train::INFO] [Validate] Iter 935000 | Loss 42.735001 | Loss(Global) 134.658832 | Loss(Local) 5.965466
+[2022-11-02 02:13:14,702::train::INFO] [Train] Iter 940000 | Loss 42.84 | Loss(Global) 134.93 | Loss(Local) 6.00 | Grad 985.30 | LR(Global) 0.000130 | LR(Local) 0.000078
+[2022-11-02 02:13:42,451::train::INFO] [Validate] Iter 940000 | Loss 42.529414 | Loss(Global) 133.552618 | Loss(Local) 6.120129
+[2022-11-02 02:19:55,883::train::INFO] [Train] Iter 945000 | Loss 42.98 | Loss(Global) 135.39 | Loss(Local) 6.02 | Grad 1002.01 | LR(Global) 0.000130 | LR(Local) 0.000078
+[2022-11-02 02:20:23,547::train::INFO] [Validate] Iter 945000 | Loss 42.119855 | Loss(Global) 132.303133 | Loss(Local) 6.046542
+[2022-11-02 02:26:31,213::train::INFO] [Train] Iter 950000 | Loss 42.93 | Loss(Global) 135.34 | Loss(Local) 5.97 | Grad 982.24 | LR(Global) 0.000130 | LR(Local) 0.000047
+[2022-11-02 02:26:58,913::train::INFO] [Validate] Iter 950000 | Loss 42.914764 | Loss(Global) 135.205541 | Loss(Local) 5.998450
+[2022-11-02 02:33:11,376::train::INFO] [Train] Iter 955000 | Loss 42.99 | Loss(Global) 135.48 | Loss(Local) 5.99 | Grad 972.20 | LR(Global) 0.000130 | LR(Local) 0.000047
+[2022-11-02 02:33:39,016::train::INFO] [Validate] Iter 955000 | Loss 42.397258 | Loss(Global) 133.689136 | Loss(Local) 5.880505
+[2022-11-02 02:39:47,791::train::INFO] [Train] Iter 960000 | Loss 42.12 | Loss(Global) 132.47 | Loss(Local) 5.98 | Grad 943.09 | LR(Global) 0.000078 | LR(Local) 0.000047
+[2022-11-02 02:40:15,476::train::INFO] [Validate] Iter 960000 | Loss 41.494369 | Loss(Global) 130.493203 | Loss(Local) 5.894833
+[2022-11-02 02:46:29,181::train::INFO] [Train] Iter 965000 | Loss 41.86 | Loss(Global) 131.70 | Loss(Local) 5.93 | Grad 958.88 | LR(Global) 0.000078 | LR(Local) 0.000047
+[2022-11-02 02:46:56,810::train::INFO] [Validate] Iter 965000 | Loss 41.513407 | Loss(Global) 130.663474 | Loss(Local) 5.853378
+[2022-11-02 02:53:08,447::train::INFO] [Train] Iter 970000 | Loss 41.85 | Loss(Global) 131.64 | Loss(Local) 5.93 | Grad 955.99 | LR(Global) 0.000078 | LR(Local) 0.000047
+[2022-11-02 02:53:43,911::train::INFO] [Validate] Iter 970000 | Loss 42.142686 | Loss(Global) 132.539417 | Loss(Local) 5.983991
+[2022-11-02 02:59:53,415::train::INFO] [Train] Iter 975000 | Loss 41.74 | Loss(Global) 131.29 | Loss(Local) 5.92 | Grad 958.92 | LR(Global) 0.000078 | LR(Local) 0.000047
+[2022-11-02 03:00:28,946::train::INFO] [Validate] Iter 975000 | Loss 41.664673 | Loss(Global) 130.848729 | Loss(Local) 5.991047
+[2022-11-02 03:06:35,131::train::INFO] [Train] Iter 980000 | Loss 41.95 | Loss(Global) 131.97 | Loss(Local) 5.94 | Grad 981.56 | LR(Global) 0.000078 | LR(Local) 0.000047
+[2022-11-02 03:07:10,579::train::INFO] [Validate] Iter 980000 | Loss 42.118802 | Loss(Global) 132.658814 | Loss(Local) 5.902795
+[2022-11-02 03:13:26,897::train::INFO] [Train] Iter 985000 | Loss 41.73 | Loss(Global) 131.19 | Loss(Local) 5.95 | Grad 959.90 | LR(Global) 0.000078 | LR(Local) 0.000047
+[2022-11-02 03:13:54,108::train::INFO] [Validate] Iter 985000 | Loss 42.175257 | Loss(Global) 132.486046 | Loss(Local) 6.050939
+[2022-11-02 03:20:06,500::train::INFO] [Train] Iter 990000 | Loss 41.68 | Loss(Global) 131.02 | Loss(Local) 5.94 | Grad 985.38 | LR(Global) 0.000078 | LR(Local) 0.000047
+[2022-11-02 03:20:33,993::train::INFO] [Validate] Iter 990000 | Loss 41.440908 | Loss(Global) 130.299432 | Loss(Local) 5.897496
+[2022-11-02 03:26:43,589::train::INFO] [Train] Iter 995000 | Loss 41.77 | Loss(Global) 131.32 | Loss(Local) 5.95 | Grad 985.62 | LR(Global) 0.000078 | LR(Local) 0.000047
+[2022-11-02 03:27:11,260::train::INFO] [Validate] Iter 995000 | Loss 40.961849 | Loss(Global) 128.936655 | Loss(Local) 5.771924
+[2022-11-02 03:33:24,583::train::INFO] [Train] Iter 1000000 | Loss 41.72 | Loss(Global) 131.20 | Loss(Local) 5.93 | Grad 976.94 | LR(Global) 0.000078 | LR(Local) 0.000047
+[2022-11-02 03:33:52,271::train::INFO] [Validate] Iter 1000000 | Loss 41.292031 | Loss(Global) 129.662528 | Loss(Local) 5.943830
+[2022-11-02 03:40:06,979::train::INFO] [Train] Iter 1005000 | Loss 41.87 | Loss(Global) 131.67 | Loss(Local) 5.95 | Grad 985.55 | LR(Global) 0.000078 | LR(Local) 0.000047
+[2022-11-02 03:40:34,616::train::INFO] [Validate] Iter 1005000 | Loss 42.256844 | Loss(Global) 133.148925 | Loss(Local) 5.900009
+[2022-11-02 03:46:44,452::train::INFO] [Train] Iter 1010000 | Loss 41.90 | Loss(Global) 131.68 | Loss(Local) 5.99 | Grad 984.58 | LR(Global) 0.000078 | LR(Local) 0.000047
+[2022-11-02 03:47:12,215::train::INFO] [Validate] Iter 1010000 | Loss 42.472410 | Loss(Global) 133.656802 | Loss(Local) 5.998650
+[2022-11-02 03:53:24,092::train::INFO] [Train] Iter 1015000 | Loss 41.92 | Loss(Global) 131.89 | Loss(Local) 5.93 | Grad 987.58 | LR(Global) 0.000078 | LR(Local) 0.000047
+[2022-11-02 03:53:51,740::train::INFO] [Validate] Iter 1015000 | Loss 41.563089 | Loss(Global) 130.481624 | Loss(Local) 5.995673
+[2022-11-02 04:00:01,800::train::INFO] [Train] Iter 1020000 | Loss 41.61 | Loss(Global) 130.80 | Loss(Local) 5.93 | Grad 973.56 | LR(Global) 0.000078 | LR(Local) 0.000047
+[2022-11-02 04:00:29,346::train::INFO] [Validate] Iter 1020000 | Loss 41.429975 | Loss(Global) 130.519913 | Loss(Local) 5.793997
+[2022-11-02 04:06:37,270::train::INFO] [Train] Iter 1025000 | Loss 41.66 | Loss(Global) 131.01 | Loss(Local) 5.92 | Grad 975.93 | LR(Global) 0.000078 | LR(Local) 0.000047
+[2022-11-02 04:07:13,131::train::INFO] [Validate] Iter 1025000 | Loss 42.802176 | Loss(Global) 134.795152 | Loss(Local) 6.004983
+[2022-11-02 04:13:14,273::train::INFO] [Train] Iter 1030000 | Loss 41.78 | Loss(Global) 131.36 | Loss(Local) 5.95 | Grad 984.73 | LR(Global) 0.000078 | LR(Local) 0.000047
+[2022-11-02 04:13:49,497::train::INFO] [Validate] Iter 1030000 | Loss 41.712177 | Loss(Global) 131.233517 | Loss(Local) 5.903638
+[2022-11-02 04:19:54,953::train::INFO] [Train] Iter 1035000 | Loss 41.68 | Loss(Global) 131.04 | Loss(Local) 5.94 | Grad 978.34 | LR(Global) 0.000078 | LR(Local) 0.000047
+[2022-11-02 04:20:30,507::train::INFO] [Validate] Iter 1035000 | Loss 41.493047 | Loss(Global) 130.173349 | Loss(Local) 6.020923
+[2022-11-02 04:26:46,163::train::INFO] [Train] Iter 1040000 | Loss 41.81 | Loss(Global) 131.50 | Loss(Local) 5.93 | Grad 994.72 | LR(Global) 0.000078 | LR(Local) 0.000047
+[2022-11-02 04:27:13,603::train::INFO] [Validate] Iter 1040000 | Loss 41.600990 | Loss(Global) 130.399188 | Loss(Local) 6.081708
+[2022-11-02 04:33:28,103::train::INFO] [Train] Iter 1045000 | Loss 41.72 | Loss(Global) 131.16 | Loss(Local) 5.94 | Grad 989.94 | LR(Global) 0.000078 | LR(Local) 0.000047
+[2022-11-02 04:33:55,896::train::INFO] [Validate] Iter 1045000 | Loss 41.544847 | Loss(Global) 130.542015 | Loss(Local) 5.945977
+[2022-11-02 04:40:13,277::train::INFO] [Train] Iter 1050000 | Loss 41.81 | Loss(Global) 131.49 | Loss(Local) 5.94 | Grad 1005.98 | LR(Global) 0.000078 | LR(Local) 0.000047
+[2022-11-02 04:40:41,179::train::INFO] [Validate] Iter 1050000 | Loss 41.145060 | Loss(Global) 129.262325 | Loss(Local) 5.898152
+[2022-11-02 04:46:55,957::train::INFO] [Train] Iter 1055000 | Loss 41.16 | Loss(Global) 129.33 | Loss(Local) 5.89 | Grad 956.72 | LR(Global) 0.000047 | LR(Local) 0.000028
+[2022-11-02 04:47:23,538::train::INFO] [Validate] Iter 1055000 | Loss 40.906260 | Loss(Global) 128.436216 | Loss(Local) 5.894274
+[2022-11-02 04:53:36,580::train::INFO] [Train] Iter 1060000 | Loss 41.12 | Loss(Global) 129.27 | Loss(Local) 5.87 | Grad 964.68 | LR(Global) 0.000047 | LR(Local) 0.000028
+[2022-11-02 04:54:04,262::train::INFO] [Validate] Iter 1060000 | Loss 41.332983 | Loss(Global) 129.674395 | Loss(Local) 5.996416
+[2022-11-02 05:00:14,938::train::INFO] [Train] Iter 1065000 | Loss 41.16 | Loss(Global) 129.28 | Loss(Local) 5.91 | Grad 974.03 | LR(Global) 0.000047 | LR(Local) 0.000028
+[2022-11-02 05:00:42,679::train::INFO] [Validate] Iter 1065000 | Loss 40.886830 | Loss(Global) 128.270007 | Loss(Local) 5.933557
+[2022-11-02 05:06:57,739::train::INFO] [Train] Iter 1070000 | Loss 40.94 | Loss(Global) 128.57 | Loss(Local) 5.89 | Grad 966.06 | LR(Global) 0.000047 | LR(Local) 0.000028
+[2022-11-02 05:07:25,690::train::INFO] [Validate] Iter 1070000 | Loss 40.876031 | Loss(Global) 128.285597 | Loss(Local) 5.912202
+[2022-11-02 05:13:40,235::train::INFO] [Train] Iter 1075000 | Loss 41.21 | Loss(Global) 129.46 | Loss(Local) 5.91 | Grad 988.76 | LR(Global) 0.000047 | LR(Local) 0.000028
+[2022-11-02 05:14:07,893::train::INFO] [Validate] Iter 1075000 | Loss 41.156133 | Loss(Global) 129.146940 | Loss(Local) 5.959808
+[2022-11-02 05:20:16,758::train::INFO] [Train] Iter 1080000 | Loss 41.01 | Loss(Global) 128.82 | Loss(Local) 5.89 | Grad 994.61 | LR(Global) 0.000047 | LR(Local) 0.000028
+[2022-11-02 05:20:51,919::train::INFO] [Validate] Iter 1080000 | Loss 40.722278 | Loss(Global) 127.876673 | Loss(Local) 5.860517
+[2022-11-02 05:26:57,031::train::INFO] [Train] Iter 1085000 | Loss 41.30 | Loss(Global) 129.73 | Loss(Local) 5.93 | Grad 1005.11 | LR(Global) 0.000047 | LR(Local) 0.000028
+[2022-11-02 05:27:32,564::train::INFO] [Validate] Iter 1085000 | Loss 41.046191 | Loss(Global) 128.761418 | Loss(Local) 5.960098
+[2022-11-02 05:33:35,879::train::INFO] [Train] Iter 1090000 | Loss 41.00 | Loss(Global) 128.75 | Loss(Local) 5.90 | Grad 989.60 | LR(Global) 0.000047 | LR(Local) 0.000028
+[2022-11-02 05:34:11,183::train::INFO] [Validate] Iter 1090000 | Loss 42.075647 | Loss(Global) 132.501778 | Loss(Local) 5.905193
+[2022-11-02 05:40:24,127::train::INFO] [Train] Iter 1095000 | Loss 40.90 | Loss(Global) 128.39 | Loss(Local) 5.90 | Grad 981.38 | LR(Global) 0.000047 | LR(Local) 0.000028
+[2022-11-02 05:40:51,305::train::INFO] [Validate] Iter 1095000 | Loss 41.189504 | Loss(Global) 129.433196 | Loss(Local) 5.892025
+[2022-11-02 05:47:00,347::train::INFO] [Train] Iter 1100000 | Loss 41.02 | Loss(Global) 128.86 | Loss(Local) 5.89 | Grad 991.72 | LR(Global) 0.000047 | LR(Local) 0.000028
+[2022-11-02 05:47:27,947::train::INFO] [Validate] Iter 1100000 | Loss 41.169740 | Loss(Global) 129.139055 | Loss(Local) 5.982011
+[2022-11-02 05:53:46,794::train::INFO] [Train] Iter 1105000 | Loss 40.98 | Loss(Global) 128.75 | Loss(Local) 5.87 | Grad 971.23 | LR(Global) 0.000047 | LR(Local) 0.000028
+[2022-11-02 05:54:14,613::train::INFO] [Validate] Iter 1105000 | Loss 41.101175 | Loss(Global) 129.200784 | Loss(Local) 5.861330
+[2022-11-02 06:00:33,752::train::INFO] [Train] Iter 1110000 | Loss 40.98 | Loss(Global) 128.70 | Loss(Local) 5.88 | Grad 982.13 | LR(Global) 0.000047 | LR(Local) 0.000020
+[2022-11-02 06:01:01,457::train::INFO] [Validate] Iter 1110000 | Loss 40.707882 | Loss(Global) 127.950151 | Loss(Local) 5.810971
+[2022-11-02 06:07:18,469::train::INFO] [Train] Iter 1115000 | Loss 41.09 | Loss(Global) 129.10 | Loss(Local) 5.89 | Grad 1003.99 | LR(Global) 0.000047 | LR(Local) 0.000020
+[2022-11-02 06:07:46,210::train::INFO] [Validate] Iter 1115000 | Loss 40.700575 | Loss(Global) 127.981842 | Loss(Local) 5.788065
+[2022-11-02 06:14:01,282::train::INFO] [Train] Iter 1120000 | Loss 40.95 | Loss(Global) 128.65 | Loss(Local) 5.87 | Grad 999.22 | LR(Global) 0.000047 | LR(Local) 0.000020
+[2022-11-02 06:14:29,141::train::INFO] [Validate] Iter 1120000 | Loss 40.812893 | Loss(Global) 128.116604 | Loss(Local) 5.891406
+[2022-11-02 06:20:41,132::train::INFO] [Train] Iter 1125000 | Loss 40.96 | Loss(Global) 128.67 | Loss(Local) 5.87 | Grad 992.43 | LR(Global) 0.000047 | LR(Local) 0.000020
+[2022-11-02 06:21:08,670::train::INFO] [Validate] Iter 1125000 | Loss 40.955674 | Loss(Global) 128.594477 | Loss(Local) 5.900151
+[2022-11-02 06:27:17,957::train::INFO] [Train] Iter 1130000 | Loss 40.92 | Loss(Global) 128.55 | Loss(Local) 5.86 | Grad 994.07 | LR(Global) 0.000047 | LR(Local) 0.000020
+[2022-11-02 06:27:53,311::train::INFO] [Validate] Iter 1130000 | Loss 40.837922 | Loss(Global) 128.366315 | Loss(Local) 5.826563
+[2022-11-02 06:33:57,847::train::INFO] [Train] Iter 1135000 | Loss 41.10 | Loss(Global) 129.21 | Loss(Local) 5.85 | Grad 998.51 | LR(Global) 0.000047 | LR(Local) 0.000020
+[2022-11-02 06:34:33,054::train::INFO] [Validate] Iter 1135000 | Loss 40.714456 | Loss(Global) 127.546474 | Loss(Local) 5.981646
+[2022-11-02 06:40:35,956::train::INFO] [Train] Iter 1140000 | Loss 40.76 | Loss(Global) 127.95 | Loss(Local) 5.89 | Grad 981.91 | LR(Global) 0.000047 | LR(Local) 0.000020
+[2022-11-02 06:41:11,478::train::INFO] [Validate] Iter 1140000 | Loss 40.894570 | Loss(Global) 128.361904 | Loss(Local) 5.907634
+[2022-11-02 06:47:18,378::train::INFO] [Train] Iter 1145000 | Loss 40.78 | Loss(Global) 128.18 | Loss(Local) 5.82 | Grad 992.70 | LR(Global) 0.000047 | LR(Local) 0.000020
+[2022-11-02 06:47:53,881::train::INFO] [Validate] Iter 1145000 | Loss 40.738599 | Loss(Global) 127.875560 | Loss(Local) 5.883812
+[2022-11-02 06:54:06,355::train::INFO] [Train] Iter 1150000 | Loss 40.76 | Loss(Global) 128.02 | Loss(Local) 5.85 | Grad 1009.92 | LR(Global) 0.000047 | LR(Local) 0.000020
+[2022-11-02 06:54:33,892::train::INFO] [Validate] Iter 1150000 | Loss 41.089829 | Loss(Global) 128.983819 | Loss(Local) 5.932230
+[2022-11-02 07:00:48,894::train::INFO] [Train] Iter 1155000 | Loss 40.96 | Loss(Global) 128.58 | Loss(Local) 5.91 | Grad 990.79 | LR(Global) 0.000047 | LR(Local) 0.000020
+[2022-11-02 07:01:16,713::train::INFO] [Validate] Iter 1155000 | Loss 40.010577 | Loss(Global) 125.569500 | Loss(Local) 5.787005
+[2022-11-02 07:07:29,215::train::INFO] [Train] Iter 1160000 | Loss 40.88 | Loss(Global) 128.38 | Loss(Local) 5.87 | Grad 992.91 | LR(Global) 0.000047 | LR(Local) 0.000020
+[2022-11-02 07:07:56,871::train::INFO] [Validate] Iter 1160000 | Loss 41.137889 | Loss(Global) 129.125874 | Loss(Local) 5.942693
+[2022-11-02 07:14:08,504::train::INFO] [Train] Iter 1165000 | Loss 40.98 | Loss(Global) 128.68 | Loss(Local) 5.90 | Grad 1004.97 | LR(Global) 0.000047 | LR(Local) 0.000020
+[2022-11-02 07:14:36,290::train::INFO] [Validate] Iter 1165000 | Loss 40.581839 | Loss(Global) 127.202531 | Loss(Local) 5.933559
+[2022-11-02 07:20:47,530::train::INFO] [Train] Iter 1170000 | Loss 40.77 | Loss(Global) 128.08 | Loss(Local) 5.85 | Grad 988.12 | LR(Global) 0.000047 | LR(Local) 0.000020
+[2022-11-02 07:21:15,263::train::INFO] [Validate] Iter 1170000 | Loss 40.890607 | Loss(Global) 128.550114 | Loss(Local) 5.826801
+[2022-11-02 07:27:35,898::train::INFO] [Train] Iter 1175000 | Loss 41.02 | Loss(Global) 128.84 | Loss(Local) 5.90 | Grad 996.89 | LR(Global) 0.000047 | LR(Local) 0.000020
+[2022-11-02 07:28:03,677::train::INFO] [Validate] Iter 1175000 | Loss 40.645977 | Loss(Global) 127.766004 | Loss(Local) 5.797964
+[2022-11-02 07:34:21,361::train::INFO] [Train] Iter 1180000 | Loss 40.78 | Loss(Global) 128.09 | Loss(Local) 5.86 | Grad 993.89 | LR(Global) 0.000047 | LR(Local) 0.000020
+[2022-11-02 07:34:49,256::train::INFO] [Validate] Iter 1180000 | Loss 40.461088 | Loss(Global) 127.115914 | Loss(Local) 5.799154
+[2022-11-02 07:41:03,612::train::INFO] [Train] Iter 1185000 | Loss 40.79 | Loss(Global) 128.07 | Loss(Local) 5.88 | Grad 993.82 | LR(Global) 0.000047 | LR(Local) 0.000020
+[2022-11-02 07:41:39,387::train::INFO] [Validate] Iter 1185000 | Loss 41.021868 | Loss(Global) 128.764742 | Loss(Local) 5.924716
+[2022-11-02 07:47:44,897::train::INFO] [Train] Iter 1190000 | Loss 40.98 | Loss(Global) 128.78 | Loss(Local) 5.86 | Grad 1010.09 | LR(Global) 0.000047 | LR(Local) 0.000020
+[2022-11-02 07:48:20,037::train::INFO] [Validate] Iter 1190000 | Loss 40.579624 | Loss(Global) 127.392669 | Loss(Local) 5.854404
+wandb: Network error (ReadTimeout), entering retry loop.
+[2022-11-02 07:54:21,056::train::INFO] [Train] Iter 1195000 | Loss 40.90 | Loss(Global) 128.42 | Loss(Local) 5.89 | Grad 1010.06 | LR(Global) 0.000047 | LR(Local) 0.000020
+[2022-11-02 07:54:56,142::train::INFO] [Validate] Iter 1195000 | Loss 40.699018 | Loss(Global) 127.676453 | Loss(Local) 5.908042
+[2022-11-02 08:01:09,266::train::INFO] [Train] Iter 1200000 | Loss 40.87 | Loss(Global) 128.30 | Loss(Local) 5.89 | Grad 1001.98 | LR(Global) 0.000047 | LR(Local) 0.000020
+[2022-11-02 08:01:36,418::train::INFO] [Validate] Iter 1200000 | Loss 40.560132 | Loss(Global) 127.413725 | Loss(Local) 5.818692
+[2022-11-02 08:07:47,087::train::INFO] [Train] Iter 1205000 | Loss 40.87 | Loss(Global) 128.37 | Loss(Local) 5.87 | Grad 1000.49 | LR(Global) 0.000047 | LR(Local) 0.000020
+[2022-11-02 08:08:14,436::train::INFO] [Validate] Iter 1205000 | Loss 40.784169 | Loss(Global) 128.021257 | Loss(Local) 5.889331
+[2022-11-02 08:14:28,854::train::INFO] [Train] Iter 1210000 | Loss 40.74 | Loss(Global) 127.90 | Loss(Local) 5.87 | Grad 1014.53 | LR(Global) 0.000047 | LR(Local) 0.000020
+[2022-11-02 08:14:56,714::train::INFO] [Validate] Iter 1210000 | Loss 40.513883 | Loss(Global) 127.128459 | Loss(Local) 5.868051
+[2022-11-02 08:21:09,982::train::INFO] [Train] Iter 1215000 | Loss 40.48 | Loss(Global) 126.99 | Loss(Local) 5.87 | Grad 970.57 | LR(Global) 0.000028 | LR(Local) 0.000020
+[2022-11-02 08:21:37,608::train::INFO] [Validate] Iter 1215000 | Loss 40.304378 | Loss(Global) 126.504821 | Loss(Local) 5.824197
+[2022-11-02 08:27:51,546::train::INFO] [Train] Iter 1220000 | Loss 40.49 | Loss(Global) 127.07 | Loss(Local) 5.85 | Grad 973.83 | LR(Global) 0.000028 | LR(Local) 0.000020
+[2022-11-02 08:28:19,191::train::INFO] [Validate] Iter 1220000 | Loss 39.803975 | Loss(Global) 125.021208 | Loss(Local) 5.717080
+[2022-11-02 08:34:32,006::train::INFO] [Train] Iter 1225000 | Loss 40.44 | Loss(Global) 126.87 | Loss(Local) 5.88 | Grad 995.30 | LR(Global) 0.000028 | LR(Local) 0.000020
+[2022-11-02 08:34:59,662::train::INFO] [Validate] Iter 1225000 | Loss 40.014559 | Loss(Global) 125.501859 | Loss(Local) 5.819637
+[2022-11-02 08:41:12,423::train::INFO] [Train] Iter 1230000 | Loss 40.33 | Loss(Global) 126.53 | Loss(Local) 5.85 | Grad 987.48 | LR(Global) 0.000028 | LR(Local) 0.000020
+[2022-11-02 08:41:40,035::train::INFO] [Validate] Iter 1230000 | Loss 40.445565 | Loss(Global) 126.766211 | Loss(Local) 5.917303
+[2022-11-02 08:47:54,841::train::INFO] [Train] Iter 1235000 | Loss 40.45 | Loss(Global) 126.95 | Loss(Local) 5.86 | Grad 991.04 | LR(Global) 0.000028 | LR(Local) 0.000020
+[2022-11-02 08:48:22,543::train::INFO] [Validate] Iter 1235000 | Loss 40.224895 | Loss(Global) 126.179631 | Loss(Local) 5.842997
+[2022-11-02 08:54:40,558::train::INFO] [Train] Iter 1240000 | Loss 40.32 | Loss(Global) 126.55 | Loss(Local) 5.83 | Grad 982.90 | LR(Global) 0.000028 | LR(Local) 0.000020
+[2022-11-02 08:55:16,425::train::INFO] [Validate] Iter 1240000 | Loss 40.562317 | Loss(Global) 127.239603 | Loss(Local) 5.891400
+[2022-11-02 09:01:22,535::train::INFO] [Train] Iter 1245000 | Loss 40.44 | Loss(Global) 126.94 | Loss(Local) 5.84 | Grad 1004.34 | LR(Global) 0.000028 | LR(Local) 0.000020
+[2022-11-02 09:01:58,268::train::INFO] [Validate] Iter 1245000 | Loss 40.450441 | Loss(Global) 126.589349 | Loss(Local) 5.994876
+[2022-11-02 09:08:06,763::train::INFO] [Train] Iter 1250000 | Loss 40.41 | Loss(Global) 126.78 | Loss(Local) 5.86 | Grad 1000.87 | LR(Global) 0.000028 | LR(Local) 0.000020
+[2022-11-02 09:08:42,361::train::INFO] [Validate] Iter 1250000 | Loss 40.322080 | Loss(Global) 126.441618 | Loss(Local) 5.874262
+[2022-11-02 09:14:53,984::train::INFO] [Train] Iter 1255000 | Loss 40.46 | Loss(Global) 126.89 | Loss(Local) 5.88 | Grad 1000.99 | LR(Global) 0.000028 | LR(Local) 0.000020
+[2022-11-02 09:15:21,021::train::INFO] [Validate] Iter 1255000 | Loss 40.210253 | Loss(Global) 125.897499 | Loss(Local) 5.935352
+[2022-11-02 09:21:30,599::train::INFO] [Train] Iter 1260000 | Loss 40.33 | Loss(Global) 126.52 | Loss(Local) 5.85 | Grad 991.28 | LR(Global) 0.000028 | LR(Local) 0.000020
+[2022-11-02 09:21:58,148::train::INFO] [Validate] Iter 1260000 | Loss 39.901376 | Loss(Global) 125.254169 | Loss(Local) 5.760257
+[2022-11-02 09:28:11,667::train::INFO] [Train] Iter 1265000 | Loss 40.36 | Loss(Global) 126.60 | Loss(Local) 5.86 | Grad 997.12 | LR(Global) 0.000028 | LR(Local) 0.000020
+[2022-11-02 09:28:39,395::train::INFO] [Validate] Iter 1265000 | Loss 40.339486 | Loss(Global) 126.569800 | Loss(Local) 5.847358
+[2022-11-02 09:34:53,501::train::INFO] [Train] Iter 1270000 | Loss 40.25 | Loss(Global) 126.26 | Loss(Local) 5.85 | Grad 989.16 | LR(Global) 0.000028 | LR(Local) 0.000020
+[2022-11-02 09:35:21,274::train::INFO] [Validate] Iter 1270000 | Loss 40.488244 | Loss(Global) 127.049844 | Loss(Local) 5.863602
+[2022-11-02 09:41:38,370::train::INFO] [Train] Iter 1275000 | Loss 40.27 | Loss(Global) 126.36 | Loss(Local) 5.83 | Grad 1005.85 | LR(Global) 0.000028 | LR(Local) 0.000020
+[2022-11-02 09:42:06,138::train::INFO] [Validate] Iter 1275000 | Loss 40.403131 | Loss(Global) 126.626950 | Loss(Local) 5.913601
+[2022-11-02 09:48:26,138::train::INFO] [Train] Iter 1280000 | Loss 40.21 | Loss(Global) 126.16 | Loss(Local) 5.83 | Grad 999.77 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 09:48:53,720::train::INFO] [Validate] Iter 1280000 | Loss 39.980069 | Loss(Global) 125.269653 | Loss(Local) 5.864233
+[2022-11-02 09:55:05,325::train::INFO] [Train] Iter 1285000 | Loss 40.25 | Loss(Global) 126.15 | Loss(Local) 5.89 | Grad 1000.29 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 09:55:33,150::train::INFO] [Validate] Iter 1285000 | Loss 39.744633 | Loss(Global) 124.589525 | Loss(Local) 5.806674
+[2022-11-02 10:01:41,895::train::INFO] [Train] Iter 1290000 | Loss 40.22 | Loss(Global) 126.14 | Loss(Local) 5.86 | Grad 1000.55 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 10:02:09,700::train::INFO] [Validate] Iter 1290000 | Loss 40.416140 | Loss(Global) 126.799492 | Loss(Local) 5.862796
+[2022-11-02 10:08:22,379::train::INFO] [Train] Iter 1295000 | Loss 40.22 | Loss(Global) 126.09 | Loss(Local) 5.88 | Grad 991.52 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 10:08:58,054::train::INFO] [Validate] Iter 1295000 | Loss 39.912738 | Loss(Global) 124.995443 | Loss(Local) 5.879654
+[2022-11-02 10:15:02,289::train::INFO] [Train] Iter 1300000 | Loss 40.04 | Loss(Global) 125.58 | Loss(Local) 5.83 | Grad 985.73 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 10:15:37,663::train::INFO] [Validate] Iter 1300000 | Loss 39.683519 | Loss(Global) 124.369755 | Loss(Local) 5.809022
+[2022-11-02 10:21:43,714::train::INFO] [Train] Iter 1305000 | Loss 40.03 | Loss(Global) 125.49 | Loss(Local) 5.85 | Grad 1000.02 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 10:22:19,192::train::INFO] [Validate] Iter 1305000 | Loss 40.432586 | Loss(Global) 126.946248 | Loss(Local) 5.827118
+[2022-11-02 10:28:37,235::train::INFO] [Train] Iter 1310000 | Loss 40.24 | Loss(Global) 126.22 | Loss(Local) 5.85 | Grad 1015.86 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 10:29:04,591::train::INFO] [Validate] Iter 1310000 | Loss 40.165319 | Loss(Global) 126.020526 | Loss(Local) 5.823234
+[2022-11-02 10:35:18,521::train::INFO] [Train] Iter 1315000 | Loss 40.13 | Loss(Global) 125.79 | Loss(Local) 5.87 | Grad 999.12 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 10:35:46,212::train::INFO] [Validate] Iter 1315000 | Loss 39.983601 | Loss(Global) 125.330028 | Loss(Local) 5.845027
+[2022-11-02 10:42:03,323::train::INFO] [Train] Iter 1320000 | Loss 40.05 | Loss(Global) 125.53 | Loss(Local) 5.85 | Grad 1010.19 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 10:42:30,933::train::INFO] [Validate] Iter 1320000 | Loss 39.999027 | Loss(Global) 125.302574 | Loss(Local) 5.877606
+[2022-11-02 10:48:44,822::train::INFO] [Train] Iter 1325000 | Loss 40.13 | Loss(Global) 125.70 | Loss(Local) 5.91 | Grad 1015.85 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 10:49:12,468::train::INFO] [Validate] Iter 1325000 | Loss 39.905956 | Loss(Global) 125.051922 | Loss(Local) 5.847567
+[2022-11-02 10:55:23,217::train::INFO] [Train] Iter 1330000 | Loss 40.17 | Loss(Global) 125.94 | Loss(Local) 5.86 | Grad 1005.80 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 10:55:50,803::train::INFO] [Validate] Iter 1330000 | Loss 39.769362 | Loss(Global) 124.662567 | Loss(Local) 5.812078
+[2022-11-02 11:01:58,800::train::INFO] [Train] Iter 1335000 | Loss 40.08 | Loss(Global) 125.67 | Loss(Local) 5.85 | Grad 996.77 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 11:02:26,512::train::INFO] [Validate] Iter 1335000 | Loss 40.069005 | Loss(Global) 125.747339 | Loss(Local) 5.797669
+[2022-11-02 11:08:35,098::train::INFO] [Train] Iter 1340000 | Loss 40.03 | Loss(Global) 125.49 | Loss(Local) 5.84 | Grad 997.24 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 11:09:02,697::train::INFO] [Validate] Iter 1340000 | Loss 39.452532 | Loss(Global) 123.871346 | Loss(Local) 5.685003
+[2022-11-02 11:15:13,707::train::INFO] [Train] Iter 1345000 | Loss 40.26 | Loss(Global) 126.31 | Loss(Local) 5.84 | Grad 1018.44 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 11:15:41,295::train::INFO] [Validate] Iter 1345000 | Loss 40.321526 | Loss(Global) 126.350916 | Loss(Local) 5.909768
+[2022-11-02 11:21:54,036::train::INFO] [Train] Iter 1350000 | Loss 40.10 | Loss(Global) 125.74 | Loss(Local) 5.85 | Grad 1019.08 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 11:22:29,732::train::INFO] [Validate] Iter 1350000 | Loss 40.220680 | Loss(Global) 126.132232 | Loss(Local) 5.856057
+[2022-11-02 11:28:38,464::train::INFO] [Train] Iter 1355000 | Loss 39.98 | Loss(Global) 125.48 | Loss(Local) 5.79 | Grad 1003.93 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 11:29:13,595::train::INFO] [Validate] Iter 1355000 | Loss 39.674995 | Loss(Global) 124.403699 | Loss(Local) 5.783512
+[2022-11-02 11:35:16,299::train::INFO] [Train] Iter 1360000 | Loss 40.14 | Loss(Global) 125.89 | Loss(Local) 5.84 | Grad 990.10 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 11:35:51,540::train::INFO] [Validate] Iter 1360000 | Loss 40.052148 | Loss(Global) 125.662182 | Loss(Local) 5.808131
+[2022-11-02 11:42:06,626::train::INFO] [Train] Iter 1365000 | Loss 40.17 | Loss(Global) 126.00 | Loss(Local) 5.84 | Grad 1011.97 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 11:42:33,697::train::INFO] [Validate] Iter 1365000 | Loss 39.726025 | Loss(Global) 124.485557 | Loss(Local) 5.822209
+[2022-11-02 11:48:47,364::train::INFO] [Train] Iter 1370000 | Loss 40.00 | Loss(Global) 125.41 | Loss(Local) 5.84 | Grad 995.40 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 11:49:14,783::train::INFO] [Validate] Iter 1370000 | Loss 40.296821 | Loss(Global) 126.180170 | Loss(Local) 5.943479
+[2022-11-02 11:55:25,068::train::INFO] [Train] Iter 1375000 | Loss 40.15 | Loss(Global) 125.91 | Loss(Local) 5.85 | Grad 1021.44 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 11:55:52,885::train::INFO] [Validate] Iter 1375000 | Loss 39.469361 | Loss(Global) 123.644561 | Loss(Local) 5.799279
+[2022-11-02 12:02:09,391::train::INFO] [Train] Iter 1380000 | Loss 39.86 | Loss(Global) 124.90 | Loss(Local) 5.85 | Grad 1006.05 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 12:02:37,258::train::INFO] [Validate] Iter 1380000 | Loss 40.131376 | Loss(Global) 125.861157 | Loss(Local) 5.839461
+[2022-11-02 12:08:50,258::train::INFO] [Train] Iter 1385000 | Loss 40.07 | Loss(Global) 125.69 | Loss(Local) 5.82 | Grad 1022.85 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 12:09:18,180::train::INFO] [Validate] Iter 1385000 | Loss 39.994196 | Loss(Global) 125.275831 | Loss(Local) 5.881539
+[2022-11-02 12:15:34,145::train::INFO] [Train] Iter 1390000 | Loss 40.13 | Loss(Global) 125.83 | Loss(Local) 5.85 | Grad 989.97 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 12:16:02,833::train::INFO] [Validate] Iter 1390000 | Loss 40.344843 | Loss(Global) 126.454434 | Loss(Local) 5.901004
+[2022-11-02 12:21:43,590::train::INFO] [Train] Iter 1395000 | Loss 39.97 | Loss(Global) 125.34 | Loss(Local) 5.83 | Grad 1013.89 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 12:22:11,294::train::INFO] [Validate] Iter 1395000 | Loss 39.497220 | Loss(Global) 123.771111 | Loss(Local) 5.787661
+[2022-11-02 12:28:03,862::train::INFO] [Train] Iter 1400000 | Loss 39.89 | Loss(Global) 125.07 | Loss(Local) 5.81 | Grad 1027.64 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 12:28:34,698::train::INFO] [Validate] Iter 1400000 | Loss 40.149988 | Loss(Global) 125.894262 | Loss(Local) 5.852276
+[2022-11-02 12:34:45,348::train::INFO] [Train] Iter 1405000 | Loss 40.19 | Loss(Global) 126.00 | Loss(Local) 5.87 | Grad 1011.14 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 12:35:20,988::train::INFO] [Validate] Iter 1405000 | Loss 40.324255 | Loss(Global) 126.509070 | Loss(Local) 5.850326
+[2022-11-02 12:41:22,749::train::INFO] [Train] Iter 1410000 | Loss 40.11 | Loss(Global) 125.79 | Loss(Local) 5.85 | Grad 1034.89 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 12:41:57,754::train::INFO] [Validate] Iter 1410000 | Loss 40.113770 | Loss(Global) 125.739184 | Loss(Local) 5.863602
+[2022-11-02 12:48:00,824::train::INFO] [Train] Iter 1415000 | Loss 40.18 | Loss(Global) 125.95 | Loss(Local) 5.87 | Grad 1030.95 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 12:48:35,682::train::INFO] [Validate] Iter 1415000 | Loss 40.141768 | Loss(Global) 125.811273 | Loss(Local) 5.873963
+[2022-11-02 12:54:50,958::train::INFO] [Train] Iter 1420000 | Loss 39.97 | Loss(Global) 125.29 | Loss(Local) 5.84 | Grad 1002.53 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 12:55:18,389::train::INFO] [Validate] Iter 1420000 | Loss 40.096156 | Loss(Global) 125.602415 | Loss(Local) 5.893650
+[2022-11-02 13:01:35,942::train::INFO] [Train] Iter 1425000 | Loss 40.17 | Loss(Global) 125.92 | Loss(Local) 5.88 | Grad 1011.03 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 13:02:03,829::train::INFO] [Validate] Iter 1425000 | Loss 39.974501 | Loss(Global) 125.419557 | Loss(Local) 5.796476
+[2022-11-02 13:08:26,616::train::INFO] [Train] Iter 1430000 | Loss 40.07 | Loss(Global) 125.65 | Loss(Local) 5.84 | Grad 1006.65 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 13:08:56,494::train::INFO] [Validate] Iter 1430000 | Loss 40.224264 | Loss(Global) 126.073779 | Loss(Local) 5.884456
+[2022-11-02 13:15:26,780::train::INFO] [Train] Iter 1435000 | Loss 39.91 | Loss(Global) 125.18 | Loss(Local) 5.80 | Grad 1029.34 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 13:15:56,822::train::INFO] [Validate] Iter 1435000 | Loss 39.691358 | Loss(Global) 124.373572 | Loss(Local) 5.818469
+[2022-11-02 13:22:32,252::train::INFO] [Train] Iter 1440000 | Loss 40.06 | Loss(Global) 125.59 | Loss(Local) 5.85 | Grad 1013.33 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 13:23:02,419::train::INFO] [Validate] Iter 1440000 | Loss 39.902757 | Loss(Global) 124.971563 | Loss(Local) 5.875232
+[2022-11-02 13:29:34,487::train::INFO] [Train] Iter 1445000 | Loss 40.08 | Loss(Global) 125.73 | Loss(Local) 5.82 | Grad 1013.59 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 13:30:04,249::train::INFO] [Validate] Iter 1445000 | Loss 40.140890 | Loss(Global) 125.842362 | Loss(Local) 5.860298
+[2022-11-02 13:36:30,954::train::INFO] [Train] Iter 1450000 | Loss 40.03 | Loss(Global) 125.44 | Loss(Local) 5.86 | Grad 1020.82 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 13:37:01,312::train::INFO] [Validate] Iter 1450000 | Loss 39.848503 | Loss(Global) 124.650078 | Loss(Local) 5.927870
+[2022-11-02 13:43:39,764::train::INFO] [Train] Iter 1455000 | Loss 40.05 | Loss(Global) 125.57 | Loss(Local) 5.84 | Grad 1019.60 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 13:44:09,999::train::INFO] [Validate] Iter 1455000 | Loss 40.442287 | Loss(Global) 126.872580 | Loss(Local) 5.870167
+[2022-11-02 13:50:31,208::train::INFO] [Train] Iter 1460000 | Loss 40.06 | Loss(Global) 125.55 | Loss(Local) 5.86 | Grad 1024.92 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 13:51:06,555::train::INFO] [Validate] Iter 1460000 | Loss 39.738011 | Loss(Global) 124.580396 | Loss(Local) 5.801054
+[2022-11-02 13:57:13,009::train::INFO] [Train] Iter 1465000 | Loss 40.02 | Loss(Global) 125.46 | Loss(Local) 5.85 | Grad 1033.10 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 13:57:48,320::train::INFO] [Validate] Iter 1465000 | Loss 40.081313 | Loss(Global) 125.775035 | Loss(Local) 5.803821
+[2022-11-02 14:03:56,993::train::INFO] [Train] Iter 1470000 | Loss 39.96 | Loss(Global) 125.25 | Loss(Local) 5.84 | Grad 1031.50 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 14:04:32,224::train::INFO] [Validate] Iter 1470000 | Loss 40.146615 | Loss(Global) 125.823255 | Loss(Local) 5.875956
+[2022-11-02 14:10:42,366::train::INFO] [Train] Iter 1475000 | Loss 40.02 | Loss(Global) 125.45 | Loss(Local) 5.85 | Grad 1022.81 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 14:11:09,692::train::INFO] [Validate] Iter 1475000 | Loss 39.767236 | Loss(Global) 124.756455 | Loss(Local) 5.771545
+[2022-11-02 14:17:20,133::train::INFO] [Train] Iter 1480000 | Loss 40.15 | Loss(Global) 125.86 | Loss(Local) 5.87 | Grad 1025.05 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 14:17:47,938::train::INFO] [Validate] Iter 1480000 | Loss 40.007689 | Loss(Global) 125.430239 | Loss(Local) 5.838667
+[2022-11-02 14:24:04,315::train::INFO] [Train] Iter 1485000 | Loss 40.06 | Loss(Global) 125.60 | Loss(Local) 5.84 | Grad 1029.52 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 14:24:32,030::train::INFO] [Validate] Iter 1485000 | Loss 40.081905 | Loss(Global) 125.648821 | Loss(Local) 5.855136
+[2022-11-02 14:30:45,624::train::INFO] [Train] Iter 1490000 | Loss 40.05 | Loss(Global) 125.55 | Loss(Local) 5.85 | Grad 1013.68 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 14:31:13,381::train::INFO] [Validate] Iter 1490000 | Loss 40.042692 | Loss(Global) 125.378875 | Loss(Local) 5.908216
+[2022-11-02 14:37:25,545::train::INFO] [Train] Iter 1495000 | Loss 40.05 | Loss(Global) 125.51 | Loss(Local) 5.87 | Grad 1025.02 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 14:37:53,319::train::INFO] [Validate] Iter 1495000 | Loss 40.254017 | Loss(Global) 126.188602 | Loss(Local) 5.880180
+[2022-11-02 14:44:11,714::train::INFO] [Train] Iter 1500000 | Loss 39.94 | Loss(Global) 125.22 | Loss(Local) 5.82 | Grad 1031.42 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 14:44:39,556::train::INFO] [Validate] Iter 1500000 | Loss 39.859828 | Loss(Global) 124.862856 | Loss(Local) 5.858614
+[2022-11-02 14:50:50,201::train::INFO] [Train] Iter 1505000 | Loss 39.92 | Loss(Global) 125.07 | Loss(Local) 5.85 | Grad 1012.88 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 14:51:17,866::train::INFO] [Validate] Iter 1505000 | Loss 39.966091 | Loss(Global) 125.315211 | Loss(Local) 5.826441
+[2022-11-02 14:57:28,868::train::INFO] [Train] Iter 1510000 | Loss 40.01 | Loss(Global) 125.41 | Loss(Local) 5.86 | Grad 1032.43 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 14:58:04,273::train::INFO] [Validate] Iter 1510000 | Loss 39.803914 | Loss(Global) 124.751795 | Loss(Local) 5.824759
+[2022-11-02 15:04:13,022::train::INFO] [Train] Iter 1515000 | Loss 39.88 | Loss(Global) 125.00 | Loss(Local) 5.84 | Grad 1025.50 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 15:04:48,253::train::INFO] [Validate] Iter 1515000 | Loss 39.823506 | Loss(Global) 124.809739 | Loss(Local) 5.829010
+[2022-11-02 15:10:58,206::train::INFO] [Train] Iter 1520000 | Loss 40.01 | Loss(Global) 125.44 | Loss(Local) 5.84 | Grad 1034.55 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 15:11:33,772::train::INFO] [Validate] Iter 1520000 | Loss 39.768680 | Loss(Global) 124.448621 | Loss(Local) 5.896701
+[2022-11-02 15:17:37,522::train::INFO] [Train] Iter 1525000 | Loss 40.08 | Loss(Global) 125.64 | Loss(Local) 5.85 | Grad 1037.66 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 15:18:12,786::train::INFO] [Validate] Iter 1525000 | Loss 39.730520 | Loss(Global) 124.435943 | Loss(Local) 5.848348
+[2022-11-02 15:24:26,587::train::INFO] [Train] Iter 1530000 | Loss 39.98 | Loss(Global) 125.33 | Loss(Local) 5.84 | Grad 1028.44 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 15:24:54,041::train::INFO] [Validate] Iter 1530000 | Loss 39.810650 | Loss(Global) 124.721211 | Loss(Local) 5.846423
+[2022-11-02 15:31:04,046::train::INFO] [Train] Iter 1535000 | Loss 39.98 | Loss(Global) 125.34 | Loss(Local) 5.83 | Grad 1032.72 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 15:31:31,656::train::INFO] [Validate] Iter 1535000 | Loss 39.951922 | Loss(Global) 125.190487 | Loss(Local) 5.856492
+[2022-11-02 15:37:40,787::train::INFO] [Train] Iter 1540000 | Loss 39.98 | Loss(Global) 125.34 | Loss(Local) 5.84 | Grad 1047.72 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 15:38:08,519::train::INFO] [Validate] Iter 1540000 | Loss 39.657285 | Loss(Global) 124.223554 | Loss(Local) 5.830775
+[2022-11-02 15:44:20,075::train::INFO] [Train] Iter 1545000 | Loss 40.22 | Loss(Global) 126.08 | Loss(Local) 5.87 | Grad 1047.54 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 15:44:47,753::train::INFO] [Validate] Iter 1545000 | Loss 39.848549 | Loss(Global) 124.989243 | Loss(Local) 5.792268
+[2022-11-02 15:50:56,312::train::INFO] [Train] Iter 1550000 | Loss 39.90 | Loss(Global) 125.00 | Loss(Local) 5.85 | Grad 1024.60 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 15:51:24,200::train::INFO] [Validate] Iter 1550000 | Loss 40.288395 | Loss(Global) 126.363816 | Loss(Local) 5.858224
+[2022-11-02 15:57:36,342::train::INFO] [Train] Iter 1555000 | Loss 39.93 | Loss(Global) 125.17 | Loss(Local) 5.83 | Grad 1030.01 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 15:58:04,013::train::INFO] [Validate] Iter 1555000 | Loss 39.603717 | Loss(Global) 124.295220 | Loss(Local) 5.727113
+[2022-11-02 16:04:14,789::train::INFO] [Train] Iter 1560000 | Loss 39.98 | Loss(Global) 125.36 | Loss(Local) 5.82 | Grad 1049.97 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 16:04:42,499::train::INFO] [Validate] Iter 1560000 | Loss 40.222338 | Loss(Global) 126.195300 | Loss(Local) 5.833150
+[2022-11-02 16:10:55,569::train::INFO] [Train] Iter 1565000 | Loss 40.01 | Loss(Global) 125.48 | Loss(Local) 5.83 | Grad 1047.48 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 16:11:30,818::train::INFO] [Validate] Iter 1565000 | Loss 40.131420 | Loss(Global) 125.630240 | Loss(Local) 5.931890
+[2022-11-02 16:17:35,453::train::INFO] [Train] Iter 1570000 | Loss 39.98 | Loss(Global) 125.23 | Loss(Local) 5.88 | Grad 1037.00 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 16:18:10,570::train::INFO] [Validate] Iter 1570000 | Loss 39.752137 | Loss(Global) 124.488241 | Loss(Local) 5.857693
+[2022-11-02 16:24:17,564::train::INFO] [Train] Iter 1575000 | Loss 40.00 | Loss(Global) 125.36 | Loss(Local) 5.86 | Grad 1033.53 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 16:24:53,155::train::INFO] [Validate] Iter 1575000 | Loss 40.262844 | Loss(Global) 126.111028 | Loss(Local) 5.923568
+[2022-11-02 16:31:11,353::train::INFO] [Train] Iter 1580000 | Loss 40.14 | Loss(Global) 125.87 | Loss(Local) 5.85 | Grad 1040.08 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 16:31:38,521::train::INFO] [Validate] Iter 1580000 | Loss 39.772461 | Loss(Global) 124.742876 | Loss(Local) 5.784293
+[2022-11-02 16:37:50,599::train::INFO] [Train] Iter 1585000 | Loss 39.90 | Loss(Global) 125.04 | Loss(Local) 5.85 | Grad 1035.12 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 16:38:18,213::train::INFO] [Validate] Iter 1585000 | Loss 39.665726 | Loss(Global) 124.181378 | Loss(Local) 5.859462
+[2022-11-02 16:44:32,450::train::INFO] [Train] Iter 1590000 | Loss 39.89 | Loss(Global) 125.00 | Loss(Local) 5.84 | Grad 1033.14 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 16:45:00,147::train::INFO] [Validate] Iter 1590000 | Loss 39.788339 | Loss(Global) 124.766853 | Loss(Local) 5.796931
+[2022-11-02 16:51:17,449::train::INFO] [Train] Iter 1595000 | Loss 40.15 | Loss(Global) 125.91 | Loss(Local) 5.85 | Grad 1046.95 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 16:51:45,383::train::INFO] [Validate] Iter 1595000 | Loss 39.513596 | Loss(Global) 123.783847 | Loss(Local) 5.805493
+[2022-11-02 16:57:52,875::train::INFO] [Train] Iter 1600000 | Loss 39.88 | Loss(Global) 125.05 | Loss(Local) 5.81 | Grad 1022.31 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 16:58:20,703::train::INFO] [Validate] Iter 1600000 | Loss 39.843883 | Loss(Global) 124.749790 | Loss(Local) 5.881518
+[2022-11-02 17:04:32,714::train::INFO] [Train] Iter 1605000 | Loss 39.92 | Loss(Global) 125.11 | Loss(Local) 5.85 | Grad 1041.46 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 17:05:00,687::train::INFO] [Validate] Iter 1605000 | Loss 39.594652 | Loss(Global) 124.027264 | Loss(Local) 5.821604
+[2022-11-02 17:11:09,424::train::INFO] [Train] Iter 1610000 | Loss 39.88 | Loss(Global) 125.06 | Loss(Local) 5.81 | Grad 1038.58 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 17:11:37,266::train::INFO] [Validate] Iter 1610000 | Loss 40.241998 | Loss(Global) 126.292012 | Loss(Local) 5.821989
+[2022-11-02 17:17:48,455::train::INFO] [Train] Iter 1615000 | Loss 39.99 | Loss(Global) 125.33 | Loss(Local) 5.86 | Grad 1055.80 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 17:18:16,150::train::INFO] [Validate] Iter 1615000 | Loss 39.522274 | Loss(Global) 123.989799 | Loss(Local) 5.735261
+[2022-11-02 17:24:28,135::train::INFO] [Train] Iter 1620000 | Loss 39.81 | Loss(Global) 124.76 | Loss(Local) 5.83 | Grad 1034.47 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 17:25:03,518::train::INFO] [Validate] Iter 1620000 | Loss 39.806406 | Loss(Global) 124.669242 | Loss(Local) 5.861268
+[2022-11-02 17:31:06,059::train::INFO] [Train] Iter 1625000 | Loss 39.81 | Loss(Global) 124.79 | Loss(Local) 5.82 | Grad 1023.37 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 17:31:41,579::train::INFO] [Validate] Iter 1625000 | Loss 39.912968 | Loss(Global) 125.215988 | Loss(Local) 5.791757
+[2022-11-02 17:37:46,767::train::INFO] [Train] Iter 1630000 | Loss 40.03 | Loss(Global) 125.47 | Loss(Local) 5.85 | Grad 1039.79 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 17:38:21,918::train::INFO] [Validate] Iter 1630000 | Loss 40.129263 | Loss(Global) 125.804406 | Loss(Local) 5.859203
+[2022-11-02 17:44:35,453::train::INFO] [Train] Iter 1635000 | Loss 39.92 | Loss(Global) 125.18 | Loss(Local) 5.81 | Grad 1041.62 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 17:45:02,704::train::INFO] [Validate] Iter 1635000 | Loss 39.970638 | Loss(Global) 125.335201 | Loss(Local) 5.824810
+[2022-11-02 17:51:19,568::train::INFO] [Train] Iter 1640000 | Loss 39.96 | Loss(Global) 125.24 | Loss(Local) 5.85 | Grad 1036.09 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 17:51:47,212::train::INFO] [Validate] Iter 1640000 | Loss 39.598563 | Loss(Global) 124.202455 | Loss(Local) 5.757003
+[2022-11-02 17:57:59,196::train::INFO] [Train] Iter 1645000 | Loss 39.80 | Loss(Global) 124.79 | Loss(Local) 5.81 | Grad 1031.42 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 17:58:27,131::train::INFO] [Validate] Iter 1645000 | Loss 39.686997 | Loss(Global) 124.177489 | Loss(Local) 5.890798
+[2022-11-02 18:04:47,134::train::INFO] [Train] Iter 1650000 | Loss 39.98 | Loss(Global) 125.31 | Loss(Local) 5.84 | Grad 1038.95 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 18:05:14,995::train::INFO] [Validate] Iter 1650000 | Loss 39.821482 | Loss(Global) 124.746466 | Loss(Local) 5.851486
+[2022-11-02 18:11:39,620::train::INFO] [Train] Iter 1655000 | Loss 40.06 | Loss(Global) 125.52 | Loss(Local) 5.88 | Grad 1051.70 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 18:12:07,461::train::INFO] [Validate] Iter 1655000 | Loss 39.878789 | Loss(Global) 124.988347 | Loss(Local) 5.834963
+[2022-11-02 18:18:20,930::train::INFO] [Train] Iter 1660000 | Loss 39.82 | Loss(Global) 124.78 | Loss(Local) 5.84 | Grad 1030.95 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 18:18:48,666::train::INFO] [Validate] Iter 1660000 | Loss 39.868651 | Loss(Global) 125.197724 | Loss(Local) 5.737020
+[2022-11-02 18:25:06,860::train::INFO] [Train] Iter 1665000 | Loss 39.75 | Loss(Global) 124.61 | Loss(Local) 5.80 | Grad 1027.21 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 18:25:34,469::train::INFO] [Validate] Iter 1665000 | Loss 40.229573 | Loss(Global) 126.056485 | Loss(Local) 5.898806
+[2022-11-02 18:31:45,015::train::INFO] [Train] Iter 1670000 | Loss 39.92 | Loss(Global) 125.12 | Loss(Local) 5.85 | Grad 1047.70 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 18:32:12,673::train::INFO] [Validate] Iter 1670000 | Loss 40.250239 | Loss(Global) 126.291177 | Loss(Local) 5.833861
+[2022-11-02 18:38:26,553::train::INFO] [Train] Iter 1675000 | Loss 39.86 | Loss(Global) 124.96 | Loss(Local) 5.82 | Grad 1049.28 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 18:39:02,210::train::INFO] [Validate] Iter 1675000 | Loss 39.987050 | Loss(Global) 125.280252 | Loss(Local) 5.869767
+[2022-11-02 18:45:08,994::train::INFO] [Train] Iter 1680000 | Loss 39.84 | Loss(Global) 124.94 | Loss(Local) 5.81 | Grad 1045.07 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 18:45:44,526::train::INFO] [Validate] Iter 1680000 | Loss 39.654295 | Loss(Global) 124.174456 | Loss(Local) 5.846228
+[2022-11-02 18:51:53,698::train::INFO] [Train] Iter 1685000 | Loss 39.88 | Loss(Global) 124.96 | Loss(Local) 5.85 | Grad 1043.97 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 18:52:29,106::train::INFO] [Validate] Iter 1685000 | Loss 39.627285 | Loss(Global) 124.182607 | Loss(Local) 5.805154
+[2022-11-02 18:58:48,071::train::INFO] [Train] Iter 1690000 | Loss 40.04 | Loss(Global) 125.50 | Loss(Local) 5.86 | Grad 1047.97 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 18:59:15,330::train::INFO] [Validate] Iter 1690000 | Loss 39.986424 | Loss(Global) 125.071126 | Loss(Local) 5.952541
+[2022-11-02 19:05:28,684::train::INFO] [Train] Iter 1695000 | Loss 39.80 | Loss(Global) 124.83 | Loss(Local) 5.79 | Grad 1030.48 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 19:05:56,252::train::INFO] [Validate] Iter 1695000 | Loss 39.915196 | Loss(Global) 124.902250 | Loss(Local) 5.920372
+[2022-11-02 19:12:08,995::train::INFO] [Train] Iter 1700000 | Loss 40.04 | Loss(Global) 125.46 | Loss(Local) 5.87 | Grad 1037.18 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 19:12:36,541::train::INFO] [Validate] Iter 1700000 | Loss 39.972944 | Loss(Global) 125.298825 | Loss(Local) 5.842589
+[2022-11-02 19:18:47,336::train::INFO] [Train] Iter 1705000 | Loss 39.83 | Loss(Global) 124.87 | Loss(Local) 5.81 | Grad 1050.22 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 19:19:15,237::train::INFO] [Validate] Iter 1705000 | Loss 39.850852 | Loss(Global) 124.780546 | Loss(Local) 5.878972
+[2022-11-02 19:25:28,528::train::INFO] [Train] Iter 1710000 | Loss 39.92 | Loss(Global) 125.19 | Loss(Local) 5.82 | Grad 1049.35 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 19:25:56,272::train::INFO] [Validate] Iter 1710000 | Loss 39.860323 | Loss(Global) 124.690085 | Loss(Local) 5.928416
+[2022-11-02 19:32:08,127::train::INFO] [Train] Iter 1715000 | Loss 39.76 | Loss(Global) 124.64 | Loss(Local) 5.81 | Grad 1041.72 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 19:32:35,718::train::INFO] [Validate] Iter 1715000 | Loss 39.471650 | Loss(Global) 123.847738 | Loss(Local) 5.721212
+[2022-11-02 19:38:52,489::train::INFO] [Train] Iter 1720000 | Loss 39.81 | Loss(Global) 124.77 | Loss(Local) 5.82 | Grad 1065.00 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 19:39:20,160::train::INFO] [Validate] Iter 1720000 | Loss 39.637074 | Loss(Global) 124.272658 | Loss(Local) 5.782838
+[2022-11-02 19:45:43,678::train::INFO] [Train] Iter 1725000 | Loss 39.88 | Loss(Global) 124.99 | Loss(Local) 5.84 | Grad 1041.71 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 19:46:11,407::train::INFO] [Validate] Iter 1725000 | Loss 39.846596 | Loss(Global) 124.921835 | Loss(Local) 5.816498
+[2022-11-02 19:52:23,775::train::INFO] [Train] Iter 1730000 | Loss 39.76 | Loss(Global) 124.62 | Loss(Local) 5.81 | Grad 1059.26 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 19:52:59,339::train::INFO] [Validate] Iter 1730000 | Loss 39.898661 | Loss(Global) 125.037968 | Loss(Local) 5.842935
+[2022-11-02 19:59:03,372::train::INFO] [Train] Iter 1735000 | Loss 39.74 | Loss(Global) 124.60 | Loss(Local) 5.80 | Grad 1041.69 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 19:59:38,572::train::INFO] [Validate] Iter 1735000 | Loss 40.352376 | Loss(Global) 126.542663 | Loss(Local) 5.876259
+[2022-11-02 20:05:40,536::train::INFO] [Train] Iter 1740000 | Loss 39.90 | Loss(Global) 125.07 | Loss(Local) 5.83 | Grad 1050.96 | LR(Global) 0.000020 | LR(Local) 0.000020
+[2022-11-02 20:06:16,086::train::INFO] [Validate] Iter 1740000 | Loss 39.818865 | Loss(Global) 124.799241 | Loss(Local) 5.826712
+[2022-11-02 20:12:27,232::train::INFO] [Train] Iter 1745000 | Loss 39.69 | Loss(Global) 124.28 | Loss(Local) 5.85 | Grad 1042.26 | LR(Global) 0.000020 | LR(Local) 0.000020

@@ -1,0 +1,43 @@
+model:
+  type: diffusion # dsm and diffusion
+  network: dualenc_sch_come
+  hidden_dim: 128
+  num_convs: 6
+  num_convs_local: 4
+  cutoff: 7.0
+  mlp_act: ReLU
+  beta_schedule: sigmoid
+  beta_start: 1.e-7
+  beta_end: 2.e-3
+  num_diffusion_timesteps: 5000
+  edge_order: 3
+  edge_encoder: mlp
+  smooth_conv: true
+  TS: True
+  edge_cat_act: swish
+  num_radial: 16
+  num_spherical: 8
+  dropout: 0.0
+
+train:
+  seed: 2022
+  batch_size: 32
+  val_freq: 7500
+  max_iters: 3000000
+  max_grad_norm: 30000.0  # Different from QM9
+  anneal_power: 2.0
+  optimizer:
+    type: adam
+    lr: 1.e-3
+    weight_decay: 0.
+    beta1: 0.95
+    beta2: 0.999
+  scheduler:
+    type: plateau
+    factor: 0.75
+    patience: 10
+
+dataset:
+  train: data/TS/b97d3/train_data.pkl
+  val: data/TS/b97d3/val_data.pkl
+  test: data/TS/b97d3/test_data.pkl

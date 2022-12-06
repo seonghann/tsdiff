@@ -1,0 +1,3 @@
+exp8 : wb97d3 dataset 을 scaffold split해서 training한다.
+
+old-edge는 굳이 학습할 필요 없고, new-edge만 학습한다.
