@@ -41,13 +41,10 @@ You can train the model with the following commands:
 
 ```bash
 # Default settings
-python train.py ./config/qm9_default.yml
-python train.py ./config/drugs_default.yml
-# An ablation setting with fewer timesteps, as described in Appendix D.2.
-python train.py ./config/drugs_1k_default.yml
+python train_ts.py ./config/train_ts_dv3_newedge_nolocal.yml
 ```
 
-The model checkpoints, configuration yaml file as well as training log will be saved into a directory specified by `--logdir` in `train.py`.
+The model checkpoints, configuration yaml file as well as training log will be saved into a directory specified by `--logdir` in `train_ts.py`.
 
 ## Generation
 
@@ -58,8 +55,8 @@ We provide the checkpoints of two trained models, i.e., `qm9_default` and `drugs
 You can generate conformations for entire or part of test sets by:
 
 ```bash
-python test.py ${log}/${model}/checkpoints/${iter}.pt \
-    --start_idx 800 --end_idx 1000
+python test_ts.py ${log}/${model}/checkpoints/${iter}.pt \
+    --start_idx 0 --end_idx 100 --from_ts_guess --from_time_t 1000 --n_steps 1000
 ```
 Here `start_idx` and `end_idx` indicate the range of the test set that we want to use. All hyper-parameters related to sampling can be set in `test.py` files. Specifically, for testing qm9 model, you could add the additional arg `--w_global 0.3`, which empirically shows slightly better results.
 
