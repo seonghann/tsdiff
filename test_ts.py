@@ -27,6 +27,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("ckpt", type=str, help="path for loading the checkpoint")
     parser.add_argument("--save_traj", action="store_true", default=False, help="whether store the whole trajectory for sampling")
+    parser.add_argument("--save_suffix", type=str, required=True, default="")
     parser.add_argument("--from_ts_guess", action="store_true", default=False)
     parser.add_argument("--from_time_t", type=int, default=None)
 
@@ -68,9 +69,9 @@ if __name__ == "__main__":
     log_dir = os.path.dirname(os.path.dirname(args.ckpt))
 
     # Logging
-    fn = f"{args.sampling_type}_wg{args.w_global}_{int(os.path.split(args.ckpt)[1].split('.')[0])/1000}k"
-    #output_dir = get_new_log_dir(root=log_dir, prefix="sample", tag=args.tag, fn=fn)
-    output_dir = None
+    fn = f"{args.sampling_type}_{args.save_suffix}"
+    output_dir = get_new_log_dir(root=log_dir, prefix="sample", tag=args.tag, fn=fn)
+    #output_dir = None
     logger = get_logger("test", output_dir)
     logger.info(args)
 
@@ -127,15 +128,15 @@ if __name__ == "__main__":
         for _ in range(2):  # Maximum number of retry
             try:
                 if args.from_ts_guess:
-                    print("Geometry Generation with Guess TS Support")
+                    #print("Geometry Generation with Guess TS Support")
                     assert args.from_time_t is not None
                     if hasattr(batch, "ts_guess"):
                         init_guess = batch.ts_guess
                     else:
-                        print("No TS guess is given, start with ground truth TS Support")
+                        #print("No TS guess is given, start with ground truth TS Support")
                         init_guess = batch.pos
-                    print(init_guess)
-                    print(init_guess.shape)
+                    #print(init_guess)
+                    #print(init_guess.shape)
                     pos_init = init_guess.to(args.device)
                 else:
                     pos_init = torch.randn(batch.num_nodes, 3).to(args.device)
@@ -168,28 +169,28 @@ if __name__ == "__main__":
                 results.append(data)
                 done_smiles.add(data.smiles)
 
-                #save_path = os.path.join(output_dir, "samples_%d.pkl" % i)
-                #logger.info("Saving samples to: %s" % save_path)
-                #with open(save_path, "wb") as f:
-                #    pickle.dump(results, f)
+                save_path = os.path.join(output_dir, "samples_%d.pkl" % i)
+                logger.info("Saving samples to: %s" % save_path)
+                with open(save_path, "wb") as f:
+                    pickle.dump(results, f)
 
                 break  # No errors occured, break the retry loop
             except FloatingPointError:
                 clip_local = 20
                 logger.warning("Retrying with local clipping.")
     
-    with open("test_save.pkl", "wb") as f:
-        pickle.dump(results, f)
-    #save_path = os.path.join(output_dir, "samples_all.pkl")
-    #logger.info("Saving samples to: %s" % save_path)
-
-    #def get_mol_key(data):
-    #    for i, d in enumerate(test_set_selected):
-    #        if d.smiles == data.smiles:
-    #            return i
-    #    return -1
-
-    #results.sort(key=get_mol_key)
-
-    #with open(save_path, "wb") as f:
+    #with open("test_save.pkl", "wb") as f:
     #    pickle.dump(results, f)
+    save_path = os.path.join(output_dir, "samples_all.pkl")
+    logger.info("Saving samples to: %s" % save_path)
+
+    def get_mol_key(data):
+        for i, d in enumerate(test_set_selected):
+            if d.smiles == data.smiles:
+                return i
+        return -1
+
+    results.sort(key=get_mol_key)
+
+    with open(save_path, "wb") as f:
+        pickle.dump(results, f)

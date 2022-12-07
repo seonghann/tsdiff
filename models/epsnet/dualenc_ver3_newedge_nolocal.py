@@ -584,15 +584,13 @@ class DualEncoderEpsNetwork(nn.Module):
                 seq_next = [-1] + list(seq[:-1])
                 pos = pos_init * sigmas[-1]
 
-            print("initial position")
+            print("Initial Position")
             print(pos)
             print(pos.shape)
 
             if is_sidechain is not None:
                 pos[~is_sidechain] = pos_gt[~is_sidechain]
             for i, j in tqdm(zip(reversed(seq), reversed(seq_next)), desc="sample"):
-                print(f"time step : {i}")
-                print(pos)
                 t = torch.full(
                     size=(num_graphs,),
                     fill_value=i,
@@ -757,7 +755,8 @@ class DualEncoderEpsNetwork(nn.Module):
                 if clip_pos is not None:
                     pos = torch.clamp(pos, min=-clip_pos, max=clip_pos)
                 pos_traj.append(pos.clone().cpu())
-
+            print("Generated Position")
+            print(pos)
         return pos, pos_traj
 
 

@@ -1,6 +1,6 @@
-from GeoDiff.utils.activation_functions import swish
+from tsdiff.utils.activation_functions import swish
 import torch.nn as nn
-from GeoDiff.utils.datasets import generate_ts_data2
+from tsdiff.utils.datasets import generate_ts_data2
 
 def activation_loader(name):
     if name == "swish":
@@ -9,3 +9,6 @@ def activation_loader(name):
     else:
         return getattr(nn, name)()
 
+
+if __name__ == "__main__":
+    activation_loader("swish")
