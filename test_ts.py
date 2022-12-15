@@ -28,8 +28,10 @@ if __name__ == "__main__":
     parser.add_argument("ckpt", type=str, help="path for loading the checkpoint")
     parser.add_argument("--save_traj", action="store_true", default=False, help="whether store the whole trajectory for sampling")
     parser.add_argument("--save_suffix", type=str, required=True, default="")
+    parser.add_argument("--save_abs", type=str, required=False, default=None)
     parser.add_argument("--from_ts_guess", action="store_true", default=False)
-    parser.add_argument("--from_time_t", type=int, default=None)
+    parser.add_argument("--denoise_from_time_t", type=int, default=None)
+    parser.add_argument("--noise_from_time_t", type=int, default=None)
 
     parser.add_argument("--resume", type=str, default=None)
     parser.add_argument("--tag", type=str, default="")
@@ -133,10 +135,10 @@ if __name__ == "__main__":
                     if hasattr(batch, "ts_guess"):
                         init_guess = batch.ts_guess
                     else:
-                        #print("No TS guess is given, start with ground truth TS Support")
                         init_guess = batch.pos
-                    #print(init_guess)
-                    #print(init_guess.shape)
+                    start_t = args.noise_from_time_t if args.noise_from_time_t \
+                            is not None else args.denoise_from_time_t
+                    init_guess = init_guess / model.alphas[start_t-1].sqrt()
                     pos_init = init_guess.to(args.device)
                 else:
                     pos_init = torch.randn(batch.num_nodes, 3).to(args.device)
@@ -159,7 +161,8 @@ if __name__ == "__main__":
                     clip_local=clip_local,
                     sampling_type=args.sampling_type,
                     eta=args.eta,
-                    from_time_t=args.from_time_t,
+                    noise_from_time_t=args.noise_from_time_t,
+                    denoise_from_time_t=args.denoise_from_time_t,
                 )
                 pos_gen = pos_gen.cpu()
                 if args.save_traj:
@@ -169,8 +172,12 @@ if __name__ == "__main__":
                 results.append(data)
                 done_smiles.add(data.smiles)
 
-                save_path = os.path.join(output_dir, "samples_%d.pkl" % i)
-                logger.info("Saving samples to: %s" % save_path)
+                if args.save_abs is not None:
+                    save_path = args.save_abs
+                    logger.info("Saving samples to: %s" % save_path)
+                else:
+                    save_path = os.path.join(output_dir, "samples_not_all.pkl")
+
                 with open(save_path, "wb") as f:
                     pickle.dump(results, f)
 
@@ -179,18 +186,19 @@ if __name__ == "__main__":
                 clip_local = 20
                 logger.warning("Retrying with local clipping.")
     
-    #with open("test_save.pkl", "wb") as f:
-    #    pickle.dump(results, f)
-    save_path = os.path.join(output_dir, "samples_all.pkl")
-    logger.info("Saving samples to: %s" % save_path)
+    if args.save_abs is not None:
+        save_path = args.save_abs
+        logger.info("Saving samples to: %s" % save_path)
+    else:
+        os.system(f"rm {save_path}")
+        save_path = os.path.join(output_dir, "samples_all.pkl")
+        logger.info("Saving samples to: %s" % save_path)
 
     def get_mol_key(data):
         for i, d in enumerate(test_set_selected):
             if d.smiles == data.smiles:
                 return i
         return -1
-
     results.sort(key=get_mol_key)
-
     with open(save_path, "wb") as f:
         pickle.dump(results, f)

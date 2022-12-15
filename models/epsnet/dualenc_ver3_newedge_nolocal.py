@@ -555,7 +555,8 @@ class DualEncoderEpsNetwork(nn.Module):
         global_start_sigma=float("inf"),
         w_global=0.2,
         w_reg=1.0,
-        from_time_t=None,
+        denoise_from_time_t=None,
+        noise_from_time_t=None,
         **kwargs
     ):
         def compute_alpha(beta, t):
@@ -573,12 +574,29 @@ class DualEncoderEpsNetwork(nn.Module):
 
             ## to test sampling with less intermediate diffusion steps
             # n_steps: the num of steps
-            if from_time_t is not None:
-                assert from_time_t - n_steps >= 0
-                seq = range(from_time_t - n_steps, from_time_t)
+            if noise_from_time_t is not None:
+                assert denoise_from_time_t >= n_steps
+                assert denoise_from_time_t >= noise_from_time_t
+                assert noise_from_time_t >= 1
+                seq = range(denoise_from_time_t - n_steps, denoise_from_time_t)
                 seq_next = [-1] + list(seq[:-1])
                 noise = torch.randn(pos_init.size(), device=pos_init.device)
-                pos = pos_init + noise * sigmas[from_time_t - 1]
+                sigma = 1.0 - (self.alphas[denoise_from_time_t-1]/self.alphas[noise_from_time_t-1])
+                sigma /= self.alphas[denoise_from_time_t-1]
+                sigma = sigma.sqrt()
+                pos = pos_init + noise * sigma
+
+                print(f"Noising from t={noise_from_time_t} to t={denoise_from_time_t}\n"
+                      f"Denoise from t={denoise_from_time_t} to t={denoise_from_time_t-n_steps}")
+
+            elif denoise_from_time_t is not None:
+                assert denoise_from_time_t >= n_steps
+                seq = range(denoise_from_time_t - n_steps, denoise_from_time_t)
+                seq_next = [-1] + list(seq[:-1])
+                pos = pos_init
+                print(f"Start with zero-noise\n"
+                      f"Denoise from t={denoise_from_time_t} to t={denoise_from_time_t-n_steps}")
+
             else:
                 seq = range(self.num_timesteps - n_steps, self.num_timesteps)
                 seq_next = [-1] + list(seq[:-1])
