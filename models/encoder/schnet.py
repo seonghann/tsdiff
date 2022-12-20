@@ -15,8 +15,8 @@ class GaussianSmearing(torch.nn.Module):
     def __init__(self, start=0.0, stop=5.0, num_gaussians=50):
         super(GaussianSmearing, self).__init__()
         offset = torch.linspace(start, stop, num_gaussians)
-        self.coeff = -0.5 / (offset[1] - offset[0]).item()**2
-        self.register_buffer('offset', offset)
+        self.coeff = -0.5 / (offset[1] - offset[0]).item() ** 2
+        self.register_buffer("offset", offset)
 
     def forward(self, dist):
         dist = dist.view(-1, 1) - self.offset.view(1, -1)
@@ -24,13 +24,12 @@ class GaussianSmearing(torch.nn.Module):
 
 
 class AsymmetricSineCosineSmearing(Module):
-
     def __init__(self, num_basis=50):
         super().__init__()
         num_basis_k = num_basis // 2
         num_basis_l = num_basis - num_basis_k
-        self.register_buffer('freq_k', torch.arange(1, num_basis_k + 1).float())
-        self.register_buffer('freq_l', torch.arange(1, num_basis_l + 1).float())
+        self.register_buffer("freq_k", torch.arange(1, num_basis_k + 1).float())
+        self.register_buffer("freq_l", torch.arange(1, num_basis_l + 1).float())
 
     @property
     def num_basis(self):
@@ -39,23 +38,28 @@ class AsymmetricSineCosineSmearing(Module):
     def forward(self, angle):
         # If we don't incorporate `cos`, the embedding of 0-deg and 180-deg will be the
         #  same, which is undesirable.
-        s = torch.sin(angle.view(-1, 1) * self.freq_k.view(1, -1))  # (num_angles, num_basis_k)
-        c = torch.cos(angle.view(-1, 1) * self.freq_l.view(1, -1))  # (num_angles, num_basis_l)
+        s = torch.sin(
+            angle.view(-1, 1) * self.freq_k.view(1, -1)
+        )  # (num_angles, num_basis_k)
+        c = torch.cos(
+            angle.view(-1, 1) * self.freq_l.view(1, -1)
+        )  # (num_angles, num_basis_l)
         return torch.cat([s, c], dim=-1)
 
-    
-class SymmetricCosineSmearing(Module):
 
+class SymmetricCosineSmearing(Module):
     def __init__(self, num_basis=50):
         super().__init__()
-        self.register_buffer('freq_k', torch.arange(1, num_basis+1).float())
+        self.register_buffer("freq_k", torch.arange(1, num_basis + 1).float())
 
     @property
     def num_basis(self):
         return self.freq_k.size(0)
 
     def forward(self, angle):
-        return torch.cos(angle.view(-1, 1) * self.freq_k.view(1, -1))   # (num_angles, num_basis)
+        return torch.cos(
+            angle.view(-1, 1) * self.freq_k.view(1, -1)
+        )  # (num_angles, num_basis)
 
 
 class ShiftedSoftplus(torch.nn.Module):
@@ -69,7 +73,7 @@ class ShiftedSoftplus(torch.nn.Module):
 
 class CFConv(MessagePassing):
     def __init__(self, in_channels, out_channels, num_filters, nn, cutoff, smooth):
-        super(CFConv, self).__init__(aggr='add')
+        super(CFConv, self).__init__(aggr="add")
         self.lin1 = Linear(in_channels, num_filters, bias=False)
         self.lin2 = Linear(num_filters, out_channels)
         self.nn = nn
@@ -86,7 +90,9 @@ class CFConv(MessagePassing):
     def forward(self, x, edge_index, edge_length, edge_attr):
         if self.smooth:
             C = 0.5 * (torch.cos(edge_length * PI / self.cutoff) + 1.0)
-            C = C * (edge_length <= self.cutoff) * (edge_length >= 0.0)     # Modification: cutoff
+            C = (
+                C * (edge_length <= self.cutoff) * (edge_length >= 0.0)
+            )  # Modification: cutoff
         else:
             C = (edge_length <= self.cutoff).float()
         W = self.nn(edge_attr) * C.view(-1, 1)
@@ -108,7 +114,9 @@ class InteractionBlock(torch.nn.Module):
             ShiftedSoftplus(),
             Linear(num_filters, num_filters),
         )
-        self.conv = CFConv(hidden_channels, hidden_channels, num_filters, mlp, cutoff, smooth)
+        self.conv = CFConv(
+            hidden_channels, hidden_channels, num_filters, mlp, cutoff, smooth
+        )
         self.act = ShiftedSoftplus()
         self.lin = Linear(hidden_channels, hidden_channels)
 
@@ -120,16 +128,16 @@ class InteractionBlock(torch.nn.Module):
 
 
 class SchNetEncoder(Module):
-
-    def __init__(self, 
-            hidden_channels=128, 
-            num_filters=128,
-            num_interactions=6, 
-            edge_channels=100, 
-            cutoff=10.0, 
-            smooth=False,
-            embedding=False,
-            ):
+    def __init__(
+        self,
+        hidden_channels=128,
+        num_filters=128,
+        num_interactions=6,
+        edge_channels=100,
+        cutoff=10.0,
+        smooth=False,
+        embedding=False,
+    ):
         super().__init__()
 
         self.hidden_channels = hidden_channels
@@ -142,11 +150,14 @@ class SchNetEncoder(Module):
 
         self.interactions = ModuleList()
         for _ in range(num_interactions):
-            block = InteractionBlock(hidden_channels, edge_channels,
-                                     num_filters, cutoff, smooth)
+            block = InteractionBlock(
+                hidden_channels, edge_channels, num_filters, cutoff, smooth
+            )
             self.interactions.append(block)
 
-    def forward(self, z, edge_index, edge_length, edge_attr, embed_node=False, **kwargs):
+    def forward(
+        self, z, edge_index, edge_length, edge_attr, embed_node=False, **kwargs
+    ):
         if embed_node:
             assert z.dim() == 1 and z.dtype == torch.long and self.embedding
             h = self.node_emb(z)
@@ -157,4 +168,3 @@ class SchNetEncoder(Module):
             h = h + interaction(h, edge_index, edge_length, edge_attr)
 
         return h
-

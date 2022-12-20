@@ -12,13 +12,14 @@ from ..common import MeanReadout, SumReadout, MultiLayerPerceptron
 
 
 class GaussianSmearingEdgeEncoder(Module):
-
     def __init__(self, num_gaussians=64, cutoff=10.0):
         super().__init__()
-        #self.NUM_BOND_TYPES = 22
+        # self.NUM_BOND_TYPES = 22
         self.num_gaussians = num_gaussians
         self.cutoff = cutoff
-        self.rbf = GaussianSmearing(start=0.0, stop=cutoff * 2, num_gaussians=num_gaussians)    # Larger `stop` to encode more cases
+        self.rbf = GaussianSmearing(
+            start=0.0, stop=cutoff * 2, num_gaussians=num_gaussians
+        )  # Larger `stop` to encode more cases
         self.bond_emb = Embedding(100, embedding_dim=num_gaussians)
 
     @property
@@ -38,12 +39,13 @@ class GaussianSmearingEdgeEncoder(Module):
 
 
 class MLPEdgeEncoder(Module):
-
-    def __init__(self, hidden_dim=100, activation='relu'):
+    def __init__(self, hidden_dim=100, activation="relu"):
         super().__init__()
         self.hidden_dim = hidden_dim
         self.bond_emb = Embedding(100, embedding_dim=self.hidden_dim)
-        self.mlp = MultiLayerPerceptron(1, [self.hidden_dim, self.hidden_dim], activation=activation)
+        self.mlp = MultiLayerPerceptron(
+            1, [self.hidden_dim, self.hidden_dim], activation=activation
+        )
 
     @property
     def out_channels(self):
@@ -57,15 +59,15 @@ class MLPEdgeEncoder(Module):
         Returns:
             edge_attr:  The representation of edges. (E, 2 * num_gaussians)
         """
-        d_emb = self.mlp(edge_length) # (num_edge, hidden_dim)
-        edge_attr = self.bond_emb(edge_type) # (num_edge, hidden_dim)
-        return d_emb * edge_attr # (num_edge, hidden)
+        d_emb = self.mlp(edge_length)  # (num_edge, hidden_dim)
+        edge_attr = self.bond_emb(edge_type)  # (num_edge, hidden_dim)
+        return d_emb * edge_attr  # (num_edge, hidden)
+
 
 def get_edge_encoder(cfg):
-    if cfg.edge_encoder == 'mlp':
+    if cfg.edge_encoder == "mlp":
         return MLPEdgeEncoder(cfg.hidden_dim, cfg.mlp_act)
-    elif cfg.edge_encoder == 'gaussian':
+    elif cfg.edge_encoder == "gaussian":
         return GaussianSmearingEdgeEncoder(cfg.hidden_dim // 2, cutoff=cfg.cutoff)
     else:
-        raise NotImplementedError('Unknown edge encoder: %s' % cfg.edge_encoder)
-        
+        raise NotImplementedError("Unknown edge encoder: %s" % cfg.edge_encoder)

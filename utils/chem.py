@@ -8,7 +8,7 @@ from rdkit.Chem import rdDepictor as DP
 from rdkit.Chem import PeriodicTable as PT
 from rdkit.Chem import rdMolAlign as MA
 from rdkit.Chem.rdchem import BondType as BT
-from rdkit.Chem.rdchem import Mol,GetPeriodicTable
+from rdkit.Chem.rdchem import Mol, GetPeriodicTable
 from rdkit.Chem.Draw import rdMolDraw2D as MD2
 from rdkit.Chem.rdmolops import RemoveHs
 from typing import List, Tuple
@@ -110,7 +110,7 @@ def get_2D_mol(mol):
     return mol
 
 
-def draw_mol_svg(mol,molSize=(450,150),kekulize=False):
+def draw_mol_svg(mol, molSize=(450, 150), kekulize=False):
     mc = Chem.Mol(mol.ToBinary())
     if kekulize:
         try:
@@ -119,7 +119,7 @@ def draw_mol_svg(mol,molSize=(450,150),kekulize=False):
             mc = Chem.Mol(mol.ToBinary())
     if not mc.GetNumConformers():
         DP.Compute2DCoords(mc)
-    drawer = MD2.MolDraw2DSVG(molSize[0],molSize[1])
+    drawer = MD2.MolDraw2DSVG(molSize[0], molSize[1])
     drawer.DrawMolecule(mc)
     drawer.FinishDrawing()
     svg = drawer.GetDrawingText()
@@ -135,4 +135,3 @@ def get_best_rmsd(probe, ref):
     ref = RemoveHs(ref)
     rmsd = MA.GetBestRMS(probe, ref)
     return rmsd
-

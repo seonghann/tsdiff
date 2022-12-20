@@ -6,6 +6,7 @@ from torch_geometric.typing import Adj, Size, Tensor
 from torch_scatter import scatter_mean
 from utils import activation_loader
 
+
 class EGNNMixed2DEncoder(nn.Module):
     def __init__(
         self,
@@ -15,7 +16,7 @@ class EGNNMixed2DEncoder(nn.Module):
         initialize_weights=False,
         aggr="mean",
         scatter_fun=scatter_mean,
-        pretrain = False,
+        pretrain=False,
     ):
         """Main Equivariant Graph Neural Network class.
 
@@ -62,14 +63,14 @@ class EGNNMixed2DEncoder(nn.Module):
                     dropout=self.dropout,
                 )
             )
-        
+
         self.lincat_kernel = nn.Sequential(
-                    torch.nn.Linear(self.hidden_dim*2,self.hidden_dim*2),
-                    activation_loader('swish'),
-                    torch.nn.Linear(self.hidden_dim*2,self.hidden_dim)
-                    )
-        #self.lincat_kernels = nn.ModuleList()
-        #for _ in range(self.num_convs):
+            torch.nn.Linear(self.hidden_dim * 2, self.hidden_dim * 2),
+            activation_loader("swish"),
+            torch.nn.Linear(self.hidden_dim * 2, self.hidden_dim),
+        )
+        # self.lincat_kernels = nn.ModuleList()
+        # for _ in range(self.num_convs):
         #    __ = nn.Sequential(
         #            torch.nn.Linear(self.hidden_dim*2,self.hidden_dim*2),
         #            activation_loader('swish'),
@@ -80,43 +81,46 @@ class EGNNMixed2DEncoder(nn.Module):
         self.gin_kernels = nn.ModuleList()
         for _ in range(self.num_convs):
             edge_cat = nn.Sequential(
-                    torch.nn.Linear(self.hidden_dim*2,self.hidden_dim*2),
-                    activation_loader('swish'),
-                    torch.nn.Linear(self.hidden_dim*2,self.hidden_dim)
-                    )
+                torch.nn.Linear(self.hidden_dim * 2, self.hidden_dim * 2),
+                activation_loader("swish"),
+                torch.nn.Linear(self.hidden_dim * 2, self.hidden_dim),
+            )
             fin_layer = nn.Sequential(
-                    torch.nn.Linear(self.hidden_dim,self.hidden_dim*2),
-                    activation_loader('swish'),
-                    torch.nn.Linear(self.hidden_dim*2,self.hidden_dim)
-                    )
-            self.gin_kernels.append(
-                    GINEConv(fin_layer, edge_cat, activation="swish")
-                    )
+                torch.nn.Linear(self.hidden_dim, self.hidden_dim * 2),
+                activation_loader("swish"),
+                torch.nn.Linear(self.hidden_dim * 2, self.hidden_dim),
+            )
+            self.gin_kernels.append(GINEConv(fin_layer, edge_cat, activation="swish"))
 
-    def forward(self, node, edge_index_local, edge_attr_r, edge_attr_p, edge_index_global, pos):
+    def forward(
+        self, node, edge_index_local, edge_attr_r, edge_attr_p, edge_index_global, pos
+    ):
         h = node
         for egnn_kernel, gin_kernel in zip(self.egnn_kernels, self.gin_kernels):
-            pos, h1 = egnn_kernel(
-                    pos=pos, 
-                    x=h, 
-                    edge_index=edge_index_global
-                    )
+            pos, h1 = egnn_kernel(pos=pos, x=h, edge_index=edge_index_global)
             h2 = gin_kernel(
-                    x=h, 
-                    edge_index=edge_index_local, 
-                    edge_attr_r=edge_attr_r, 
-                    edge_attr_p=edge_attr_p
-                    )
+                x=h,
+                edge_index=edge_index_local,
+                edge_attr_r=edge_attr_r,
+                edge_attr_p=edge_attr_p,
+            )
             dh = self.lincat_kernel(torch.cat([h1, h2], dim=-1))
             h = h + dh
-            
+
         return h
 
-class GINEConv(MessagePassing):
 
-    def __init__(self, nn, edge_cat, eps: float = 0., train_eps: bool = False,
-                 activation="swish", **kwargs):
-        super(GINEConv, self).__init__(aggr='add', **kwargs)
+class GINEConv(MessagePassing):
+    def __init__(
+        self,
+        nn,
+        edge_cat,
+        eps: float = 0.0,
+        train_eps: bool = False,
+        activation="swish",
+        **kwargs,
+    ):
+        super(GINEConv, self).__init__(aggr="add", **kwargs)
         self.nn = nn
         self.initial_eps = eps
         self.edge_cat = edge_cat
@@ -128,7 +132,7 @@ class GINEConv(MessagePassing):
         if train_eps:
             self.eps = torch.nn.Parameter(torch.Tensor([eps]))
         else:
-            self.register_buffer('eps', torch.Tensor([eps]))
+            self.register_buffer("eps", torch.Tensor([eps]))
 
     def forward(self, x, edge_index, edge_attr_r, edge_attr_p, size=None):
         if isinstance(x, Tensor):
@@ -138,12 +142,8 @@ class GINEConv(MessagePassing):
 
         # propagate_type: (x: OptPairTensor, edge_attr: OptTensor)
         out = self.propagate(
-                edge_index, 
-                x=x, 
-                edge_attr_r=edge_attr_r, 
-                edge_attr_p=edge_attr_p,
-                size=size
-                )
+            edge_index, x=x, edge_attr_r=edge_attr_r, edge_attr_p=edge_attr_p, size=size
+        )
 
         x_r = x[1]
         if x_r is not None:
@@ -159,7 +159,8 @@ class GINEConv(MessagePassing):
             return x_j * edge_attr
 
     def __repr__(self):
-        return '{}(nn={})'.format(self.__class__.__name__, self.nn)
+        return "{}(nn={})".format(self.__class__.__name__, self.nn)
+
 
 def weights_init(m):
     """Xavier uniform weight initialization
@@ -172,6 +173,7 @@ def weights_init(m):
     if isinstance(m, nn.Linear):
         nn.init.xavier_uniform_(m.weight)
         nn.init.zeros_(m.bias)
+
 
 class EGNN_sparse(MessagePassing):
     def __init__(
@@ -221,17 +223,17 @@ class EGNN_sparse(MessagePassing):
         self.edge_norm2 = nn.LayerNorm(1)
 
         self.edge_mlp1 = nn.Sequential(
-            nn.Linear(self.hidden_dim*2 + 1, self.hidden_dim*2),
+            nn.Linear(self.hidden_dim * 2 + 1, self.hidden_dim * 2),
             self.dropout,
             nn.SiLU(),
-            nn.Linear(self.hidden_dim*2, self.m_dim),
+            nn.Linear(self.hidden_dim * 2, self.m_dim),
             nn.SiLU(),
         )
         self.edge_mlp2 = nn.Sequential(
-            nn.Linear(self.hidden_dim*2 + 1, self.hidden_dim*2),
+            nn.Linear(self.hidden_dim * 2 + 1, self.hidden_dim * 2),
             self.dropout,
             nn.SiLU(),
-            nn.Linear(self.hidden_dim*2, 1),
+            nn.Linear(self.hidden_dim * 2, 1),
             nn.SiLU(),
         )
 
@@ -240,21 +242,22 @@ class EGNN_sparse(MessagePassing):
         self.node_norm2 = nn.LayerNorm(self.hidden_dim)
 
         self.node_mlp = nn.Sequential(
-            nn.Linear(self.hidden_dim + self.m_dim, self.hidden_dim*2),
+            nn.Linear(self.hidden_dim + self.m_dim, self.hidden_dim * 2),
             self.dropout,
             nn.SiLU(),
-            nn.Linear(self.hidden_dim*2, self.hidden_dim),
+            nn.Linear(self.hidden_dim * 2, self.hidden_dim),
         )
 
-    def forward(
-            self, pos, x: Tensor, edge_index: Adj 
-    ):
+    def forward(self, pos, x: Tensor, edge_index: Adj):
         vec = pos[edge_index[0]] - pos[edge_index[1]]
-        dist = (vec ** 2).sum(dim=-1, keepdim=True)
+        dist = (vec**2).sum(dim=-1, keepdim=True)
 
         pos, x = self.propagate(
-            edge_index, x=x,  edge_attr=dist, pos=pos
-            #edge_attr_topo=edge_attr, edge_attr_geom=dist, pos=pos,  
+            edge_index,
+            x=x,
+            edge_attr=dist,
+            pos=pos
+            # edge_attr_topo=edge_attr, edge_attr_geom=dist, pos=pos,
         )
 
         return pos, x
@@ -287,9 +290,7 @@ class EGNN_sparse(MessagePassing):
         x = self.node_mlp(torch.cat([x, m1_i], dim=-1))
         x = self.node_norm2(x)
         x = kwargs["x"] + x
-        
+
         pos = kwargs["pos"]
         pos = pos + m2_i
         return pos, x
-
-

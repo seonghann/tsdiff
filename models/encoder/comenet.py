@@ -3,7 +3,8 @@ from torch_geometric.nn import GraphConv, GraphNorm
 from torch_geometric.nn.acts import swish
 from torch_geometric.nn import inits
 from torch_geometric.nn.conv import MessagePassing
-#from torch_geometric.nn.dense.linear import Linear
+
+# from torch_geometric.nn.dense.linear import Linear
 from torch_geometric.typing import Adj, OptPairTensor, OptTensor, Size
 
 from typing import Tuple, Union
@@ -27,6 +28,8 @@ except ImportError:
     sym = None
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+
 class CustomLinear(torch.nn.Module):
     def __init__(
         self,
@@ -130,7 +133,7 @@ class EmbeddingBlock(torch.nn.Module):
         super(EmbeddingBlock, self).__init__()
         self.act = act
         self.emb = Embedding(100, hidden_channels)
-        #self.emb = CustomLinear(inp, hidden_channels)
+        # self.emb = CustomLinear(inp, hidden_channels)
         self.reset_parameters()
 
     def reset_parameters(self):
@@ -245,7 +248,9 @@ class SimpleInteractionBlock(torch.nn.Module):
         for _ in range(num_layers):
             self.lins.append(CustomLinear(hidden_channels, hidden_channels))
             self.lins.append(nn.Dropout(dropout))
-        self.final = CustomLinear(hidden_channels, output_channels, weight_initializer=inits)
+        self.final = CustomLinear(
+            hidden_channels, output_channels, weight_initializer=inits
+        )
 
         self.reset_parameters()
 
@@ -254,7 +259,6 @@ class SimpleInteractionBlock(torch.nn.Module):
         self.conv2.reset_parameters()
 
         self.norm.reset_parameters()
-
 
         self.lin.reset_parameters()
         self.lin1.reset_parameters()
@@ -485,7 +489,7 @@ class ComENet(nn.Module):
 
         act = swish
         self.act = act
-        
+
         self.feature1 = torsion_emb(
             num_radial=num_radial, num_spherical=num_spherical, cutoff=cutoff
         )
@@ -501,7 +505,10 @@ class ComENet(nn.Module):
 
         else:
             self.lin_feature1 = TwoLayerLinear(
-                num_radial * num_spherical**2, hidden_channels, hidden_channels, dropout
+                num_radial * num_spherical**2,
+                hidden_channels,
+                hidden_channels,
+                dropout,
             )
             self.lin_feature2 = TwoLayerLinear(
                 num_radial * num_spherical, hidden_channels, hidden_channels, dropout
@@ -523,7 +530,9 @@ class ComENet(nn.Module):
         self.lins = torch.nn.ModuleList()
         for _ in range(num_output_layers):
             self.lins.append(CustomLinear(hidden_channels, hidden_channels))
-        self.lin_out = CustomLinear(hidden_channels, out_channels, weight_initializer="zeros")
+        self.lin_out = CustomLinear(
+            hidden_channels, out_channels, weight_initializer="zeros"
+        )
         self.reset_parameters()
 
     def reset_parameters(self):
@@ -535,8 +544,12 @@ class ComENet(nn.Module):
         for lin in self.lins:
             lin.reset_parameters()
         self.lin_out.reset_parameters()
-    
-    def get_geom_feat(self, pos, edge_index, ):
+
+    def get_geom_feat(
+        self,
+        pos,
+        edge_index,
+    ):
         j, i = edge_index
         vecs = pos[j] - pos[i]
         dist = vecs.norm(dim=-1)
@@ -547,7 +560,6 @@ class ComENet(nn.Module):
 
     def forward(self, z, pos, batch, edge_index, edge_attr, **kwargs):
         num_nodes = z.size(0)
-
 
         # Embedding block.
         # x = self.emb(z)
@@ -573,10 +585,9 @@ class ComENet(nn.Module):
             )
             x = _x + residual
             residual = residual + _x
-        
+
         for lin in self.lins:
             x = self.act(lin(x))
         x = self.lin_out(x)
         edges = [edge_geom_attr1, edge_geom_attr2]
         return x, edges
-

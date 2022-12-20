@@ -4,7 +4,7 @@ from rdkit import Chem
 
 def visualize_mol(mol, size=(300, 300), surface=False, opacity=0.5):
     """Draw molecule in 3D
-    
+
     Args:
     ----
         mol: rdMol, molecule to show
@@ -20,9 +20,9 @@ def visualize_mol(mol, size=(300, 300), surface=False, opacity=0.5):
     # assert style in ('line', 'stick', 'sphere', 'carton')
     mblock = Chem.MolToMolBlock(mol)
     viewer = py3Dmol.view(width=size[0], height=size[1])
-    viewer.addModel(mblock, 'mol')
-    viewer.setStyle({'stick':{}, 'sphere':{'radius':0.35}})
+    viewer.addModel(mblock, "mol")
+    viewer.setStyle({"stick": {}, "sphere": {"radius": 0.35}})
     if surface:
-        viewer.addSurface(py3Dmol.SAS, {'opacity': opacity})
+        viewer.addSurface(py3Dmol.SAS, {"opacity": opacity})
     viewer.zoomTo()
     return viewer

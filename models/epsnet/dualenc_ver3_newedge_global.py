@@ -268,15 +268,15 @@ class DualEncoderEpsNetwork(nn.Module):
         atom_emb = self.atom_embedding(atom_type)
         atom_feat_emb_r = self.atom_feat_embedding(r_feat.float())
         atom_feat_emb_p = self.atom_feat_embedding(p_feat.float())
-        
+
         z = torch.cat(
             [atom_emb + atom_feat_emb_r, atom_feat_emb_p - atom_feat_emb_r], dim=-1
         )
-        
-        #atom_delta_emb = atom_emb + atom_feat_emb_r
-        #atom_feat_delta_emb = atom_feat_emb_p - atom_feat_emb_r
-        #z = torch.cat([atom_delta_emb, atom_feat_delta_emb], dim=-1)
-        
+
+        # atom_delta_emb = atom_emb + atom_feat_emb_r
+        # atom_feat_delta_emb = atom_feat_emb_p - atom_feat_emb_r
+        # z = torch.cat([atom_delta_emb, atom_feat_delta_emb], dim=-1)
+
         # Global
         node_attr_global = self.encoder_global(
             z=z,
@@ -306,9 +306,9 @@ class DualEncoderEpsNetwork(nn.Module):
             torch.cat([edge_attr_r, edge_attr_p], dim=-1)
         )
 
-        #print(f"z shape : {z.shape}")
-        #print(f"edge_attr_global shape : {edge_attr_global.shape}")
-        #print(f"edge_attr_local shape : {edge_attr_local.shape}")
+        # print(f"z shape : {z.shape}")
+        # print(f"edge_attr_global shape : {edge_attr_global.shape}")
+        # print(f"edge_attr_local shape : {edge_attr_local.shape}")
         # Local
         node_attr_local = self.encoder_local(
             z=z,
@@ -408,8 +408,8 @@ class DualEncoderEpsNetwork(nn.Module):
         # Perterb pos
         a_pos = a.index_select(0, node2graph).unsqueeze(-1)  # (N, 1)
         pos_noise = torch.randn(size=pos.size(), device=pos.device)
-        #pos_noise = torch.zeros(size=pos.size(), device=pos.device)
-        #pos_noise.normal_()
+        # pos_noise = torch.zeros(size=pos.size(), device=pos.device)
+        # pos_noise.normal_()
         # pos_noise += 0.5
         pos_perturbed = pos + pos_noise * (1.0 - a_pos).sqrt() / a_pos.sqrt()
         # Update invariant edge features, as shown in equation 5-7
@@ -636,7 +636,7 @@ class DualEncoderEpsNetwork(nn.Module):
                 if clip_local is not None:
                     node_eq_local = clip_norm(node_eq_local, limit=clip_local)
                 # Global
-                #if True: # Check
+                # if True: # Check
                 if sigmas[i] < global_start_sigma:
                     edge_inv_global = edge_inv_global * (
                         1 - local_edge_mask.view(-1, 1).float()
@@ -730,7 +730,9 @@ class DualEncoderEpsNetwork(nn.Module):
                         atm1 = at_next
                         beta_t = 1 - at / atm1
                         e = -eps_pos
-                        pos0_from_e = (1.0/at).sqrt()*pos - (1.0/at - 1).sqrt()*e
+                        pos0_from_e = (1.0 / at).sqrt() * pos - (
+                            1.0 / at - 1
+                        ).sqrt() * e
                         mean_eps = (
                             (atm1.sqrt() * beta_t) * pos0_from_e
                             + ((1 - beta_t).sqrt() * (1 - atm1)) * pos

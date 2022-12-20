@@ -13,16 +13,18 @@ from torch_geometric.data import Batch
 class BlackHole(object):
     def __setattr__(self, name, value):
         pass
+
     def __call__(self, *args, **kwargs):
         return self
+
     def __getattr__(self, name):
         return self
 
 
-def get_logger(name, log_dir=None, log_fn='log.txt'):
+def get_logger(name, log_dir=None, log_fn="log.txt"):
     logger = logging.getLogger(name)
     logger.setLevel(logging.DEBUG)
-    formatter = logging.Formatter('[%(asctime)s::%(name)s::%(levelname)s] %(message)s')
+    formatter = logging.Formatter("[%(asctime)s::%(name)s::%(levelname)s] %(message)s")
 
     stream_handler = logging.StreamHandler()
     stream_handler.setLevel(logging.DEBUG)
@@ -38,13 +40,13 @@ def get_logger(name, log_dir=None, log_fn='log.txt'):
     return logger
 
 
-def get_new_log_dir(root='./logs', prefix='', tag='', fn=None):
+def get_new_log_dir(root="./logs", prefix="", tag="", fn=None):
     if fn is None:
-        fn = time.strftime('%Y_%m_%d__%H_%M_%S', time.localtime())
-    if prefix != '':
-        fn = prefix + '_' + fn
-    if tag != '':
-        fn = fn + '_' + tag
+        fn = time.strftime("%Y_%m_%d__%H_%M_%S", time.localtime())
+    if prefix != "":
+        fn = prefix + "_" + fn
+    if tag != "":
+        fn = fn + "_" + tag
     log_dir = os.path.join(root, fn)
     os.makedirs(log_dir)
     return log_dir
@@ -54,7 +56,7 @@ def seed_all(seed):
     torch.manual_seed(seed)
     np.random.seed(seed)
     random.seed(seed)
-    
+
 
 def inf_iterator(iterable):
     iterator = iterable.__iter__()
@@ -67,7 +69,8 @@ def inf_iterator(iterable):
 
 def log_hyperparams(writer, args):
     from torch.utils.tensorboard.summary import hparams
-    vars_args = {k:v if isinstance(v, str) else repr(v) for k, v in vars(args).items()}
+
+    vars_args = {k: v if isinstance(v, str) else repr(v) for k, v in vars(args).items()}
     exp, ssi, sei = hparams(vars_args, {})
     writer.file_writer.add_summary(exp)
     writer.file_writer.add_summary(ssi)
@@ -75,11 +78,11 @@ def log_hyperparams(writer, args):
 
 
 def int_tuple(argstr):
-    return tuple(map(int, argstr.split(',')))
+    return tuple(map(int, argstr.split(",")))
 
 
 def str_tuple(argstr):
-    return tuple(argstr.split(','))
+    return tuple(argstr.split(","))
 
 
 def repeat_data(data, num_repeat):
@@ -97,8 +100,9 @@ def repeat_batch(batch, num_repeat):
 
 def get_checkpoint_path(folder, it=None):
     if it is not None:
-        return os.path.join(folder, '%d.pt' % it), it
-    all_iters = list(map(lambda x: int(os.path.basename(x[:-3])), glob(os.path.join(folder, '*.pt'))))
+        return os.path.join(folder, "%d.pt" % it), it
+    all_iters = list(
+        map(lambda x: int(os.path.basename(x[:-3])), glob(os.path.join(folder, "*.pt")))
+    )
     all_iters.sort()
-    return os.path.join(folder, '%d.pt' % all_iters[-1]), all_iters[-1]
-    
+    return os.path.join(folder, "%d.pt" % all_iters[-1]), all_iters[-1]
