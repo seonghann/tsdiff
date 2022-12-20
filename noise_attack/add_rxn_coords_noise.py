@@ -347,7 +347,7 @@ if __name__ == "__main__":
     r_pos_list = [xyz_block_to_pos(b, dtype=torch.double) for b in r_blocks]
     p_pos_list = [xyz_block_to_pos(b, dtype=torch.double) for b in p_blocks]
     if args.interpolation == "qst":
-        ts_pos_list = [xyz_block_to_pos(b) for b in ts_blocks]
+        ts_pos_list = [xyz_block_to_pos(b, dypte=torch.double) for b in ts_blocks]
     else:
         ts_pos_list = None
 
@@ -371,7 +371,7 @@ if __name__ == "__main__":
         # only retuns noised R,P structure.
         r_data_iter, p_data_iter = ret
         noised_pos_list = zip(r_data_iter, p_data_iter)
-
+    
     # save path setting
     print(f"Done parallel optimization {(time.time() - st)/60:0.2f}")
     save_dir = (
