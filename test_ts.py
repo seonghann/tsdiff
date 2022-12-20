@@ -12,6 +12,7 @@ from models.epsnet import get_model
 from utils.datasets import TSDataset
 from utils.transforms import CountNodesPerGraph, AddHigherOrderEdges
 from utils.misc import seed_all, get_new_log_dir, seed_all, get_logger, repeat_data
+from torch_geometric.data import Batch
 
 
 def num_confs(num: str):
@@ -23,39 +24,69 @@ def num_confs(num: str):
         raise ValueError()
 
 
+def batching(iterable, batch_size):
+    cur = 0
+    cnt = 0
+    while cnt < len(iterable):
+        if cnt + batch_size <= len(iterable):
+            yield iterable[cnt : cnt + batch_size]
+            cnt += batch_size
+        else:
+            yield iterable[cnt:]
+            cnt += batch_size
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("ckpt", type=str, help="path for loading the checkpoint")
-    parser.add_argument("--save_traj", action="store_true", default=False, help="whether store the whole trajectory for sampling")
+    parser.add_argument(
+        "--save_traj",
+        action="store_true",
+        default=False,
+        help="whether store the whole trajectory for sampling",
+    )
     parser.add_argument("--save_suffix", type=str, required=True, default="")
     parser.add_argument("--save_abs", type=str, required=False, default=None)
     parser.add_argument("--from_ts_guess", action="store_true", default=False)
     parser.add_argument("--denoise_from_time_t", type=int, default=None)
     parser.add_argument("--noise_from_time_t", type=int, default=None)
+    parser.add_argument("--batch_size", type=int, default=1)
 
     parser.add_argument("--resume", type=str, default=None)
     parser.add_argument("--tag", type=str, default="")
-    parser.add_argument("--num_confs", type=num_confs, default=num_confs("2x"))
+    # parser.add_argument("--num_confs", type=num_confs, default=num_confs("1x"))
     parser.add_argument("--test_set", type=str, default=None)
     parser.add_argument("--start_idx", type=int, default=0)
     parser.add_argument("--end_idx", type=int, default=10)
     parser.add_argument("--out_dir", type=str, default=None)
     parser.add_argument("--device", type=str, default="cuda")
     parser.add_argument("--clip", type=float, default=1000.0)
-    parser.add_argument("--n_steps", type=int, default=5000,
+    parser.add_argument(
+        "--n_steps",
+        type=int,
+        default=5000,
         help="sampling num steps; for DSM framework, this means num steps for each noise scale",
     )
-    parser.add_argument("--global_start_sigma", type=float, default=0.5,
+    parser.add_argument(
+        "--global_start_sigma",
+        type=float,
+        default=0.5,
         help="enable global gradients only when noise is low",
     )
-    parser.add_argument("--w_global", type=float, default=1.0, 
-            help="weight for global gradients"
+    parser.add_argument(
+        "--w_global", type=float, default=1.0, help="weight for global gradients"
     )
     # Parameters for DDPM
-    parser.add_argument("--sampling_type", type=str, default="ld",
+    parser.add_argument(
+        "--sampling_type",
+        type=str,
+        default="ld",
         help="generalized, ddpm_noisy, ddpm_det, ld: sampling method for DDIM, DDPM or Langevin Dynamics",
     )
-    parser.add_argument("--eta", type=float, default=1.0,
+    parser.add_argument(
+        "--eta",
+        type=float,
+        default=1.0,
         help="weight for DDIM and DDPM: 0->DDIM, 1->DDPM",
     )
     args = parser.parse_args()
@@ -72,8 +103,8 @@ if __name__ == "__main__":
 
     # Logging
     fn = f"{args.sampling_type}_{args.save_suffix}"
-    output_dir = get_new_log_dir(root=log_dir, prefix="sample", tag=args.tag, fn=fn)
-    #output_dir = None
+    # output_dir = get_new_log_dir(root=log_dir, prefix="sample", tag=args.tag, fn=fn)
+    output_dir = None
     logger = get_logger("test", output_dir)
     logger.info(args)
 
@@ -82,16 +113,14 @@ if __name__ == "__main__":
     transforms = Compose(
         [
             CountNodesPerGraph(),
-            #AddHigherOrderEdges(
+            # AddHigherOrderEdges(
             #    order=config.model.edge_order
-            #),  # Offline edge augmentation
+            # ),  # Offline edge augmentation
         ]
     )
     if args.test_set is None:
-        # test_set = PackedConformationDataset(config.dataset.test, transform=transforms)
         test_set = TSDataset(config.dataset.test, transform=transforms)
     else:
-        # test_set = PackedConformationDataset(args.test_set, transform=transforms)
         test_set = TSDataset(args.test_set, transform=transforms)
 
     # Model
@@ -114,31 +143,25 @@ if __name__ == "__main__":
         for data in results:
             done_smiles.add(data.smiles)
 
-    for i, data in enumerate(tqdm(test_set_selected)):
-        if data.smiles in done_smiles:
-            logger.info("Molecule#%d is already done." % i)
-            continue
-
-        # num_refs = data.pos_ref.size(0) // data.num_nodes
-        # num_samples = args.num_confs(num_refs)
-        num_samples = args.num_confs(1)
-
-        data_input = data.clone()
-        batch = repeat_data(data_input, num_samples).to(args.device)
+    for i, batch in tqdm(enumerate(batching(test_set_selected, args.batch_size))):
+        batch = Batch.from_data_list(batch).to(args.device)
 
         clip_local = None
         for _ in range(2):  # Maximum number of retry
             try:
                 if args.from_ts_guess:
-                    #print("Geometry Generation with Guess TS Support")
-                    assert args.from_time_t is not None
+                    # print("Geometry Generation with Guess TS Support")
+                    assert args.denoise_from_time_t is not None
                     if hasattr(batch, "ts_guess"):
                         init_guess = batch.ts_guess
                     else:
                         init_guess = batch.pos
-                    start_t = args.noise_from_time_t if args.noise_from_time_t \
-                            is not None else args.denoise_from_time_t
-                    init_guess = init_guess / model.alphas[start_t-1].sqrt()
+                    start_t = (
+                        args.noise_from_time_t
+                        if args.noise_from_time_t is not None
+                        else args.denoise_from_time_t
+                    )
+                    init_guess = init_guess / model.alphas[start_t - 1].sqrt()
                     pos_init = init_guess.to(args.device)
                 else:
                     pos_init = torch.randn(batch.num_nodes, 3).to(args.device)
@@ -165,12 +188,22 @@ if __name__ == "__main__":
                     denoise_from_time_t=args.denoise_from_time_t,
                 )
                 pos_gen = pos_gen.cpu()
-                if args.save_traj:
-                    data.pos_gen = torch.stack(pos_gen_traj)
-                else:
-                    data.pos_gen = pos_gen
-                results.append(data)
-                done_smiles.add(data.smiles)
+                for i, data in enumerate(batch.to_data_list()):
+                    mask = batch.batch == i
+                    if args.save_traj:
+                        data.pos_gen = torch.stack(pos_gen_traj)[:, mask]
+                    else:
+                        data.pos_gen = pos_gen[mask]
+
+                    results.append(data)
+                    done_smiles.add(data.smiles)
+
+                # if args.save_traj:
+                #    data.pos_gen = torch.stack(pos_gen_traj)
+                # else:
+                #    data.pos_gen = pos_gen
+                # results.append(data)
+                # done_smiles.add(data.smiles)
 
                 if args.save_abs is not None:
                     save_path = args.save_abs
@@ -185,7 +218,7 @@ if __name__ == "__main__":
             except FloatingPointError:
                 clip_local = 20
                 logger.warning("Retrying with local clipping.")
-    
+
     if args.save_abs is not None:
         save_path = args.save_abs
         logger.info("Saving samples to: %s" % save_path)
@@ -199,6 +232,7 @@ if __name__ == "__main__":
             if d.smiles == data.smiles:
                 return i
         return -1
+
     results.sort(key=get_mol_key)
     with open(save_path, "wb") as f:
         pickle.dump(results, f)

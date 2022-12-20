@@ -199,7 +199,7 @@ class DualEncoderEpsNetwork(nn.Module):
         batch,
         time_step,
         return_edges=True,
-        **kwargs
+        **kwargs,
     ):
         """
         Args:
@@ -503,8 +503,9 @@ class DualEncoderEpsNetwork(nn.Module):
         global_start_sigma=float("inf"),
         w_global=0.2,
         w_reg=1.0,
-        from_time_t=None,
-        **kwargs
+        denoise_from_time_t=None,
+        noise_from_time_t=None,
+        **kwargs,
     ):
         if self.model_type == "diffusion":
             return self.langevin_dynamics_sample_diffusion(
@@ -530,7 +531,8 @@ class DualEncoderEpsNetwork(nn.Module):
                 w_reg,
                 sampling_type=kwargs.get("sampling_type", "ddpm_noisy"),
                 eta=kwargs.get("eta", 1.0),
-                from_time_t=from_time_t,
+                denoise_from_time_t=denoise_from_time_t,
+                noise_from_time_t=noise_from_time_t,
             )
 
     def langevin_dynamics_sample_diffusion(
@@ -557,7 +559,7 @@ class DualEncoderEpsNetwork(nn.Module):
         w_reg=1.0,
         denoise_from_time_t=None,
         noise_from_time_t=None,
-        **kwargs
+        **kwargs,
     ):
         def compute_alpha(beta, t):
             beta = torch.cat([torch.zeros(1).to(beta.device), beta], dim=0)
@@ -581,21 +583,28 @@ class DualEncoderEpsNetwork(nn.Module):
                 seq = range(denoise_from_time_t - n_steps, denoise_from_time_t)
                 seq_next = [-1] + list(seq[:-1])
                 noise = torch.randn(pos_init.size(), device=pos_init.device)
-                sigma = 1.0 - (self.alphas[denoise_from_time_t-1]/self.alphas[noise_from_time_t-1])
-                sigma /= self.alphas[denoise_from_time_t-1]
+                sigma = 1.0 - (
+                    self.alphas[denoise_from_time_t - 1]
+                    / self.alphas[noise_from_time_t - 1]
+                )
+                sigma /= self.alphas[denoise_from_time_t - 1]
                 sigma = sigma.sqrt()
                 pos = pos_init + noise * sigma
 
-                print(f"Noising from t={noise_from_time_t} to t={denoise_from_time_t}\n"
-                      f"Denoise from t={denoise_from_time_t} to t={denoise_from_time_t-n_steps}")
+                print(
+                    f"Noising from t={noise_from_time_t} to t={denoise_from_time_t}\n"
+                    f"Denoise from t={denoise_from_time_t} to t={denoise_from_time_t-n_steps}"
+                )
 
             elif denoise_from_time_t is not None:
                 assert denoise_from_time_t >= n_steps
                 seq = range(denoise_from_time_t - n_steps, denoise_from_time_t)
                 seq_next = [-1] + list(seq[:-1])
                 pos = pos_init
-                print(f"Start with zero-noise\n"
-                      f"Denoise from t={denoise_from_time_t} to t={denoise_from_time_t-n_steps}")
+                print(
+                    f"Start with zero-noise\n"
+                    f"Denoise from t={denoise_from_time_t} to t={denoise_from_time_t-n_steps}"
+                )
 
             else:
                 seq = range(self.num_timesteps - n_steps, self.num_timesteps)
