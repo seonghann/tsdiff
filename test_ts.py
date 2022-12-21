@@ -188,8 +188,10 @@ if __name__ == "__main__":
                     denoise_from_time_t=args.denoise_from_time_t,
                 )
                 alphas = model.alphas.detach()
-                alphas = alphas[args.denoise_from_time_t - args.n_steps:args.denoise_from_time_t]
-                alphas = alphas.flip(0).view(-1,1,1)
+                alphas = alphas[
+                    args.denoise_from_time_t - args.n_steps : args.denoise_from_time_t
+                ]
+                alphas = alphas.flip(0).view(-1, 1, 1)
                 pos_gen_traj_ = torch.stack(pos_gen_traj) * alphas.sqrt().cpu()
 
                 for i, data in enumerate(batch.to_data_list()):
