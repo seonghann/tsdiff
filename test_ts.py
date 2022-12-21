@@ -187,23 +187,21 @@ if __name__ == "__main__":
                     noise_from_time_t=args.noise_from_time_t,
                     denoise_from_time_t=args.denoise_from_time_t,
                 )
-                pos_gen = pos_gen.cpu()
+                alphas = model.alphas.detach()
+                alphas = alphas[args.denoise_from_time_t - args.n_steps:args.denoise_from_time_t]
+                alphas = alphas.flip(0).view(-1,1,1)
+                pos_gen_traj_ = torch.stack(pos_gen_traj) * alphas.sqrt().cpu()
+
                 for i, data in enumerate(batch.to_data_list()):
                     mask = batch.batch == i
                     if args.save_traj:
-                        data.pos_gen = torch.stack(pos_gen_traj)[:, mask]
+                        data.pos_gen = pos_gen_traj_[:, mask]
                     else:
                         data.pos_gen = pos_gen[mask]
 
+                    data = data.to("cpu")
                     results.append(data)
                     done_smiles.add(data.smiles)
-
-                # if args.save_traj:
-                #    data.pos_gen = torch.stack(pos_gen_traj)
-                # else:
-                #    data.pos_gen = pos_gen
-                # results.append(data)
-                # done_smiles.add(data.smiles)
 
                 if args.save_abs is not None:
                     save_path = args.save_abs
