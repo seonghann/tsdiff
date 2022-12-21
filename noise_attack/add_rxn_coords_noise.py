@@ -294,7 +294,7 @@ if __name__ == "__main__":
         "--r_path",
         "-r_path",
         default="/home/ksh/MolDiff/tsdiff/"
-        "data/TS/b97d3/random_split/"
+        "data/TS/b97d3/random_split2/"
         "raw_data/b97d3_r_test.xyz",
         type=str,
     )
@@ -302,7 +302,7 @@ if __name__ == "__main__":
         "--p_path",
         "-p_path",
         default="/home/ksh/MolDiff/tsdiff"
-        "/data/TS/b97d3/random_split/"
+        "/data/TS/b97d3/random_split2/"
         "raw_data/b97d3_p_test.xyz",
         type=str,
     )
@@ -310,7 +310,7 @@ if __name__ == "__main__":
         "--ts_path",
         "-ts_path",
         default="/home/ksh/MolDiff/tsdiff/"
-        "data/TS/b97d3/random_split/"
+        "data/TS/b97d3/random_split2/"
         "raw_data/b97d3_ts_test.xyz",
         type=str,
     )
@@ -318,17 +318,17 @@ if __name__ == "__main__":
         "--save_type", "-save_type", default="pkl", choices=["pkl", "xyz"]
     )
     parser.add_argument(
-        "--save_prefix", "-save_prefix", default="b97d3_random_split", type=str
+        "--save_prefix", "-save_prefix", default="b97d3_random_split2", type=str,
     )
 
     parser.add_argument(
         "--feat_dict",
         "-feat_dict",
-        default="../data/TS/b97d3/random_split/feat_dict.pkl",
+        default="../data/TS/b97d3/random_split2/feat_dict.pkl",
         type=str,
     )
     parser.add_argument("--seed", "-seed", type=int, default=0)
-    parser.add_argument("--batch_size", "-batch_size", type=int, default=100)
+    parser.add_argument("--batch_size", "-batch_size", type=int, default=1000)
     parser.add_argument("--n", "-n", default=1, type=int, help="Deprecated")
     parser.add_argument("--steps", "-steps", default=3000, type=int)
     parser.add_argument("--patience", "-patience", default=300, type=int)
@@ -347,7 +347,7 @@ if __name__ == "__main__":
     r_pos_list = [xyz_block_to_pos(b, dtype=torch.double) for b in r_blocks]
     p_pos_list = [xyz_block_to_pos(b, dtype=torch.double) for b in p_blocks]
     if args.interpolation == "qst":
-        ts_pos_list = [xyz_block_to_pos(b, dypte=torch.double) for b in ts_blocks]
+        ts_pos_list = [xyz_block_to_pos(b, dtype=torch.double) for b in ts_blocks]
     else:
         ts_pos_list = None
 
@@ -362,6 +362,7 @@ if __name__ == "__main__":
         steps=args.steps,
         patience=args.patience,
         device=args.device,
+        batch_size=args.batch_size
     )
 
     if args.save_type == "pkl":
