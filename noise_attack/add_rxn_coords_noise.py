@@ -383,6 +383,8 @@ if __name__ == "__main__":
     _ = save_dir.split("/")
     _ = ["/".join(_[:i]) for i in range(1, len(_) + 1)]
     for p in _:
+        if p.strip() == "":
+            continue
         if not os.path.isdir(p):
             os.system(f"mkdir {p}")
 
