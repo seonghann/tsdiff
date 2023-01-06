@@ -15,8 +15,9 @@ from ..common import (
     assemble_atom_pair_feature,
     generate_symmetric_edge_noise,
     extend_ts_graph_order_radius,
+    index_set_subtraction,
 )
-from ..encoder import SchNetEncoder, GINEncoder, get_edge_encoder
+from ..encoder import SchNetEncoder, GINEncoder, get_edge_encoder, load_encoder
 from ..geometry import get_distance, get_angle, get_dihedral, eq_transform
 
 # from diffusion import get_timestep_embedding, get_beta_schedule
@@ -76,20 +77,9 @@ class DualEncoderEpsNetwork(nn.Module):
         """
         The graph neural network that extracts node-wise features.
         """
-        self.encoder_global = SchNetEncoder(
-            hidden_channels=config.hidden_dim,
-            num_filters=config.hidden_dim,
-            num_interactions=config.num_convs,
-            edge_channels=self.edge_encoder_global.out_channels,
-            cutoff=config.cutoff,
-            smooth=config.smooth_conv,
-            embedding=False,
-        )
-        self.encoder_local = GINEncoder(
-            hidden_dim=config.hidden_dim,
-            num_convs=config.num_convs_local,
-            embedding=False,
-        )
+        print(config)
+        self.encoder_global = load_encoder(config, "global_encoder")
+        self.encoder_local = load_encoder(config, "local_encoder")
 
         """
         `output_mlp` takes a mixture of two nodewise features and edge features as input and outputs 
@@ -161,7 +151,6 @@ class DualEncoderEpsNetwork(nn.Module):
             self.TS = False
 
         from utils.chem import BOND_TYPES
-
         self.num_bond_types = len(BOND_TYPES)
 
         if self.TS:
@@ -178,24 +167,209 @@ class DualEncoderEpsNetwork(nn.Module):
             )
             self.edge_cat_local = torch.nn.Sequential(
                 torch.nn.Linear(
-                    self.edge_encoder_global.out_channels * 2,
-                    self.edge_encoder_global.out_channels,
+                    self.edge_encoder_local.out_channels * 2,
+                    self.edge_encoder_local.out_channels,
                 ),
                 activation_loader(config.edge_cat_act),
                 torch.nn.Linear(
-                    self.edge_encoder_global.out_channels,
-                    self.edge_encoder_global.out_channels,
+                    self.edge_encoder_local.out_channels,
+                    self.edge_encoder_local.out_channels,
                 ),
             )
 
-    def _atom_embedding(self, atom_type, r_feat, p_feat):
+    def _extend_condensed_graph_edge(self,N, pos, bond_index, bond_type, batch, cutoff=None, edge_order=None):
+
+        if cutoff is None: cutoff = self.config.cutoff
+        if edge_order is None: edge_order = self.config.edge_order
+
+        out = extend_ts_graph_order_radius(
+            num_nodes=N,
+            pos=pos,
+            edge_index=bond_index,
+            edge_type=bond_type,
+            batch=batch,
+            order=edge_order,
+            cutoff=cutoff,
+        )
+        edge_index_global, edge_index_local, edge_type_r, edge_type_p = out
+        # local index             : (i, j) pairs which are edge of R or P.
+        # edge_type_r/edge_type_p : 0, 1, 2, ... 23, 24, ...
+        #                           0 -> no edge (bond)
+        #                           1, 2, 3 ..-> bond type
+        #                           23, 24 -> meaning no bond, but higher order edge. (2-hop or 3-hop)
+        # global index            : atom pairs (i, j) which are closer than cutoff
+        #                           are added to local_index.
+        # 
+
+        edge_type_global = torch.zeros_like(edge_index_global[0]) - 1
+        adj_global = to_dense_adj(
+            edge_index_global, edge_attr=edge_type_global, max_num_nodes=N
+        )
+        adj_local_r = to_dense_adj(
+            edge_index_local, edge_attr=edge_type_r, max_num_nodes=N
+        )
+        adj_local_p = to_dense_adj(
+            edge_index_local, edge_attr=edge_type_p, max_num_nodes=N
+        )
+        adj_global_r = torch.where(adj_local_r != 0, adj_local_r, adj_global)
+        adj_global_p = torch.where(adj_local_p != 0, adj_local_p, adj_global)
+        edge_index_global_r, edge_type_global_r = dense_to_sparse(adj_global_r)
+        edge_index_global_p, edge_type_global_p = dense_to_sparse(adj_global_p)
+        edge_type_global_r[edge_type_global_r < 0] = 0
+        edge_type_global_p[edge_type_global_p < 0] = 0
+        edge_index_global = edge_index_global_r
+
+        return edge_index_global, edge_index_local, edge_type_global_r, edge_type_global_p
+    
+    def _condensed_edge_embedding(
+            self, 
+            edge_length, 
+            edge_type_r, 
+            edge_type_p, 
+            edge_type="global", 
+            edge_attr=None,
+            emb_type="bond_w_d"):
+
+        assert emb_type in ["bond_w_d", "bond_wo_d", "add_d"]
+
+        encoder = getattr(self, f"edge_encoder_{edge_type}")
+        cat_fn = getattr(self, f"edge_cat_{edge_type}")
+
+        if emb_type == "bond_wo_d":
+            edge_attr_r = encoder.bond_emb(edge_type_r)
+            edge_attr_p = encoder.bond_emb(edge_type_p)
+            edge_attr = cat_fn(torch.cat([edge_attr_r, edge_attr_p], dim=-1))
+
+        elif emb_type == "bond_w_d":
+            edge_attr_r = encoder(edge_length=edge_length, edge_type=edge_type_r)  # Embed edges
+            edge_attr_p = encoder(edge_length=edge_length, edge_type=edge_type_p)
+            edge_attr = cat_fn(torch.cat([edge_attr_r, edge_attr_p], dim=-1))
+
+        elif emb_type == "add_d":
+            edge_attr = encoder.mlp(edge_length) * edge_attr
+        return edge_attr
+    
+    def forward_(self, atom_type, r_feat, p_feat, pos, bond_index, bond_type, batch,
+            enc_type="global", **kwargs):
+        """
+        Args:
+            atom_type:  Types of atoms, (N, ).
+            bond_index: Indices of bonds (not extended, not radius-graph), (2, E).
+            bond_type:  Bond types, (E, ).
+            batch:      Node index to graph index, (N, ).
+        """
+        N = atom_type.size(0)
+        # --------------------------------------------------------------------
+        # condensed atom embedding
         atom_emb = self.atom_embedding(atom_type)
         atom_feat_emb_r = self.atom_feat_embedding(r_feat.float())
         atom_feat_emb_p = self.atom_feat_embedding(p_feat.float())
         z = torch.cat(
             [atom_emb + atom_feat_emb_r, atom_feat_emb_p - atom_feat_emb_r], dim=-1
         )
-        return z
+        
+        if enc_type == "global":
+            edge_order = self.config.global_edge_order
+            edge_cutoff = self.config.global_edge_cutoff
+            edge_order_pred = self.config.global_pred_edge_order
+            
+        elif enc_type == "local":
+            edge_order = self.config.local_edge_order
+            edge_cutoff = self.config.local_edge_cutoff
+            edge_order_pred = self.config.local_pred_edge_order
+        else:
+            raise
+            
+        # --------------------------------------------------------------------
+        # edge extension
+        (
+                edge_index, 
+                _, 
+                edge_type_r, 
+                edge_type_p
+                ) = self._extend_condensed_graph_edge(
+                        N, 
+                        pos, 
+                        bond_index, 
+                        bond_type, 
+                        batch,
+                        edge_order=edge_order,
+                        cutoff=edge_cutoff
+                        )
+        edge_length= get_distance(pos, edge_index).unsqueeze(-1)  # (E, 1)
+
+        # --------------------------------------------------------------------
+        # global edge embedding
+        edge_attr_wo_length = False
+        edge_attr= self._condensed_edge_embedding(
+                edge_length, 
+                edge_type_r, 
+                edge_type_p, 
+                edge_type=enc_type,
+                emb_type="bond_wo_d" if edge_attr_wo_length else "bond_w_d",
+                )
+        sigma_edge = 1.0
+        
+        # --------------------------------------------------------------------
+        # global encoding and pair encoding
+        enc = getattr(self, f"encoder_{enc_type}")
+        node_attr= enc(
+                z=z,
+                edge_index=edge_index,
+                edge_length=edge_length,
+                pos=pos,
+                edge_attr=edge_attr,
+                edge_type=(edge_type_r, edge_type_p),
+                embed_node=False,
+                )
+
+        if edge_order_pred != edge_order:
+            (
+                    edge_index, 
+                    _, 
+                    edge_type_r, 
+                    edge_type_p
+                    ) = self._extend_condensed_graph_edge(
+                            N, 
+                            pos, 
+                            bond_index, 
+                            bond_type, 
+                            batch,
+                            edge_order=edge_order_pred,
+                            cutoff=edge_cutoff
+                            )
+            edge_length= get_distance(pos, edge_index).unsqueeze(-1)  # (E, 1)
+            edge_attr= self._condensed_edge_embedding(
+                    edge_length, 
+                    edge_type_r, 
+                    edge_type_p, 
+                    edge_type=enc_type,
+                    emb_type="bond_w_d",
+                    )
+        
+        else:
+            if edge_attr_wo_length:
+                edge_attr= self._condensed_edge_embedding(
+                        edge_length,
+                        None,
+                        None,
+                        edge_attr=edge_attr,
+                        edge_type=enc_type,
+                        emb_type="add_d"
+                        )
+
+        h_pair= assemble_atom_pair_feature(
+            node_attr=node_attr,
+            edge_index=edge_index,
+            edge_attr=edge_attr,
+        )  # (E_global, 2H)
+        
+        ## Invariant features of edges (radius graph, global)
+        grad_mlp = getattr(self, f"grad_{enc_type}_dist_mlp")
+        edge_inv= grad_mlp(h_pair)  # (E_global, 1)
+        # edge_inv_global /= sigma_edge
+
+        return edge_inv, edge_index, edge_length,
 
     def forward(
         self,
@@ -218,115 +392,60 @@ class DualEncoderEpsNetwork(nn.Module):
             batch:      Node index to graph index, (N, ).
         """
         N = atom_type.size(0)
-        out = extend_ts_graph_order_radius(
-            num_nodes=N,
-            pos=pos,
-            edge_index=bond_index,
-            edge_type=bond_type,
-            batch=batch,
-            order=self.config.edge_order,
-            cutoff=self.config.cutoff,
-        )
-        edge_index_global, edge_index_local, edge_type_r, edge_type_p = out
+        out_global = self.forward_(
+                atom_type, 
+                r_feat, 
+                p_feat, 
+                pos, 
+                bond_index, 
+                bond_type, 
+                batch,
+                enc_type="global", 
+                )
 
-        edge_type_global = torch.zeros_like(edge_index_global[0]) - 1
-        adj_global = to_dense_adj(
-            edge_index_global, edge_attr=edge_type_global, max_num_nodes=N
-        )
-        adj_local_r = to_dense_adj(
-            edge_index_local, edge_attr=edge_type_r, max_num_nodes=N
-        )
-        adj_local_p = to_dense_adj(
-            edge_index_local, edge_attr=edge_type_p, max_num_nodes=N
-        )
+        edge_inv_global, edge_index_global, edge_length_global = out_global
 
-        adj_global_r = torch.where(adj_local_r != 0, adj_local_r, adj_global)
-        adj_global_p = torch.where(adj_local_p != 0, adj_local_p, adj_global)
-        edge_index_global_r, edge_type_global_r = dense_to_sparse(adj_global_r)
-        edge_index_global_p, edge_type_global_p = dense_to_sparse(adj_global_p)
-        edge_type_global_r[edge_type_global_r < 0] = 0
-        edge_type_global_p[edge_type_global_p < 0] = 0
-        edge_index_global = edge_index_global_r
-
-        edge_length_global = get_distance(pos, edge_index_global).unsqueeze(
-            -1
-        )  # (E, 1)
-        edge_length_local = get_distance(pos, edge_index_local).unsqueeze(-1)  # (E, 1)
-        # local_edge_mask = is_local_edge(edge_type)  # (E, )
-        local_edge_mask = calc_local_edge_mask(edge_index_global, edge_index_local)
-
-        # Emb time_step
-        # sigma_edge = torch.ones(size=(edge_index.size(1), 1), device=pos.device)  # (E, 1)
-        sigma_edge = 1.0
-
-        # Encoding global
-        edge_attr_r = self.edge_encoder_global(
-            edge_length=edge_length_global, edge_type=edge_type_global_r
-        )  # Embed edges
-        edge_attr_p = self.edge_encoder_global(
-            edge_length=edge_length_global, edge_type=edge_type_global_p
-        )
-        edge_attr_global = self.edge_cat_global(
-            torch.cat([edge_attr_r, edge_attr_p], dim=-1)
-        )
-
-        z = self._atom_embedding(atom_type, r_feat, p_feat)
-
-        # Global
-        node_attr_global = self.encoder_global(
-            z=z,
-            edge_index=edge_index_global,
-            edge_length=edge_length_global,
-            edge_attr=edge_attr_global,
-        )
-        ## Assemble pairwise features
-        h_pair_global = assemble_atom_pair_feature(
-            node_attr=node_attr_global,
-            edge_index=edge_index_global,
-            edge_attr=edge_attr_global,
-        )  # (E_global, 2H)
-        ## Invariant features of edges (radius graph, global)
-        edge_inv_global = self.grad_global_dist_mlp(h_pair_global) * (
-            1.0 / sigma_edge
-        )  # (E_global, 1)
-
-        # Encoding local
-        # edge_attr_r = self.edge_encoder_local(
-        #        edge_length=edge_length_local,
-        #        edge_type=edge_type_r
-        #        )   # Embed edges
-        # edge_attr_p = self.edge_encoder_local(
-        #        edge_length=edge_length_local,
-        #        edge_type=edge_type_p
-        #        )
-        # edge_attr_local = self.edge_cat_local(
-        #        torch.cat([edge_attr_r, edge_attr_p],
-        #        dim=-1))
-
-        ## Local
-        # node_attr_local = self.encoder_local(
-        #    z=atom_type,
-        #    edge_index=edge_index_local,
-        #    edge_attr=edge_attr_local,
-        # )
-        ### Assemble pairwise features
-        # h_pair_local = assemble_atom_pair_feature(
-        #    node_attr=node_attr_local,
-        #    edge_index=edge_index_local,
-        #    edge_attr=edge_attr_local,
-        # )    # (E_local, 2H)
-        ### Invariant features of edges (bond graph, local)
-        # edge_inv_local = self.grad_local_dist_mlp(h_pair_local) * (1.0 / sigma_edge) # (E_local, 1)
-        edge_inv_local = torch.zeros_like(edge_index_local[0]).unsqueeze(-1)
-        # local_edge_mask = local_edge_mask * False
+        if self.config.dual_encoding:
+            # --------------------------------------------------------------------
+            # local edge extension
+            assert self.config.local_edge_cutoff < 0.1
+            out_local = self.forward_(
+                    atom_type, 
+                    r_feat, 
+                    p_feat, 
+                    pos, 
+                    bond_index, 
+                    bond_type, 
+                    batch,
+                    enc_type="local", 
+                    )
+            
+            edge_inv_local, edge_index_local, edge_length_local = out_local
+            
+            # edge_inv_global = ...
+            # edge_index_global = ...
+            idx_ = index_set_subtraction(
+                        edge_index_global, 
+                        edge_index_local, 
+                        max_num_nodes=N
+                        )
+            edge_index_global = edge_index_global[:, idx_]
+            edge_inv_global = edge_inv_global[idx_]
+            edge_length_global = edge_length_global[idx_]
+            
+        else:
+            edge_length_local = None
+            edge_inv_local = None
+            edge_index_local = None
+        
         if return_edges:
             return (
                 edge_inv_global,
                 edge_inv_local,
                 edge_index_global,
-                edge_type_global,
+                edge_index_local,
                 edge_length_global,
-                local_edge_mask,
+                edge_length_local,
             )
         else:
             return edge_inv_global, edge_inv_local
@@ -368,119 +487,6 @@ class DualEncoderEpsNetwork(nn.Module):
                 is_sidechain,
             )
     
-    def check_loss(
-        self,
-        atom_type,
-        r_feat,
-        p_feat,
-        pos,
-        bond_index,
-        bond_type,
-        batch,
-        num_graphs,
-        time_step=(0,1000),
-        return_unreduced_loss=False,
-        return_unreduced_edge_loss=False,
-        extend_order=True,
-        extend_radius=True,
-        is_sidechain=None,
-    ):
-        N = atom_type.size(0)
-        node2graph = batch
-
-        # Four elements for DDPM: original_data(pos), gaussian_noise(pos_noise), beta(sigma), time_step
-        # Sample noise levels
-        init, end = time_step
-        time_step = torch.randint(
-            init, end, size=(num_graphs,), device=pos.device
-        )
-        a = self.alphas.index_select(0, time_step)  # (G, )
-        # Perterb pos
-        a_pos = a.index_select(0, node2graph).unsqueeze(-1)  # (N, 1)
-        pos_noise = torch.zeros(size=pos.size(), device=pos.device)
-        pos_noise.normal_()
-        pos_perturbed = pos + pos_noise * (1.0 - a_pos).sqrt() / a_pos.sqrt()
-
-        # Update invariant edge features, as shown in equation 5-7
-        (
-            edge_inv_global,
-            edge_inv_local,
-            edge_index,
-            edge_type,
-            edge_length,
-            local_edge_mask,
-        ) = self(
-            atom_type=atom_type,
-            r_feat=r_feat,
-            p_feat=p_feat,
-            pos=pos_perturbed,
-            bond_index=bond_index,
-            bond_type=bond_type,
-            batch=batch,
-            time_step=time_step,
-            return_edges=True,
-            extend_order=extend_order,
-            extend_radius=extend_radius,
-            is_sidechain=is_sidechain,
-        )  # (E_global, 1), (E_local, 1)
-
-        edge2graph = node2graph.index_select(0, edge_index[0])
-        # Compute sigmas_edge
-        a_edge = a.index_select(0, edge2graph).unsqueeze(-1)  # (E, 1)
-
-        # Compute original and perturbed distances
-        d_gt = get_distance(pos, edge_index).unsqueeze(-1)  # (E, 1)
-        d_perturbed = edge_length
-        # Filtering for protein
-        train_edge_mask = is_train_edge(edge_index, is_sidechain)
-        d_perturbed = torch.where(train_edge_mask.unsqueeze(-1), d_perturbed, d_gt)
-
-        if self.config.edge_encoder == "gaussian":
-            # Distances must be greater than 0
-            d_sgn = torch.sign(d_perturbed)
-            d_perturbed = torch.clamp(d_perturbed * d_sgn, min=0.01, max=float("inf"))
-        d_target = (
-            (d_gt - d_perturbed) / (1.0 - a_edge).sqrt() * a_edge.sqrt()
-        )  # (E_global, 1), denoising direction
-
-        target_d_global = d_target
-        target_pos_global = eq_transform(
-            target_d_global, pos_perturbed, edge_index, edge_length
-        )
-        node_eq_global = eq_transform(
-            edge_inv_global, pos_perturbed, edge_index, edge_length
-        )
-        loss_global = (node_eq_global - target_pos_global) ** 2
-        loss_global = torch.sum(loss_global, dim=-1, keepdim=True)
-
-        target_pos_local = eq_transform(
-            d_target[local_edge_mask],
-            pos_perturbed,
-            edge_index[:, local_edge_mask],
-            edge_length[local_edge_mask],
-        )
-        node_eq_local = eq_transform(
-            edge_inv_local,
-            pos_perturbed,
-            edge_index[:, local_edge_mask],
-            edge_length[local_edge_mask],
-        )
-        loss_local = node_eq_local
-        loss_local = torch.sum(loss_local, dim=-1, keepdim=True)
-        # loss_local = (node_eq_local - target_pos_local)**2
-        # loss_local = torch.sum(loss_local, dim=-1, keepdim=True)
-
-        # loss for atomic eps regression
-        loss = loss_global
-        # loss_pos = scatter_add(loss_pos.squeeze(), node2graph)  # (G, 1)
-
-        if return_unreduced_edge_loss:
-            pass
-        elif return_unreduced_loss:
-            return loss, loss_global, loss_local
-        else:
-            return loss
-
     def get_loss_diffusion(
         self,
         atom_type,
@@ -501,15 +507,21 @@ class DualEncoderEpsNetwork(nn.Module):
     ):
         N = atom_type.size(0)
         node2graph = batch
-
         # Four elements for DDPM: original_data(pos), gaussian_noise(pos_noise), beta(sigma), time_step
         # Sample noise levels
+        t0 = 0 if not hasattr(self.config, "t0") else self.config.t0
+        t1 = self.num_timesteps if not hasattr(self.config, "t1") else self.config.t1
+
         time_step = torch.randint(
-            0, self.num_timesteps, size=(num_graphs // 2 + 1,), device=pos.device
+            t0, t1, size=(num_graphs // 2 + 1,), device=pos.device
         )
-        time_step = torch.cat([time_step, self.num_timesteps - time_step - 1], dim=0)[
-            :num_graphs
-        ]
+        time_step = torch.cat([time_step, t0+t1-1-time_step], dim=0)[:num_graphs]
+        #time_step = torch.randint(
+        #    0, self.num_timesteps, size=(num_graphs // 2 + 1,), device=pos.device
+        #)
+        #time_step = torch.cat([time_step, self.num_timesteps - time_step - 1], dim=0)[
+        #    :num_graphs
+        #]
         a = self.alphas.index_select(0, time_step)  # (G, )
         # Perterb pos
         a_pos = a.index_select(0, node2graph).unsqueeze(-1)  # (N, 1)
@@ -521,10 +533,10 @@ class DualEncoderEpsNetwork(nn.Module):
         (
             edge_inv_global,
             edge_inv_local,
-            edge_index,
-            edge_type,
-            edge_length,
-            local_edge_mask,
+            edge_index_global,
+            edge_index_local,
+            edge_length_global,
+            edge_length_local,
         ) = self(
             atom_type=atom_type,
             r_feat=r_feat,
@@ -540,55 +552,66 @@ class DualEncoderEpsNetwork(nn.Module):
             is_sidechain=is_sidechain,
         )  # (E_global, 1), (E_local, 1)
 
+        # calculate global
+        # ----------------------------------------------------------------
+        # setting for global
+        edge_index = edge_index_global
         edge2graph = node2graph.index_select(0, edge_index[0])
-        # Compute sigmas_edge
         a_edge = a.index_select(0, edge2graph).unsqueeze(-1)  # (E, 1)
 
-        # Compute original and perturbed distances
+        # compute original and perturbed distances
         d_gt = get_distance(pos, edge_index).unsqueeze(-1)  # (E, 1)
-        d_perturbed = edge_length
-        # Filtering for protein
-        train_edge_mask = is_train_edge(edge_index, is_sidechain)
-        d_perturbed = torch.where(train_edge_mask.unsqueeze(-1), d_perturbed, d_gt)
+        d_perturbed = edge_length_global
 
-        if self.config.edge_encoder == "gaussian":
-            # Distances must be greater than 0
-            d_sgn = torch.sign(d_perturbed)
-            d_perturbed = torch.clamp(d_perturbed * d_sgn, min=0.01, max=float("inf"))
         d_target = (
             (d_gt - d_perturbed) / (1.0 - a_edge).sqrt() * a_edge.sqrt()
         )  # (E_global, 1), denoising direction
 
+        # re-parametrization, distance to position
         target_d_global = d_target
         target_pos_global = eq_transform(
-            target_d_global, pos_perturbed, edge_index, edge_length
+            target_d_global, pos_perturbed, edge_index, edge_length_global
         )
         node_eq_global = eq_transform(
-            edge_inv_global, pos_perturbed, edge_index, edge_length
+            edge_inv_global, pos_perturbed, edge_index, edge_length_global
         )
+
+        # calc loss
         loss_global = (node_eq_global - target_pos_global) ** 2
         loss_global = torch.sum(loss_global, dim=-1, keepdim=True)
-
-        target_pos_local = eq_transform(
-            d_target[local_edge_mask],
-            pos_perturbed,
-            edge_index[:, local_edge_mask],
-            edge_length[local_edge_mask],
-        )
-        node_eq_local = eq_transform(
-            edge_inv_local,
-            pos_perturbed,
-            edge_index[:, local_edge_mask],
-            edge_length[local_edge_mask],
-        )
-        loss_local = node_eq_local
-        loss_local = torch.sum(loss_local, dim=-1, keepdim=True)
-        # loss_local = (node_eq_local - target_pos_local)**2
-        # loss_local = torch.sum(loss_local, dim=-1, keepdim=True)
-
-        # loss for atomic eps regression
         loss = loss_global
-        # loss_pos = scatter_add(loss_pos.squeeze(), node2graph)  # (G, 1)
+
+        if self.config.dual_encoding:
+            # calculate local
+            # ----------------------------------------------------------------
+            # setting for local
+            edge_index = edge_index_local
+            edge2graph = node2graph.index_select(0, edge_index[0])
+            a_edge = a.index_select(0, edge2graph).unsqueeze(-1)  # (E, 1)
+
+            # compute original and perturbed distances
+            d_gt = get_distance(pos, edge_index).unsqueeze(-1)  # (E, 1)
+            d_perturbed = edge_length_local
+            d_target = (
+                (d_gt - d_perturbed) / (1.0 - a_edge).sqrt() * a_edge.sqrt()
+            )  # (E_local, 1), denoising direction
+
+            # re-parametrization, distance to position
+            target_d_local = d_target
+            target_pos_local = eq_transform(
+                target_d_local, pos_perturbed, edge_index, edge_length_local
+            )
+            node_eq_local = eq_transform(
+                edge_inv_local, pos_perturbed, edge_index, edge_length_local
+            )
+
+            # calc loss
+            loss_local = (node_eq_local - target_pos_local) ** 2
+            loss_local = torch.sum(loss_local, dim=-1, keepdim=True)
+            loss = loss + loss_local
+
+        else:
+            loss_local = loss_global * 0
 
         if return_unreduced_edge_loss:
             pass
@@ -744,10 +767,10 @@ class DualEncoderEpsNetwork(nn.Module):
                 (
                     edge_inv_global,
                     edge_inv_local,
-                    edge_index,
-                    edge_type,
-                    edge_length,
-                    local_edge_mask,
+                    edge_index_global,
+                    edge_index_local,
+                    edge_length_global,
+                    edge_length_local,
                 ) = self(
                     atom_type=atom_type,
                     r_feat=r_feat,
@@ -763,29 +786,26 @@ class DualEncoderEpsNetwork(nn.Module):
                     is_sidechain=is_sidechain,
                 )  # (E_global, 1), (E_local, 1)
 
-                # Local
-                node_eq_local = eq_transform(
-                    edge_inv_local,
-                    pos,
-                    edge_index[:, local_edge_mask],
-                    edge_length[local_edge_mask],
-                )
-                if clip_local is not None:
-                    node_eq_local = clip_norm(node_eq_local, limit=clip_local)
                 # Global
                 # if sigmas[i] < global_start_sigma:
-                if True:
-                    edge_inv_global = edge_inv_global
-                    node_eq_global = eq_transform(
-                        edge_inv_global, pos, edge_index, edge_length
+                edge_inv_global = edge_inv_global
+                node_eq_global = eq_transform(
+                    edge_inv_global, pos, edge_index_global, edge_length_global
+                )
+                node_eq_global = clip_norm(node_eq_global, limit=clip)
+                
+                # Local
+                if self.config.dual_encoding:
+                    node_eq_local = eq_transform(
+                        edge_inv_local, pos, edge_index_local, edge_length_local,
                     )
-                    node_eq_global = clip_norm(node_eq_global, limit=clip)
+                    if clip_local is not None:
+                        node_eq_local = clip_norm(node_eq_local, limit=clip_local)
                 else:
-                    node_eq_global = 0
+                    node_eq_local = 0.0
+
                 # Sum
-                eps_pos = (
-                    node_eq_local + node_eq_global * w_global
-                )  # + eps_pos_reg * w_reg
+                eps_pos = (node_eq_local + node_eq_global * w_global)  # + eps_pos_reg * w_reg
                 # eps_pos = node_eq_local * (1 - w_global) + node_eq_global * w_global # + eps_pos_reg * w_reg
 
                 # Update
