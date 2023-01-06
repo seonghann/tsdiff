@@ -103,7 +103,8 @@ if __name__ == "__main__":
 
     # Logging
     fn = f"{args.sampling_type}_{args.save_suffix}"
-    output_dir = get_new_log_dir(root=log_dir, prefix="sample", tag=args.tag, fn=fn)
+    #output_dir = get_new_log_dir(root=log_dir, prefix="sample", tag=args.tag, fn=fn)
+    output_dir = None
     logger = get_logger("test", output_dir)
     logger.info(args)
 
@@ -160,7 +161,8 @@ if __name__ == "__main__":
                         if args.noise_from_time_t is not None
                         else args.denoise_from_time_t
                     )
-                    init_guess = init_guess / model.alphas[start_t - 1].sqrt()
+                    sqrt_a = model.alphas[start_t-1].sqrt() if start_t !=0 else 1
+                    init_guess = init_guess / sqrt_a
                     pos_init = init_guess.to(args.device)
                 else:
                     pos_init = torch.randn(batch.num_nodes, 3).to(args.device)
@@ -187,9 +189,12 @@ if __name__ == "__main__":
                     denoise_from_time_t=args.denoise_from_time_t,
                 )
                 alphas = model.alphas.detach()
-                alphas = alphas[
-                    args.denoise_from_time_t - args.n_steps : args.denoise_from_time_t
-                ]
+                if args.denoise_from_time_t is not None:
+                    alphas = alphas[
+                        args.denoise_from_time_t - args.n_steps : args.denoise_from_time_t
+                    ]
+                else:
+                    alphas = alphas[5000-args.n_steps : 5000]
                 alphas = alphas.flip(0).view(-1, 1, 1)
                 pos_gen_traj_ = torch.stack(pos_gen_traj) * alphas.sqrt().cpu()
 
