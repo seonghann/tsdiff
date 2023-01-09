@@ -103,8 +103,7 @@ if __name__ == "__main__":
 
     # Logging
     fn = f"{args.sampling_type}_{args.save_suffix}"
-    #output_dir = get_new_log_dir(root=log_dir, prefix="sample", tag=args.tag, fn=fn)
-    output_dir = None
+    output_dir = get_new_log_dir(root=log_dir, prefix="sample", tag=args.tag, fn=fn)
     logger = get_logger("test", output_dir)
     logger.info(args)
 
