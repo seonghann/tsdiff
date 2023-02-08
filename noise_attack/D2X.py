@@ -76,7 +76,8 @@ def get_coord_from_distance_parallel(
     for i in range(steps):
         opt.zero_grad()
         D_gen = (pos[e[0]] - pos[e[1]]).norm(dim=-1)
-        logloss = 2 * torch.log(torch.abs(D_gen - D_target)) - 4 * torch.log(
+        # logloss = 2 * torch.log(torch.abs(D_gen - D_target)) - 4 * torch.log(
+        logloss = 2 * torch.log(torch.abs(D_gen - D_target) + 1e-12) - 4 * torch.log(
             torch.abs(D_target)
         )
         loss = torch.exp(logloss).sum()

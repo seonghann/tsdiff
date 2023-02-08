@@ -89,6 +89,12 @@ if __name__ == "__main__":
         default=1.0,
         help="weight for DDIM and DDPM: 0->DDIM, 1->DDPM",
     )
+    parser.add_argument(
+        "--seed",
+        type=int,
+        default=2022,
+        help="seed number for random",
+    )
     args = parser.parse_args()
 
     # Load checkpoint
@@ -98,7 +104,8 @@ if __name__ == "__main__":
     )[0]
     with open(config_path, "r") as f:
         config = EasyDict(yaml.safe_load(f))
-    seed_all(config.train.seed)
+    # seed_all(config.train.seed)
+    seed_all(args.seed)
     log_dir = os.path.dirname(os.path.dirname(args.ckpt))
 
     # Logging
