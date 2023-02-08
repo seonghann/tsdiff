@@ -3,7 +3,8 @@ from torch import nn
 from torch_scatter import scatter_add, scatter_mean
 from torch_scatter import scatter
 from torch_geometric.data import Data, Batch
-from torch_geometric.utils import to_dense_adj, dense_to_sparse
+from torch_geometric.utils import to_dense_adj, dense_to_sparse, degree
+from torch_geometric.nn import radius_graph
 import numpy as np
 from numpy import pi as PI
 from tqdm.auto import tqdm
@@ -77,7 +78,7 @@ class DualEncoderEpsNetwork(nn.Module):
         """
         The graph neural network that extracts node-wise features.
         """
-        print(config)
+        #print(config)
         self.encoder_global = load_encoder(config, "global_encoder")
         self.encoder_local = load_encoder(config, "local_encoder")
 
@@ -181,6 +182,7 @@ class DualEncoderEpsNetwork(nn.Module):
 
         if cutoff is None: cutoff = self.config.cutoff
         if edge_order is None: edge_order = self.config.edge_order
+        #print(cutoff, edge_order)
 
         out = extend_ts_graph_order_radius(
             num_nodes=N,
@@ -204,7 +206,7 @@ class DualEncoderEpsNetwork(nn.Module):
         edge_type_global = torch.zeros_like(edge_index_global[0]) - 1
         adj_global = to_dense_adj(
             edge_index_global, edge_attr=edge_type_global, max_num_nodes=N
-        )
+        ) # adj matrix \in {0, -1}^(N x N)
         adj_local_r = to_dense_adj(
             edge_index_local, edge_attr=edge_type_r, max_num_nodes=N
         )
@@ -272,6 +274,7 @@ class DualEncoderEpsNetwork(nn.Module):
             edge_order = self.config.global_edge_order
             edge_cutoff = self.config.global_edge_cutoff
             edge_order_pred = self.config.global_pred_edge_order
+
             
         elif enc_type == "local":
             edge_order = self.config.local_edge_order
@@ -324,6 +327,7 @@ class DualEncoderEpsNetwork(nn.Module):
                 )
 
         if edge_order_pred != edge_order:
+            #print(f"Here : pred order {edge_order_pred}")
             (
                     edge_index, 
                     _, 
@@ -424,14 +428,14 @@ class DualEncoderEpsNetwork(nn.Module):
             
             # edge_inv_global = ...
             # edge_index_global = ...
-            idx_ = index_set_subtraction(
+            mask = index_set_subtraction(
                         edge_index_global, 
                         edge_index_local, 
                         max_num_nodes=N
                         )
-            edge_index_global = edge_index_global[:, idx_]
-            edge_inv_global = edge_inv_global[idx_]
-            edge_length_global = edge_length_global[idx_]
+            edge_index_global = edge_index_global[:, mask]
+            edge_inv_global = edge_inv_global[mask]
+            edge_length_global = edge_length_global[mask]
             
         else:
             edge_length_local = None
@@ -486,7 +490,409 @@ class DualEncoderEpsNetwork(nn.Module):
                 extend_radius,
                 is_sidechain,
             )
+    def _test_fn(
+        self,
+        atom_type,
+        r_feat,
+        p_feat,
+        pos,
+        bond_index,
+        bond_type,
+        batch,
+        num_nodes_per_graph,
+        num_graphs,
+        anneal_power=2.0,
+        return_unreduced_loss=False,
+        return_unreduced_edge_loss=False,
+        extend_order=3,
+        extend_radius=10.0,
+        is_sidechain=None,
+        t0=0,
+        t1=5000,
+    ):
+        N = atom_type.size(0)
+        node2graph = batch
+        time_step = torch.randint(
+            t0, t1, size=(num_graphs // 2 + 1,), device=pos.device
+        )
+        time_step = torch.cat([time_step, t0+t1-1-time_step], dim=0)[:num_graphs]
+
+        a = self.alphas.index_select(0, time_step)  # (G, )
+        # Perterb pos
+        a_pos = a.index_select(0, node2graph).unsqueeze(-1)  # (N, 1)
+        pos_noise = torch.zeros(size=pos.size(), device=pos.device)
+        pos_noise.normal_()
+        pos_perturbed = pos + pos_noise * (1.0 - a_pos).sqrt() / a_pos.sqrt()
+        
+        # extended edge
+        (
+                edge_index, 
+                _, 
+                edge_type_r, 
+                edge_type_p
+                ) = self._extend_condensed_graph_edge(
+                        N, 
+                        pos_perturbed, 
+                        bond_index, 
+                        bond_type, 
+                        batch,
+                        edge_order=extend_order,
+                        cutoff=extend_radius,
+                        )
+
+        num_atoms = scatter_add(torch.ones(batch.size()).to(batch.device), batch)
+        edge2graph = node2graph.index_select(0, edge_index[0])
+        #N_edge_1 = edge_index.shape[1]
+        N_edge_1 = scatter_add(degree(edge_index[0], num_nodes=N), batch)
+        a_edge = a.index_select(0, edge2graph).unsqueeze(-1)  # (E, 1)
+        d_gt = get_distance(pos, edge_index).unsqueeze(-1)  # (E, 1)
+        d_perturbed = get_distance(pos_perturbed, edge_index).unsqueeze(-1)
+        d_target = (
+            (d_gt - d_perturbed) / (1.0 - a_edge).sqrt() * a_edge.sqrt()
+        )  
+        target_pos_1 = eq_transform(
+            d_target, pos_perturbed, edge_index, d_perturbed
+        )
+
+        # extended edge - far edge (over radius 10.0)
+        mask = d_perturbed.squeeze(-1) < extend_radius
+        edge_index = edge_index[:, mask]
+        #N_edge_2 = edge_index.shape[1]
+        #N_edge_2 = torch.Tensor([e.shape[1] for e in unbatch_edge_index(edge_index, batch)])
+        N_edge_2 = scatter_add(degree(edge_index[0], num_nodes=N), batch)
+        edge2graph = node2graph.index_select(0, edge_index[0])
+        a_edge = a.index_select(0, edge2graph).unsqueeze(-1)  # (E, 1)
+        d_gt = get_distance(pos, edge_index).unsqueeze(-1)  # (E, 1)
+        d_perturbed = get_distance(pos_perturbed, edge_index).unsqueeze(-1)
+        d_target = (
+            (d_gt - d_perturbed) / (1.0 - a_edge).sqrt() * a_edge.sqrt()
+        )  
+        target_pos_2 = eq_transform(
+            d_target, pos_perturbed, edge_index, d_perturbed
+        )
+
+        # total edge
+        edge_index = radius_graph(pos, r=100, batch=batch, max_num_neighbors=200)
+        #N_edge = edge_index.shape[1]
+        #N_edge = torch.Tensor([e.shape[1] for e in unbatch_edge_index(edge_index, batch)])
+        N_edge = scatter_add(degree(edge_index[0], num_nodes=N), batch)
+        edge2graph = node2graph.index_select(0, edge_index[0])
+        a_edge = a.index_select(0, edge2graph).unsqueeze(-1)  # (E, 1)
+        d_gt = get_distance(pos, edge_index).unsqueeze(-1)  # (E, 1)
+        d_perturbed = get_distance(pos_perturbed, edge_index).unsqueeze(-1)
+        d_target = (
+            (d_gt - d_perturbed) / (1.0 - a_edge).sqrt() * a_edge.sqrt()
+        )  
+        target_pos = eq_transform(
+            d_target, pos_perturbed, edge_index, d_perturbed
+        )
+
+        bias1 = (target_pos_1 - target_pos) ** 2
+        bias1 = torch.sum(bias1, dim=-1, keepdim=True)
+
+        bias2 = (target_pos_2 - target_pos) ** 2
+        bias2 = torch.sum(bias2, dim=-1, keepdim=True)
+
+        r1 = N_edge_1/(6*num_atoms-12)
+        r2 = N_edge_2/(6*num_atoms-12)
+        r1 = r1.mean()
+        r2 = r2.mean()
+        #r1 = (r1 < 1).float().mean()
+        #r2 = (r2 < 1).float().mean()
+
+        return bias1, bias2, r1, r2
+
+    def _check_contribution(
+        self,
+        atom_type,
+        r_feat,
+        p_feat,
+        pos,
+        bond_index,
+        bond_type,
+        batch,
+        num_graphs,
+        extend_order=True,
+        extend_radius=True,
+        is_sidechain=None,
+        t0=0,
+        t1=5000,
+    ):
+
+        N = atom_type.size(0)
+        node2graph = batch
+
+        # Set time step uniform randomly.
+        time_step = torch.randint(
+            t0, t1, size=(num_graphs // 2 + 1,), device=pos.device
+        )
+        time_step = torch.cat([time_step, t0+t1-1-time_step], dim=0)[:num_graphs]
+
+        # Adjust hyperparam alpha_t, pos_t <pos_perturbed>
+        a = self.alphas.index_select(0, time_step)  # (G, )
+        a_pos = a.index_select(0, node2graph).unsqueeze(-1)  # (N, 1)
+        pos_noise = torch.zeros(size=pos.size(), device=pos.device)
+        pos_noise.normal_()
+        pos_perturbed = pos + pos_noise * (1.0 - a_pos).sqrt() / a_pos.sqrt()
+
+        loss_fn = lambda x,y : torch.sum((x-y)**2, dim=-1, keepdim=True)
+        def _get_pred_target(
+                edge_index, 
+                edge_inv=None, 
+                node2graph=node2graph, 
+                pos=pos, 
+                pos_perturbed=pos_perturbed
+                ):
+            edge2graph = node2graph.index_select(0, edge_index[0])
+            a_edge = a.index_select(0, edge2graph).unsqueeze(-1)
+            d_perturbed = get_distance(pos_perturbed, edge_index).unsqueeze(-1)
+            if edge_inv is None:
+                d_gt = get_distance(pos, edge_index).unsqueeze(-1)
+                d_target = (d_gt - d_perturbed) / (1.0 - a_edge).sqrt() * a_edge.sqrt()
+                return eq_transform(d_target, pos_perturbed, edge_index, d_perturbed)
+            
+            else:
+                return eq_transform(edge_inv, pos_perturbed, edge_index, d_perturbed)
+                
+        # Get Full-Edge target
+        edge_index = radius_graph(pos, r=100, batch=batch, max_num_neighbors=200)
+        target_pos = _get_pred_target(edge_index)
+
+        # Update invariant edge features, as shown in equation 5-7
+        (
+            edge_inv_global,
+            edge_inv_local,
+            edge_index_global,
+            edge_index_local,
+            edge_length_global,
+            edge_length_local,
+        ) = self(
+            atom_type=atom_type,
+            r_feat=r_feat,
+            p_feat=p_feat,
+            pos=pos_perturbed,
+            bond_index=bond_index,
+            bond_type=bond_type,
+            batch=batch,
+            time_step=time_step,
+            return_edges=True,
+            extend_order=extend_order,
+            extend_radius=extend_radius,
+            is_sidechain=is_sidechain,
+        )  # (E_global, 1), (E_local, 1)
+
+        # calculate global
+        # ----------------------------------------------------------------
+        num_atoms = scatter_add(torch.ones(batch.size()).to(batch.device), batch)
+        # setting for global
+        edge_index = edge_index_global
+        #N_edge_1 = edge_index.shape[1]
+        N_edge_1 = scatter_add(degree(edge_index[0], num_nodes=N), batch)
+        node_eq_global_1 = _get_pred_target(edge_index, edge_inv=edge_inv_global)
+        target_pos_1 = _get_pred_target(edge_index)
+        loss_1 = loss_fn(node_eq_global_1, target_pos_1)
+        bias_1 = loss_fn(target_pos_1, target_pos)
+
+        # ----------------------------------------------------------------
+        # target from the edge indice whoose distance is smaller than cutoff
+        d_perturbed = get_distance(pos_perturbed, edge_index)
+        mask = d_perturbed.squeeze(-1) < self.config.global_edge_cutoff
+        node_eq_global_2 = _get_pred_target(edge_index[:,mask], edge_inv=edge_inv_global[mask])
+        target_pos_2 = _get_pred_target(edge_index[:,mask])
+        loss_2 = loss_fn(node_eq_global_2, target_pos_2)
+        bias_2 = loss_fn(target_pos_2, target_pos)
+        
+        mask = ~mask
+        node_eq_global_3 = _get_pred_target(edge_index[:,mask], edge_inv=edge_inv_global[mask])
+        target_pos_3 = _get_pred_target(edge_index[:,mask])
+        loss_3 = loss_fn(node_eq_global_3, target_pos_3)
+        bias_3 = loss_fn(target_pos_3, target_pos)
+        
+
+        local_ext3, _, etr, etp = self._extend_condensed_graph_edge(N, pos, bond_index, bond_type, batch, cutoff=0.1, edge_order=3)
+        local_ext2, _, etr, etp = self._extend_condensed_graph_edge(N, pos, bond_index, bond_type, batch, cutoff=0.1, edge_order=2)
+        local_ext1, _, etr, etp = self._extend_condensed_graph_edge(N, pos, bond_index, bond_type, batch, cutoff=0.1, edge_order=1)
+        mask_ext3 = index_set_subtraction(edge_index_global, local_ext3)
+        mask_ext2 = index_set_subtraction(edge_index_global, local_ext2)
+        mask_ext1 = index_set_subtraction(edge_index_global, local_ext1)
+        
+        mask_rad = mask_ext3
+        mask_3hop = mask_ext2 * ~mask_ext3
+        mask_2hop = mask_ext1 * ~mask_ext2
+        mask_1hop = ~mask_ext1
+        
+        mask = mask_1hop
+        node_eq_global_4 = _get_pred_target(edge_index[:,mask], edge_inv=edge_inv_global[mask])
+        target_pos_4 = _get_pred_target(edge_index[:,mask])
+        loss_4 = loss_fn(node_eq_global_4, target_pos_4)
+        bias_4 = loss_fn(target_pos_4, target_pos)
+
+        mask = mask_2hop
+        node_eq_global_5 = _get_pred_target(edge_index[:,mask], edge_inv=edge_inv_global[mask])
+        target_pos_5 = _get_pred_target(edge_index[:,mask])
+        loss_5 = loss_fn(node_eq_global_5, target_pos_5)
+        bias_5 = loss_fn(target_pos_5, target_pos)
     
+        mask = mask_3hop
+        node_eq_global_6 = _get_pred_target(edge_index[:,mask], edge_inv=edge_inv_global[mask])
+        target_pos_6 = _get_pred_target(edge_index[:,mask])
+        loss_6 = loss_fn(node_eq_global_6, target_pos_6)
+        bias_6 = loss_fn(target_pos_6, target_pos)
+
+        mask = mask_rad
+        node_eq_global_7 = _get_pred_target(edge_index[:,mask], edge_inv=edge_inv_global[mask])
+        target_pos_7 = _get_pred_target(edge_index[:,mask])
+        loss_7 = loss_fn(node_eq_global_7, target_pos_7)
+        bias_7 = loss_fn(target_pos_7, target_pos)
+
+        losses = loss_1, loss_2, loss_3, loss_4, loss_5, loss_6, loss_7
+        biases = bias_1, bias_2, bias_3, bias_4, bias_5, loss_6, loss_7
+        return losses, biases
+
+    def _check_loss(
+        self,
+        atom_type,
+        r_feat,
+        p_feat,
+        pos,
+        bond_index,
+        bond_type,
+        batch,
+        num_graphs,
+        extend_order=True,
+        extend_radius=True,
+        is_sidechain=None,
+        t0=0,
+        t1=5000,
+    ):
+
+        N = atom_type.size(0)
+        node2graph = batch
+
+        # Set time step uniform randomly.
+        time_step = torch.randint(
+            t0, t1, size=(num_graphs // 2 + 1,), device=pos.device
+        )
+        time_step = torch.cat([time_step, t0+t1-1-time_step], dim=0)[:num_graphs]
+
+        # Adjust hyperparam alpha_t, pos_t <pos_perturbed>
+        a = self.alphas.index_select(0, time_step)  # (G, )
+        a_pos = a.index_select(0, node2graph).unsqueeze(-1)  # (N, 1)
+        pos_noise = torch.zeros(size=pos.size(), device=pos.device)
+        pos_noise.normal_()
+        pos_perturbed = pos + pos_noise * (1.0 - a_pos).sqrt() / a_pos.sqrt()
+
+        # Update invariant edge features, as shown in equation 5-7
+        (
+            edge_inv_global,
+            edge_inv_local,
+            edge_index_global,
+            edge_index_local,
+            edge_length_global,
+            edge_length_local,
+        ) = self(
+            atom_type=atom_type,
+            r_feat=r_feat,
+            p_feat=p_feat,
+            pos=pos_perturbed,
+            bond_index=bond_index,
+            bond_type=bond_type,
+            batch=batch,
+            time_step=time_step,
+            return_edges=True,
+            extend_order=extend_order,
+            extend_radius=extend_radius,
+            is_sidechain=is_sidechain,
+        )  # (E_global, 1), (E_local, 1)
+
+        # calculate global
+        # ----------------------------------------------------------------
+        num_atoms = scatter_add(torch.ones(batch.size()).to(batch.device), batch)
+        # setting for global
+        edge_index = edge_index_global
+        #N_edge_1 = edge_index.shape[1]
+        N_edge_1 = scatter_add(degree(edge_index[0], num_nodes=N), batch)
+        edge2graph = node2graph.index_select(0, edge_index[0])
+        a_edge = a.index_select(0, edge2graph).unsqueeze(-1)  # (E, 1)
+
+        # compute original and perturbed distances
+        d_gt = get_distance(pos, edge_index).unsqueeze(-1)  # (E, 1)
+        d_perturbed = edge_length_global
+
+        # re-parametrization, distance to position (round d -> round c)
+        d_target = (
+            (d_gt - d_perturbed) / (1.0 - a_edge).sqrt() * a_edge.sqrt()
+        )  # (E_global, 1), denoising direction
+        target_pos_1 = eq_transform(
+            d_target, pos_perturbed, edge_index, d_perturbed
+        )
+        node_eq_global_1 = eq_transform(
+            edge_inv_global, pos_perturbed, edge_index, d_perturbed
+        )
+
+        # ----------------------------------------------------------------
+        # target from the edge indice whoose distance is smaller than cutoff
+        mask = d_perturbed.squeeze(-1) < self.config.global_edge_cutoff
+        edge_index = edge_index[:, mask]
+        #N_edge_2 = edge_index.shape[1]
+        N_edge_2 = scatter_add(degree(edge_index[0], num_nodes=N), batch)
+        edge2graph = node2graph.index_select(0, edge_index[0])
+        a_edge = a.index_select(0, edge2graph).unsqueeze(-1)  # (E, 1)
+
+        # compute original and perturbed distance
+        d_gt = get_distance(pos, edge_index).unsqueeze(-1)  # (E, 1)
+        d_perturbed = get_distance(pos_perturbed, edge_index).unsqueeze(-1)
+        
+        # re-parametrization, distance to position (round d -> round c)
+        d_target = (
+            (d_gt - d_perturbed) / (1.0 - a_edge).sqrt() * a_edge.sqrt()
+        )  
+        target_pos_2 = eq_transform(
+            d_target, pos_perturbed, edge_index, d_perturbed
+        )
+        node_eq_global_2 = eq_transform(
+            edge_inv_global[mask], pos_perturbed, edge_index, d_perturbed
+        )
+
+        # ----------------------------------------------------------------
+        # target from full edge indice
+        edge_index = radius_graph(pos, r=100, batch=batch, max_num_neighbors=200)
+        #N_edge_total = edge_index.shape[1]
+        N_edge_total = scatter_add(degree(edge_index[0], num_nodes=N), batch)
+        edge2graph = node2graph.index_select(0, edge_index[0])
+        a_edge = a.index_select(0, edge2graph).unsqueeze(-1)  # (E, 1)
+        
+        # compute original and perturbed distance
+        d_gt = get_distance(pos, edge_index).unsqueeze(-1)  # (E, 1)
+        d_perturbed = get_distance(pos_perturbed, edge_index).unsqueeze(-1)
+        
+        # re-parametrization, distance to position (round d -> round c)
+        d_target = (
+            (d_gt - d_perturbed) / (1.0 - a_edge).sqrt() * a_edge.sqrt()
+        )  
+        target_pos = eq_transform(
+            d_target, pos_perturbed, edge_index, d_perturbed
+        )
+
+        # calc loss
+        loss_1 = torch.sum((node_eq_global_1 - target_pos_1) ** 2, dim=-1, keepdim=True)
+        loss_2 = torch.sum((node_eq_global_1 - target_pos) ** 2, dim=-1, keepdim=True)
+
+        loss_3 = torch.sum((node_eq_global_2 - target_pos_2) ** 2, dim=-1, keepdim=True)
+        loss_4 = torch.sum((node_eq_global_2 - target_pos) ** 2, dim=-1, keepdim=True)
+        
+        bias_1 = torch.sum((target_pos_1 - target_pos) ** 2, dim=-1, keepdim=True)
+        bias_2 = torch.sum((target_pos_2 - target_pos) ** 2, dim=-1, keepdim=True)
+
+        r1 = (N_edge_1/N_edge_total).mean()
+        r2 = (N_edge_2/N_edge_total).mean()
+        #r1 = N_edge_1/(6*num_atoms-12)
+        #r2 = N_edge_2/(6*num_atoms-12)
+        #r1 = (r1 < 1).float().mean()
+        #r2 = (r2 < 1).float().mean()
+
+        return loss_1, loss_2, loss_3, loss_4, bias_1, bias_2, r1, r2
+        
     def get_loss_diffusion(
         self,
         atom_type,
@@ -516,19 +922,13 @@ class DualEncoderEpsNetwork(nn.Module):
             t0, t1, size=(num_graphs // 2 + 1,), device=pos.device
         )
         time_step = torch.cat([time_step, t0+t1-1-time_step], dim=0)[:num_graphs]
-        #time_step = torch.randint(
-        #    0, self.num_timesteps, size=(num_graphs // 2 + 1,), device=pos.device
-        #)
-        #time_step = torch.cat([time_step, self.num_timesteps - time_step - 1], dim=0)[
-        #    :num_graphs
-        #]
+
         a = self.alphas.index_select(0, time_step)  # (G, )
         # Perterb pos
         a_pos = a.index_select(0, node2graph).unsqueeze(-1)  # (N, 1)
         pos_noise = torch.zeros(size=pos.size(), device=pos.device)
         pos_noise.normal_()
         pos_perturbed = pos + pos_noise * (1.0 - a_pos).sqrt() / a_pos.sqrt()
-
         # Update invariant edge features, as shown in equation 5-7
         (
             edge_inv_global,
@@ -820,7 +1220,6 @@ class DualEncoderEpsNetwork(nn.Module):
                 if (
                     sampling_type == "generalized"
                     or sampling_type == "ddpm_noisy"
-                    or sampling_type == "ddpm_det"
                 ):
                     b = self.betas
                     t = t[0]
@@ -864,23 +1263,6 @@ class DualEncoderEpsNetwork(nn.Module):
 
                         pos_next = pos - et * step_size_pos + noise * step_size_noise
 
-                    elif sampling_type == "ddpm_det":
-                        atm1 = at_next
-                        beta_t = 1 - at / atm1
-                        e = -eps_pos
-                        pos0_from_e = (1.0 / at).sqrt() * pos - (
-                            1.0 / at - 1
-                        ).sqrt() * e
-                        mean_eps = (
-                            (atm1.sqrt() * beta_t) * pos0_from_e
-                            + ((1 - beta_t).sqrt() * (1 - atm1)) * pos
-                        ) / (1.0 - at)
-                        mean = mean_eps
-                        mask = 1 - (t == 0).float()
-                        logvar = (beta_t * (1 - atm1) / (1 - at)).log()
-
-                        pos_next = mean + mask * torch.exp(0.5 * logvar) * noise
-
                     elif sampling_type == "ddpm_noisy":
                         atm1 = at_next
                         beta_t = 1 - at / atm1
@@ -905,6 +1287,14 @@ class DualEncoderEpsNetwork(nn.Module):
                         + step_size * eps_pos / sigmas[i]
                         + noise * torch.sqrt(step_size * 2)
                     )
+
+                elif sampling_type == "det":
+                    step_size = step_lr * (sigmas[i] / 0.01) ** 2
+                    pos_next = (
+                        pos
+                        + step_size * eps_pos / sigmas[i]
+                    )
+            
 
                 pos = pos_next
 
