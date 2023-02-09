@@ -87,5 +87,22 @@ def get_scheduler(cfg, optimizer):
             gamma=gamma,
             min_lr=cfg.min_lr,
         )
+    elif cfg.type == "CosineAnnealingLR":
+        scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
+                optimizer, 
+                T_max=cfg.t, 
+                eta_min=cfg.min_lr, 
+                #last_epoch=cfg.last_epoch
+                )
+        return scheduler
+    elif cfg.type == "CosineAnnealingWarmRestarts":
+        scheduler = torch.optim.lr_scheduler.CosineAnnealingWarmRestarts(
+                optimizer, 
+                T_0=cfg.t, 
+                T_mult=cfg.mult, 
+                eta_min=cfg.min_lr, 
+                #last_epoch=cfg.last_epoch
+                )
+        return scheduler
     else:
         raise NotImplementedError("Scheduler not supported: %s" % cfg.type)

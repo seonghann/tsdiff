@@ -89,6 +89,28 @@ class MultiLayerPerceptron(nn.Module):
                     x = self.dropout(x)
         return x
 
+def index_set_subtraction(index1:torch.LongTensor, index2:torch.LongTensor, max_num_nodes=None):
+    dev = index1.device
+    adj1 = to_dense_adj(
+            index1, 
+            edge_attr=torch.arange(1, index1.shape[1]+1).to(dev), 
+            max_num_nodes=max_num_nodes
+            )
+    adj2 = to_dense_adj(
+            index2, 
+            edge_attr=torch.ones(index2.shape[1]).to(dev), 
+            max_num_nodes=max_num_nodes
+            )
+    
+    adj = adj1 - adj2 * (index1.shape[1] + 1)
+    mask = (adj > 0)
+    index = adj1[mask] - 1
+    #return index
+
+    mask = torch.zeros(index1.size(1), device=dev)
+    mask[index] = 1
+    mask = mask.bool()
+    return mask
 
 def _extend_ts_graph_order(num_nodes, edge_index, edge_type, batch, order=3):
     def binarize(x):
