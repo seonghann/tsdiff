@@ -96,6 +96,7 @@ class CFConv(MessagePassing):
         else:
             C = (edge_length <= self.cutoff).float()
         W = self.nn(edge_attr) * C.view(-1, 1)
+        #W = self.nn(edge_attr)
 
         x = self.lin1(x)
         x = self.propagate(edge_index, x=x, W=W)
@@ -137,6 +138,8 @@ class SchNetEncoder(Module):
         cutoff=10.0,
         smooth=False,
         embedding=False,
+        edge_emb=None,
+        edge_activation="ReLU"
     ):
         super().__init__()
 
@@ -148,15 +151,57 @@ class SchNetEncoder(Module):
         if self.embedding:
             self.node_emb = Embedding(100, hidden_channels, max_norm=10.0)
 
+        if edge_emb is not None:
+            self.edge_emb = edge_emb
+            self.edge_cat = torch.nn.Sequential(
+                    torch.nn.Linear(hidden_channels *2, hidden_channels),
+                    torch.nn.ReLU(),
+                    torch.nn.Linear(hidden_channels, hidden_channels))
+            self.edge_d_emb = MultiLayerPerceptron(
+                    1, 
+                    [hidden_channels, hidden_channels], 
+                    activation=edge_activation
+                    )
+
         self.interactions = ModuleList()
         for _ in range(num_interactions):
             block = InteractionBlock(
                 hidden_channels, edge_channels, num_filters, cutoff, smooth
             )
             self.interactions.append(block)
+    
+    @classmethod
+    def from_config(cls, config):
+        if config.edge_emb:
+            from edge import MLPEdgeEncoder
+            edge_emb = MLPEdgeEncoder(config.hidden_dim, config.mlp_act)
+        else:
+            edge_emb = None
+
+        #print(f"hidden_channels:{config.hidden_dim}")
+        #print(f"num_filters:{config.hidden_dim}")
+        #print(f"num_interactions:{config.num_convs}")
+        #print(f"cutoff:{config.cutoff}")
+        #print(f"smooth:{config.smooth_conv}")
+        #print(f"embedding:{False}")
+        #print(f"edge_emb:{edge_emb}")
+        #print(f"edge_activation:{config.mlp_act}")
+
+        encoder = cls(
+                hidden_channels=config.hidden_dim,
+                num_filters=config.hidden_dim,
+                num_interactions=config.num_convs,
+                edge_channels=config.hidden_dim,
+                cutoff=config.cutoff,
+                smooth=config.smooth_conv,
+                embedding=False,
+                edge_emb=edge_emb,
+                edge_activation=config.mlp_act
+                )
+        return encoder
 
     def forward(
-        self, z, edge_index, edge_length, edge_attr, embed_node=False, **kwargs
+        self, z, edge_index, edge_length, edge_attr=None, embed_node=False, **kwargs
     ):
         if embed_node:
             assert z.dim() == 1 and z.dtype == torch.long and self.embedding
@@ -164,7 +209,17 @@ class SchNetEncoder(Module):
         else:
             h = z
 
+        if edge_attr is None:
+            if hasattr(kwargs, "edge_type"):
+                edge_type_r, edge_type_p = kwargs["edge_type"]
+                edge_emb_r = self.edge_emb(edge_type_r) 
+                edge_emb_p = self.edge_emb(edge_type_p) 
+                edge_d_emb = self.edge_d_emb(edge_length)
+                edge_attr = self.edge_cat(
+                        torch.cat(
+                            [edge_d_emb * edge_emb_r, edge_d_emb * edge_emb_p],
+                            -1)
+                        )
         for interaction in self.interactions:
             h = h + interaction(h, edge_index, edge_length, edge_attr)
-
         return h

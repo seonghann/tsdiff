@@ -453,7 +453,7 @@ def get_features(dist, vecs, i, j, num_nodes, cutoff):
     return theta, phi, tau
 
 
-class ComENet(nn.Module):
+class ComENetEncoder(nn.Module):
     r"""
      The ComENet from the `"ComENet: Towards Complete and Efficient Message Passing for 3D Molecular Graphs" <https://arxiv.org/abs/2206.08515>`_ paper.
 
@@ -477,9 +477,10 @@ class ComENet(nn.Module):
         num_spherical=2,
         num_output_layers=3,
         dropout=0.1,
+        act=None,
         **kwargs,
     ):
-        super(ComENet, self).__init__()
+        super(ComENetEncoder, self).__init__()
         self.out_channels = out_channels
         self.cutoff = cutoff
         self.num_layers = num_layers
@@ -487,7 +488,6 @@ class ComENet(nn.Module):
         if sym is None:
             raise ImportError("Package `sympy` could not be found.")
 
-        act = swish
         self.act = act
 
         self.feature1 = torsion_emb(
@@ -498,6 +498,12 @@ class ComENet(nn.Module):
         )
 
         self.emb = EmbeddingBlock(hidden_channels, act)
+        self.edge_emb = Embedding(100, embedding_dim=hidden_channels)
+        self.edge_cat = torch.nn.Sequential(
+                torch.nn.Linear(hidden_channels *2, hidden_channels),
+                act,
+                torch.nn.Linear(hidden_channels, hidden_channels)
+                )
 
         if "lin_feature" in kwargs and kwargs["lin_feature"] is not None:
             self.lin_feature1 = kwargs["lin_feature"][0]
@@ -534,6 +540,24 @@ class ComENet(nn.Module):
             hidden_channels, out_channels, weight_initializer="zeros"
         )
         self.reset_parameters()
+    
+    @classmethod
+    def from_config(cls, config):
+        if not config.edge_emb:
+            raise Exception(
+                    "ComENetEncoder Must have edge-embedding internally\n"
+                    "Check config.global(local)_encoder.edge_emb"
+                    )
+
+        encoder = cls(
+                cutoff=config.cutoff,
+                num_layers=config.num_convs,
+                hidden_channels=config.hidden_dim,
+                num_radial=config.num_radial,
+                num_spherical=config.num_spherical,
+                dropout=config.dropout,
+                )
+        return encoder
 
     def reset_parameters(self):
         self.emb.reset_parameters()
@@ -558,19 +582,35 @@ class ComENet(nn.Module):
         theta, phi, tau = get_features(dist, vecs, i, j, num_nodes, self.cutoff)
         return theta, phi, tau
 
-    def forward(self, z, pos, batch, edge_index, edge_attr, **kwargs):
+    def forward(self, z, pos, batch, edge_index, edge_type, **kwargs):
         num_nodes = z.size(0)
 
         # Embedding block.
         # x = self.emb(z)
         x = z
 
+        
         j, i = edge_index
         vecs = pos[j] - pos[i]
         dist = vecs.norm(dim=-1)
         theta, phi, tau = get_features(dist, vecs, i, j, num_nodes, self.cutoff)
+        
+        edge_type_r, edge_type_p = edge_type
+        edge_emb_r = self.edge_emb(edge_type_r)
+        edge_emb_p = self.edge_emb(edge_type_p)
         edge_geom_attr1 = self.lin_feature1(self.feature1(dist, theta, phi))
+        edge_geom_attr1 = self.edge_cat(
+                torch.cat(
+                    [edge_geom_attr1 * edge_emb_r, edge_geom_attr1 * edge_emb_p], 
+                    dim=-1)
+                )
+
         edge_geom_attr2 = self.lin_feature2(self.feature2(dist, tau))
+        edge_geom_attr2 = self.edge_cat(
+                torch.cat(
+                    [edge_geom_attr2 * edge_emb_r, edge_geom_attr2 * edge_emb_p], 
+                    dim=-1)
+                )
 
         # Interaction blocks.
         residual = x
@@ -578,7 +618,6 @@ class ComENet(nn.Module):
             _x = interaction_block(
                 x,
                 edge_index,
-                edge_attr,
                 edge_geom_attr1,
                 edge_geom_attr2,
                 batch,

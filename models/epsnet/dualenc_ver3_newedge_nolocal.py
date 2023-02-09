@@ -3,7 +3,8 @@ from torch import nn
 from torch_scatter import scatter_add, scatter_mean
 from torch_scatter import scatter
 from torch_geometric.data import Data, Batch
-from torch_geometric.utils import to_dense_adj, dense_to_sparse
+from torch_geometric.utils import to_dense_adj, dense_to_sparse, degree
+from torch_geometric.nn import radius_graph
 import numpy as np
 from numpy import pi as PI
 from tqdm.auto import tqdm
@@ -368,6 +369,150 @@ class DualEncoderEpsNetwork(nn.Module):
                 is_sidechain,
             )
     
+    def _check_loss(
+        self,
+        atom_type,
+        r_feat,
+        p_feat,
+        pos,
+        bond_index,
+        bond_type,
+        batch,
+        num_graphs,
+        extend_order=True,
+        extend_radius=True,
+        is_sidechain=None,
+        t0=0,
+        t1=5000,
+    ):
+
+        N = atom_type.size(0)
+        node2graph = batch
+
+        # Set time step uniform randomly.
+        time_step = torch.randint(
+            t0, t1, size=(num_graphs // 2 + 1,), device=pos.device
+        )
+        time_step = torch.cat([time_step, t0+t1-1-time_step], dim=0)[:num_graphs]
+
+        # Adjust hyperparam alpha_t, pos_t <pos_perturbed>
+        a = self.alphas.index_select(0, time_step)  # (G, )
+        a_pos = a.index_select(0, node2graph).unsqueeze(-1)  # (N, 1)
+        pos_noise = torch.zeros(size=pos.size(), device=pos.device)
+        pos_noise.normal_()
+        pos_perturbed = pos + pos_noise * (1.0 - a_pos).sqrt() / a_pos.sqrt()
+
+        # Update invariant edge features, as shown in equation 5-7
+        (
+            edge_inv_global,
+            edge_inv_local,
+            edge_index_global,
+            edge_index_local,
+            edge_length_global,
+            edge_length_local,
+        ) = self(
+            atom_type=atom_type,
+            r_feat=r_feat,
+            p_feat=p_feat,
+            pos=pos_perturbed,
+            bond_index=bond_index,
+            bond_type=bond_type,
+            batch=batch,
+            time_step=time_step,
+            return_edges=True,
+            extend_order=extend_order,
+            extend_radius=extend_radius,
+            is_sidechain=is_sidechain,
+        )  # (E_global, 1), (E_local, 1)
+
+        # calculate global
+        # ----------------------------------------------------------------
+        num_atoms = scatter_add(torch.ones(batch.size()).to(batch.device), batch)
+        # setting for global
+        edge_index = edge_index_global
+        #N_edge_1 = edge_index.shape[1]
+        N_edge_1 = scatter_add(degree(edge_index[0], num_nodes=N), batch)
+        edge2graph = node2graph.index_select(0, edge_index[0])
+        a_edge = a.index_select(0, edge2graph).unsqueeze(-1)  # (E, 1)
+
+        # compute original and perturbed distances
+        d_gt = get_distance(pos, edge_index).unsqueeze(-1)  # (E, 1)
+        d_perturbed = edge_length_global
+
+        # re-parametrization, distance to position (round d -> round c)
+        d_target = (
+            (d_gt - d_perturbed) / (1.0 - a_edge).sqrt() * a_edge.sqrt()
+        )  # (E_global, 1), denoising direction
+        target_pos_1 = eq_transform(
+            d_target, pos_perturbed, edge_index, d_perturbed
+        )
+        node_eq_global_1 = eq_transform(
+            edge_inv_global, pos_perturbed, edge_index, d_perturbed
+        )
+
+        # ----------------------------------------------------------------
+        # target from the edge indice whoose distance is smaller than cutoff
+        mask = d_perturbed.squeeze(-1) < self.config.edge_cutoff
+        edge_index = edge_index[:, mask]
+        #N_edge_2 = edge_index.shape[1]
+        N_edge_2 = scatter_add(degree(edge_index[0], num_nodes=N), batch)
+        edge2graph = node2graph.index_select(0, edge_index[0])
+        a_edge = a.index_select(0, edge2graph).unsqueeze(-1)  # (E, 1)
+
+        # compute original and perturbed distance
+        d_gt = get_distance(pos, edge_index).unsqueeze(-1)  # (E, 1)
+        d_perturbed = get_distance(pos_perturbed, edge_index).unsqueeze(-1)
+        
+        # re-parametrization, distance to position (round d -> round c)
+        d_target = (
+            (d_gt - d_perturbed) / (1.0 - a_edge).sqrt() * a_edge.sqrt()
+        )  
+        target_pos_2 = eq_transform(
+            d_target, pos_perturbed, edge_index, d_perturbed
+        )
+        node_eq_global_2 = eq_transform(
+            edge_inv_global[mask], pos_perturbed, edge_index, d_perturbed
+        )
+
+        # ----------------------------------------------------------------
+        # target from full edge indice
+        edge_index = radius_graph(pos, r=100, batch=batch, max_num_neighbors=200)
+        #N_edge_total = edge_index.shape[1]
+        N_edge_total = scatter_add(degree(edge_index[0], num_nodes=N), batch)
+        edge2graph = node2graph.index_select(0, edge_index[0])
+        a_edge = a.index_select(0, edge2graph).unsqueeze(-1)  # (E, 1)
+        
+        # compute original and perturbed distance
+        d_gt = get_distance(pos, edge_index).unsqueeze(-1)  # (E, 1)
+        d_perturbed = get_distance(pos_perturbed, edge_index).unsqueeze(-1)
+        
+        # re-parametrization, distance to position (round d -> round c)
+        d_target = (
+            (d_gt - d_perturbed) / (1.0 - a_edge).sqrt() * a_edge.sqrt()
+        )  
+        target_pos = eq_transform(
+            d_target, pos_perturbed, edge_index, d_perturbed
+        )
+
+        # calc loss
+        loss_1 = torch.sum((node_eq_global_1 - target_pos_1) ** 2, dim=-1, keepdim=True)
+        loss_2 = torch.sum((node_eq_global_1 - target_pos) ** 2, dim=-1, keepdim=True)
+
+        loss_3 = torch.sum((node_eq_global_2 - target_pos_2) ** 2, dim=-1, keepdim=True)
+        loss_4 = torch.sum((node_eq_global_2 - target_pos) ** 2, dim=-1, keepdim=True)
+        
+        bias_1 = torch.sum((target_pos_1 - target_pos) ** 2, dim=-1, keepdim=True)
+        bias_2 = torch.sum((target_pos_2 - target_pos) ** 2, dim=-1, keepdim=True)
+
+        r1 = (N_edge_1/N_edge_total).mean()
+        r2 = (N_edge_2/N_edge_total).mean()
+        #r1 = N_edge_1/(6*num_atoms-12)
+        #r2 = N_edge_2/(6*num_atoms-12)
+        #r1 = (r1 < 1).float().mean()
+        #r2 = (r2 < 1).float().mean()
+
+        return loss_1, loss_2, loss_3, loss_4, bias_1, bias_2, r1, r2
+
     def check_loss(
         self,
         atom_type,
