@@ -9,7 +9,7 @@ model:
   beta_schedule: sigmoid
   beta_start: 1.e-7
   beta_end: 9.e-3
-  num_diffusion_timesteps: 1
+  num_diffusion_timesteps: 5000
   edge_order: 3
   edge_encoder: mlp
   smooth_conv: true

@@ -63,7 +63,7 @@ if __name__=="__main__":
         # job script
         job_script_msg = f"""#!/bin/bash
 #PBS -N {args.job_name}_{i}
-#PBS -l nodes=cnode{next(nodes)}:ppn=4
+#PBS -l nodes=cnode{next(nodes)}:ppn=1
 #PBS -l walltime=500:00:00
     """ + """
 cd $PBS_O_WORKDIR
