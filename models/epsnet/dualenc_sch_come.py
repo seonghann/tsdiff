@@ -286,18 +286,15 @@ class DualEncoderEpsNetwork(nn.Module):
     def forward(
         self,
         atom_type,
+        r_feat,
+        p_feat,
         pos,
         bond_index,
         bond_type,
         batch,
         time_step,
-        edge_index=None,
-        edge_type=None,
-        edge_length=None,
-        return_edges=False,
-        extend_order=True,
-        extend_radius=True,
-        is_sidechain=None,
+        return_edges=True,
+        **kwargs,
     ):
         """
         Args:
@@ -307,21 +304,25 @@ class DualEncoderEpsNetwork(nn.Module):
             batch:      Node index to graph index, (N, ).
         """
         N = atom_type.size(0)
-        if edge_index is None or edge_type is None or edge_length is None:
-            edge_index, edge_type = extend_graph_order_radius(
-                num_nodes=N,
-                pos=pos,
-                edge_index=bond_index,
-                edge_type=bond_type,
-                batch=batch,
-                order=self.config.edge_order,
-                cutoff=self.config.cutoff,
-                extend_order=extend_order,
-                extend_radius=extend_radius,
-                is_sidechain=is_sidechain,
-            )
-            edge_length = get_distance(pos, edge_index).unsqueeze(-1)  # (E, 1)
-        local_edge_mask = is_local_edge(edge_type)  # (E, )
+        
+        # --------------------------------------------------------------------
+        # condensed atom embedding
+        atom_emb = self.atom_embedding(atom_type)
+        atom_feat_emb_r = self.atom_feat_embedding(r_feat.float())
+        atom_feat_emb_p = self.atom_feat_embedding(p_feat.float())
+        z = torch.cat(
+            [atom_emb + atom_feat_emb_r, atom_feat_emb_p - atom_feat_emb_r], dim=-1
+        )
+    
+        if self.config.dual_encoding:
+            local_edge_order = self.config.local_edge_order
+            local_edge_cutoff = self.config.local_edge_cutoff
+            
+            global_edge_order = self.config.global_edge_order
+            global_edge_cutoff = self.config.global_edge_cutoff
+        else:
+            global_edge_order = self.config.edge_order
+            global_edge_cutoff = self.config.edge_cutoff
 
         # Emb time_step
         sigma_edge = torch.ones(

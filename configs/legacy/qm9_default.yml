@@ -5,7 +5,7 @@ model:
   num_convs: 6
   num_convs_local: 4
   cutoff: 10.0
-  mlp_act: relu
+  mlp_act: ReLU
   beta_schedule: sigmoid
   beta_start: 1.e-7
   beta_end: 2.e-3
@@ -29,6 +29,7 @@ train:
     beta2: 0.999
   scheduler:
     type: plateau
+    min_lr: 0.00002
     factor: 0.6
     patience: 10
 

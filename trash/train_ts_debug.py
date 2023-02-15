@@ -100,7 +100,9 @@ if __name__ == "__main__":
     # Model
     logger.info("Building model...")
     model = get_model(config.model).to(args.device)
-    model_state_dict = torch.load("logs/ts_dv3_newedge_base___dv3_newedge_base/checkpoints/286000.pt")["model"]
+    model_state_dict = torch.load(
+        "logs/ts_dv3_newedge_base___dv3_newedge_base/checkpoints/286000.pt"
+    )["model"]
     model.load_state_dict(model_state_dict)
     # Optimizer
     optimizer = get_optimizer(config.train.optimizer, model)
@@ -145,8 +147,10 @@ if __name__ == "__main__":
             n, n_g, n_l = loss.size(0), loss_global.size(0), loss_local.size(0)
             loss_sum = loss.sum()
             loss = loss.mean()
-            #loss.backward()
-            orig_grad_norm = clip_grad_norm_(model.parameters(), config.train.max_grad_norm)
+            # loss.backward()
+            orig_grad_norm = clip_grad_norm_(
+                model.parameters(), config.train.max_grad_norm
+            )
             optimizer.step()
 
         return (
@@ -235,7 +239,7 @@ if __name__ == "__main__":
             n_l_sum += n_l
             grad_norm_sum += grad_norm
 
-            if it % int(config.train.val_freq/20) == 0:
+            if it % int(config.train.val_freq / 20) == 0:
                 logger.info(
                     "[Train] Iter %05d | Loss %.2f | Loss(Global) %.2f | Loss(Local) %.2f | Grad %.2f | LR %.6f"
                     % (

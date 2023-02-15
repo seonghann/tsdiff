@@ -1,6 +1,0 @@
-[2022-11-05 04:48:53,048::test::INFO] Namespace(ckpt='logs/ts_dv3_newedge_nolocal___dv3_newedge_nolocal/checkpoints/260000.pt', clip=1000.0, device='cuda', end_idx=2, eta=1.0, global_start_sigma=0.5, n_steps=5000, num_confs=<function num_confs.<locals>.<lambda> at 0x2b47f4ed4680>, out_dir=None, resume=None, sampling_type='ld', save_traj=False, start_idx=0, tag='', test_set='data/TS/b97d3/double_chiral_test/double_chiral.pkl', w_global=1.0)
-[2022-11-05 04:48:53,049::test::INFO] Loading datasets...
-[2022-11-05 04:48:53,052::test::INFO] Loading model...
-[2022-11-05 04:52:12,597::test::INFO] Saving samples to: logs/ts_dv3_newedge_nolocal___dv3_newedge_nolocal/sample_ld_wg1.0_260.0k/samples_0.pkl
-[2022-11-05 04:55:31,827::test::INFO] Saving samples to: logs/ts_dv3_newedge_nolocal___dv3_newedge_nolocal/sample_ld_wg1.0_260.0k/samples_1.pkl
-[2022-11-05 04:55:31,832::test::INFO] Saving samples to: logs/ts_dv3_newedge_nolocal___dv3_newedge_nolocal/sample_ld_wg1.0_260.0k/samples_all.pkl

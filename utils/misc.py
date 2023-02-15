@@ -48,7 +48,8 @@ def get_new_log_dir(root="./logs", prefix="", tag="", fn=None):
     if tag != "":
         fn = fn + "_" + tag
     log_dir = os.path.join(root, fn)
-    os.makedirs(log_dir)
+    #os.makedirs(log_dir)
+    os.system(f"mkdir -p {log_dir}")
     return log_dir
 
 

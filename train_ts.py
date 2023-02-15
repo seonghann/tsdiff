@@ -223,7 +223,6 @@ if __name__ == "__main__":
         best_loss = 10000
         for it in range(start_iter, config.train.max_iters + 1):
             loss, loss_g, loss_l, lr, grad_norm, n, n_g, n_l = train(it)
-            # print(loss/n)
             loss_sum += loss
             loss_g_sum += loss_g
             loss_l_sum += loss_l
