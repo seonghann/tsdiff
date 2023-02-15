@@ -95,6 +95,12 @@ if __name__ == "__main__":
         default=2022,
         help="seed number for random",
     )
+    parser.add_argument(
+        "--step_lr",
+        type=float,
+        default=1e-6,
+        help="step_lr of sampling",
+    )
     args = parser.parse_args()
 
     # Load checkpoint
@@ -184,7 +190,8 @@ if __name__ == "__main__":
                     num_graphs=batch.num_graphs,
                     extend_order=True,  # Done in transforms.
                     n_steps=args.n_steps,
-                    step_lr=1e-6,
+                    # step_lr=1e-6,
+                    step_lr=args.step_lr,
                     w_global=args.w_global,
                     global_start_sigma=args.global_start_sigma,
                     clip=args.clip,
@@ -243,6 +250,6 @@ if __name__ == "__main__":
                 return i
         return -1
 
-    results.sort(key=get_mol_key)
+    results.sort(key=get_mol_key)  ## sort~~!!!!!!!!!!!!!!!!
     with open(save_path, "wb") as f:
         pickle.dump(results, f)
