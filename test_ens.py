@@ -38,96 +38,78 @@ def batching(iterable, batch_size):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("ckpt", type=str, help="path for loading the checkpoint")
+    parser.add_argument("ckpt", type=str, help="path for loading the checkpoint", nargs="+")
     parser.add_argument(
         "--save_traj",
         action="store_true",
         default=False,
         help="whether store the whole trajectory for sampling",
     )
-    parser.add_argument("--save_suffix", type=str, required=True, default="")
-    parser.add_argument("--save_abs", type=str, required=False, default=None)
     parser.add_argument("--from_ts_guess", action="store_true", default=False)
     parser.add_argument("--denoise_from_time_t", type=int, default=None)
     parser.add_argument("--noise_from_time_t", type=int, default=None)
     parser.add_argument("--batch_size", type=int, default=1)
-
+    parser.add_argument("--save_dir", type=str, required=True)
     parser.add_argument("--resume", type=str, default=None)
-    parser.add_argument("--tag", type=str, default="")
-    # parser.add_argument("--num_confs", type=num_confs, default=num_confs("1x"))
     parser.add_argument("--test_set", type=str, default=None)
     parser.add_argument("--start_idx", type=int, default=0)
     parser.add_argument("--end_idx", type=int, default=10)
-    parser.add_argument("--out_dir", type=str, default=None)
     parser.add_argument("--device", type=str, default="cuda")
     parser.add_argument("--clip", type=float, default=1000.0)
-    parser.add_argument(
-        "--n_steps",
-        type=int,
-        default=5000,
+    parser.add_argument( "--n_steps", type=int, default=5000,
         help="sampling num steps; for DSM framework, this means num steps for each noise scale",
     )
-    parser.add_argument(
-        "--global_start_sigma",
-        type=float,
-        default=0.5,
+    parser.add_argument("--global_start_sigma", type=float, default=0.5,
         help="enable global gradients only when noise is low",
     )
-    parser.add_argument(
-        "--w_global", type=float, default=1.0, help="weight for global gradients"
+    parser.add_argument("--w_global", type=float, default=1.0, 
+            help="weight for global gradients"
     )
     # Parameters for DDPM
-    parser.add_argument(
-        "--sampling_type",
-        type=str,
-        default="ld",
+    parser.add_argument("--sampling_type", type=str, default="ld",
         help="generalized, ddpm_noisy, ddpm_det, ld: sampling method for DDIM, DDPM or Langevin Dynamics",
     )
-    parser.add_argument(
-        "--eta",
-        type=float,
-        default=1.0,
+    parser.add_argument("--eta", type=float, default=1.0,
         help="weight for DDIM and DDPM: 0->DDIM, 1->DDPM",
     )
-    parser.add_argument(
-        "--seed",
-        type=int,
-        default=2022,
-        help="seed number for random",
-    )
-    parser.add_argument(
-        "--step_lr",
-        type=float,
-        default=1e-6,
-        help="step_lr of sampling",
+    parser.add_argument("--seed", type=int, default=2022, 
+            help="seed number for random",
     )
     args = parser.parse_args()
 
+    # Logging
+    log_dir = args.save_dir
+    os.system(f"mkdir -p {log_dir}")
+    logger = get_logger("test", log_dir)
+    logger.info(args)
+    
     # Load checkpoint
-    ckpt = torch.load(args.ckpt)
-    config_path = glob(
-        os.path.join(os.path.dirname(os.path.dirname(args.ckpt)), "*.yml")
-    )[0]
+    ckpts = [torch.load(x) for x in args.ckpt]
+    models = []
+    for ckpt, ckpt_path in zip(ckpts, args.ckpt):
+        logger.info(f"load model from {ckpt_path}")
+        config_path = glob(
+            os.path.join(os.path.dirname(os.path.dirname(ckpt_path)), "*.yml")
+        )[0]
+        model = get_model(ckpt["config"].model).to(args.device)
+        model.load_state_dict(ckpt["model"])
+        models.append(model)
+
+    from models.epsnet import ensemble
+    model = ensemble.EnsembleNetwork(models).to(args.device)
+
     with open(config_path, "r") as f:
         config = EasyDict(yaml.safe_load(f))
+    
     # seed_all(config.train.seed)
     seed_all(args.seed)
-    log_dir = os.path.dirname(os.path.dirname(args.ckpt))
 
-    # Logging
-    fn = f"{args.sampling_type}_{args.save_suffix}"
-    output_dir = get_new_log_dir(root=log_dir, prefix="sample", tag=args.tag, fn=fn)
-    logger = get_logger("test", output_dir)
-    logger.info(args)
 
     # Datasets and loaders
     logger.info("Loading datasets...")
     transforms = Compose(
         [
             CountNodesPerGraph(),
-            # AddHigherOrderEdges(
-            #    order=config.model.edge_order
-            # ),  # Offline edge augmentation
         ]
     )
     if args.test_set is None:
@@ -138,8 +120,6 @@ if __name__ == "__main__":
     # Model
     logger.info("Loading model...")
 
-    model = get_model(ckpt["config"].model).to(args.device)
-    model.load_state_dict(ckpt["model"])
 
     test_set_selected = []
     for i, data in enumerate(test_set):
@@ -190,8 +170,7 @@ if __name__ == "__main__":
                     num_graphs=batch.num_graphs,
                     extend_order=True,  # Done in transforms.
                     n_steps=args.n_steps,
-                    # step_lr=1e-6,
-                    step_lr=args.step_lr,
+                    step_lr=1e-6,
                     w_global=args.w_global,
                     global_start_sigma=args.global_start_sigma,
                     clip=args.clip,
@@ -222,12 +201,7 @@ if __name__ == "__main__":
                     results.append(data)
                     done_smiles.add(data.smiles)
 
-                if args.save_abs is not None:
-                    save_path = args.save_abs
-                    logger.info("Saving samples to: %s" % save_path)
-                else:
-                    save_path = os.path.join(output_dir, "samples_not_all.pkl")
-
+                save_path = os.path.join(log_dir, "samples_not_all.pkl")
                 with open(save_path, "wb") as f:
                     pickle.dump(results, f)
 
@@ -236,13 +210,9 @@ if __name__ == "__main__":
                 clip_local = 20
                 logger.warning("Retrying with local clipping.")
 
-    if args.save_abs is not None:
-        save_path = args.save_abs
-        logger.info("Saving samples to: %s" % save_path)
-    else:
-        os.system(f"rm {save_path}")
-        save_path = os.path.join(output_dir, "samples_all.pkl")
-        logger.info("Saving samples to: %s" % save_path)
+    os.system(f"rm {save_path}")
+    save_path = os.path.join(log_dir, "samples_all.pkl")
+    logger.info("Saving samples to: %s" % save_path)
 
     def get_mol_key(data):
         for i, d in enumerate(test_set_selected):
@@ -250,6 +220,6 @@ if __name__ == "__main__":
                 return i
         return -1
 
-    results.sort(key=get_mol_key)  ## sort~~!!!!!!!!!!!!!!!!
+    results.sort(key=get_mol_key)
     with open(save_path, "wb") as f:
         pickle.dump(results, f)
