@@ -37,6 +37,15 @@ def batching(iterable, batch_size):
 
 
 if __name__ == "__main__":
+    def str2bool(v):
+        if isinstance(v, bool):
+            return v
+        if v.lower() in ('yes', 'true', 't', 'y', '1'):
+            return True
+        elif v.lower() in ('no', 'false', 'f', 'n', '0'):
+            return False
+        else:
+            raise argparse.ArgumentTypeError('Boolean value expected.')
     parser = argparse.ArgumentParser()
     parser.add_argument("ckpt", type=str, help="path for loading the checkpoint", nargs="+")
     parser.add_argument(
@@ -53,7 +62,7 @@ if __name__ == "__main__":
     parser.add_argument("--resume", type=str, default=None)
     parser.add_argument("--test_set", type=str, default=None)
     parser.add_argument("--start_idx", type=int, default=0)
-    parser.add_argument("--end_idx", type=int, default=10)
+    parser.add_argument("--end_idx", type=int, default=9999)
     parser.add_argument("--device", type=str, default="cuda")
     parser.add_argument("--clip", type=float, default=1000.0)
     parser.add_argument( "--n_steps", type=int, default=5000,
@@ -75,6 +84,13 @@ if __name__ == "__main__":
     parser.add_argument("--seed", type=int, default=2022, 
             help="seed number for random",
     )
+    parser.add_argument(
+        "--step_lr",
+        type=float,
+        default=1e-6,
+        help="step_lr of sampling",
+    )
+    parser.add_argument("--sampling_even_index", type=str2bool, default=False,)
     args = parser.parse_args()
 
     # Logging
@@ -125,6 +141,9 @@ if __name__ == "__main__":
     for i, data in enumerate(test_set):
         if not (args.start_idx <= i < args.end_idx):
             continue
+        if args.sampling_even_index:
+            if i % 2 != 0:
+                continue
         test_set_selected.append(data)
 
     done_smiles = set()
@@ -170,7 +189,7 @@ if __name__ == "__main__":
                     num_graphs=batch.num_graphs,
                     extend_order=True,  # Done in transforms.
                     n_steps=args.n_steps,
-                    step_lr=1e-6,
+                    step_lr=args.step_lr,
                     w_global=args.w_global,
                     global_start_sigma=args.global_start_sigma,
                     clip=args.clip,

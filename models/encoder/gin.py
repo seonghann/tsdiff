@@ -136,7 +136,7 @@ class GINEncoder(torch.nn.Module):
 
             hiddens.append(hidden)
             conv_input = hidden
-
+        
         if self.concat_hidden:
             node_feature = torch.cat(hiddens, dim=-1)
         else:

@@ -1,6 +1,7 @@
 from torch_cluster import radius_graph
 from torch_geometric.nn import GraphConv, GraphNorm
-from torch_geometric.nn.acts import swish
+#from torch_geometric.nn.acts import swish
+from utils import swish
 from torch_geometric.nn import inits
 from torch_geometric.nn.conv import MessagePassing
 

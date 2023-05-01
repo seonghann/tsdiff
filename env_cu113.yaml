@@ -220,8 +220,8 @@ dependencies:
   - testpath=0.4.4=py_0
   - threadpoolctl=2.1.0=pyh5ca1d4c_0
   - tk=8.6.10=hbc83047_0
-  - torchaudio=0.8.1=py37
-  - torchvision=0.9.1=py37_cu102
+    # - torchaudio=0.8.1=py37
+    # - torchvision=0.9.1=py37_cu102
   - tornado=6.1=py37h4abf009_0
   - tqdm=4.60.0=pyhd8ed1ab_0
   - traitlets=5.0.5=py_0

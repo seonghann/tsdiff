@@ -419,15 +419,18 @@ def generate_ts_data2(
         Chem.SanitizeMol(p)
     else:
         r, p = r_smarts, p_smarts
-
-    if isinstance(xyz_block, str):
-        symbol_xyz, pos = read_xyz_block(xyz_block)
-    else:
-        pos = xyz_block
-    pos = torch.Tensor(pos)
+    
     N = r.GetNumAtoms()
-    assert len(pos) == N and p.GetNumAtoms() == N
-    # assert len(symbol_xyz) == N and p.GetNumAtoms() == N
+    if xyz_block is not None:
+        if isinstance(xyz_block, str):
+            symbol_xyz, pos = read_xyz_block(xyz_block)
+        else:
+            pos = xyz_block
+        pos = torch.Tensor(pos)
+        assert len(pos) == N and p.GetNumAtoms() == N
+    else:
+        pos = torch.zeros(N,3)
+    assert len(symbol_xyz) == N and p.GetNumAtoms() == N
 
     r_perm = np.array([a.GetAtomMapNum() for a in r.GetAtoms()]) - 1
     p_perm = np.array([a.GetAtomMapNum() for a in p.GetAtoms()]) - 1

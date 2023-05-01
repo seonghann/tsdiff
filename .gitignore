@@ -6,6 +6,12 @@ __pycache__/
 # C extensions
 *.so
 
+logs/
+stdout/
+orca_test/
+noise_attack/
+configs/
+results/
 noise_attack/result*
 data/
 wandb/
@@ -41,10 +47,6 @@ MANIFEST
 pip-log.txt
 pip-delete-this-directory.txt
 
-logs/
-stdout/
-noise_attack/
-configs/
 
 
 # Unit test / coverage reports

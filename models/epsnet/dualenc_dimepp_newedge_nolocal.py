@@ -1156,6 +1156,7 @@ class DualEncoderEpsNetwork(nn.Module):
 
             if is_sidechain is not None:
                 pos[~is_sidechain] = pos_gt[~is_sidechain]
+            #for i, j in zip(reversed(seq), reversed(seq_next)):
             for i, j in tqdm(zip(reversed(seq), reversed(seq_next)), desc="sample"):
                 t = torch.full(
                     size=(num_graphs,),
