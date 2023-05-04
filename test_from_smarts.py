@@ -37,12 +37,11 @@ def batching(iterable, batch_size):
 
 
 def preprocessing(smarts_list, feat_dict_path="feat_dict.pkl"):
-    feat_dict_path = ""
-    feat_dict = pickle.load(feat_dict_path)
+    feat_dict = pickle.load(open(feat_dict_path,"rb"))
     
     data_list = []
     for a_smarts in smarts_list:
-        r, p = a_smarts.spllit(">>")
+        r, p = a_smarts.split(">>")
         data, _ = generate_ts_data2(r, p, None, feat_dict=feat_dict)
         data_list.append(data)
     
@@ -166,9 +165,6 @@ if __name__ == "__main__":
     for i, data in enumerate(test_set):
         if not (args.start_idx <= i < args.end_idx):
             continue
-        if args.sampling_even_index:
-            if i % 2 != 0:
-                continue
         test_set_selected.append(data)
 
     done_smiles = set()
@@ -216,7 +212,6 @@ if __name__ == "__main__":
                     n_steps=args.n_steps,
                     step_lr=args.step_lr,
                     w_global=args.w_global,
-                    global_start_sigma=args.global_start_sigma,
                     clip=args.clip,
                     clip_local=clip_local,
                     sampling_type=args.sampling_type,

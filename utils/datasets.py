@@ -430,7 +430,6 @@ def generate_ts_data2(
         assert len(pos) == N and p.GetNumAtoms() == N
     else:
         pos = torch.zeros(N,3)
-    assert len(symbol_xyz) == N and p.GetNumAtoms() == N
 
     r_perm = np.array([a.GetAtomMapNum() for a in r.GetAtoms()]) - 1
     p_perm = np.array([a.GetAtomMapNum() for a in p.GetAtoms()]) - 1
