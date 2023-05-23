@@ -122,7 +122,7 @@ class DualEncoderEpsNetwork(nn.Module):
 
         if self.model_type == "diffusion":
             # denoising diffusion
-            ## betas
+            # betas
             betas = get_beta_schedule(
                 beta_schedule=config.beta_schedule,
                 beta_start=config.beta_start,
@@ -131,7 +131,7 @@ class DualEncoderEpsNetwork(nn.Module):
             )
             betas = torch.from_numpy(betas).float()
             self.betas = nn.Parameter(betas, requires_grad=False)
-            ## variances
+            # variances
             alphas = (1.0 - betas).cumprod(dim=0)
             self.alphas = nn.Parameter(alphas, requires_grad=False)
             self.num_timesteps = self.betas.size(0)
@@ -147,7 +147,8 @@ class DualEncoderEpsNetwork(nn.Module):
                 ),
                 dtype=torch.float32,
             )
-            self.sigmas = nn.Parameter(sigmas, requires_grad=False)  # (num_noise_level)
+            self.sigmas = nn.Parameter(
+                sigmas, requires_grad=False)  # (num_noise_level)
             self.num_timesteps = self.sigmas.size(0)  # betas.shape[0]
 
         if hasattr(config, "TS"):
@@ -266,7 +267,8 @@ class DualEncoderEpsNetwork(nn.Module):
             nb = self.num_bond_types
             mask = edge_type // nb**2 == 0
             high_order_type = torch.where(~mask, edge_type % nb**2 + nb, 0)
-            edge_type1 = torch.where(mask, edge_type // nb, 0) + high_order_type
+            edge_type1 = torch.where(
+                mask, edge_type // nb, 0) + high_order_type
             edge_type2 = torch.where(mask, edge_type % nb, 0) + high_order_type
             edge_attr1 = self.edge_encoder_global(
                 edge_length=edge_length, edge_type=edge_type1
@@ -295,13 +297,13 @@ class DualEncoderEpsNetwork(nn.Module):
             edge_attr=edge_attr_global,
             embed_node=True,
         )
-        ## Assemble pairwise features
+        # Assemble pairwise features
         h_pair_global = assemble_atom_pair_feature(
             node_attr=node_attr_global,
             edge_index=edge_index,
             edge_attr=edge_attr_global,
         )  # (E_global, 2H)
-        ## Invariant features of edges (radius graph, global)
+        # Invariant features of edges (radius graph, global)
         edge_inv_global = self.grad_global_dist_mlp(h_pair_global) * (
             1.0 / sigma_edge
         )  # (E_global, 1)
@@ -311,7 +313,8 @@ class DualEncoderEpsNetwork(nn.Module):
             nb = self.num_bond_types
             mask = edge_type // nb**2 == 0
             high_order_type = torch.where(~mask, edge_type % nb**2 + nb, 0)
-            edge_type1 = torch.where(mask, edge_type // nb, 0) + high_order_type
+            edge_type1 = torch.where(
+                mask, edge_type // nb, 0) + high_order_type
             edge_type2 = torch.where(mask, edge_type % nb, 0) + high_order_type
             edge_attr1 = self.edge_encoder_local(
                 edge_length=edge_length, edge_type=edge_type1
@@ -338,13 +341,13 @@ class DualEncoderEpsNetwork(nn.Module):
             edge_index=edge_index[:, local_edge_mask],
             edge_attr=edge_attr_local[local_edge_mask],
         )
-        ## Assemble pairwise features
+        # Assemble pairwise features
         h_pair_local = assemble_atom_pair_feature(
             node_attr=node_attr_local,
             edge_index=edge_index[:, local_edge_mask],
             edge_attr=edge_attr_local[local_edge_mask],
         )  # (E_local, 2H)
-        ## Invariant features of edges (bond graph, local)
+        # Invariant features of edges (bond graph, local)
         if isinstance(sigma_edge, torch.Tensor):
             edge_inv_local = self.grad_local_dist_mlp(h_pair_local) * (
                 1.0 / sigma_edge[local_edge_mask]
@@ -490,11 +493,13 @@ class DualEncoderEpsNetwork(nn.Module):
 
         global_mask = torch.logical_and(
             torch.logical_or(
-                d_perturbed <= self.config.cutoff, local_edge_mask.unsqueeze(-1)
+                d_perturbed <= self.config.cutoff, local_edge_mask.unsqueeze(
+                    -1)
             ),
             ~local_edge_mask.unsqueeze(-1),
         )
-        target_d_global = torch.where(global_mask, d_target, torch.zeros_like(d_target))
+        target_d_global = torch.where(
+            global_mask, d_target, torch.zeros_like(d_target))
         edge_inv_global = torch.where(
             global_mask, edge_inv_global, torch.zeros_like(edge_inv_global)
         )
@@ -528,14 +533,14 @@ class DualEncoderEpsNetwork(nn.Module):
         # print(f"pos noise : \n{pos_noise}")
         # print(f"pos noise recalc : \n{pos_noise}")
 
-        ##print(f"target_global(d) :\n {d_target}")
-        ##print(f"target_local(d) :\n {d_target[local_edge_mask]}")
+        # print(f"target_global(d) :\n {d_target}")
+        # print(f"target_local(d) :\n {d_target[local_edge_mask]}")
         # print(f"target_global(c) :\n {target_pos_global}")
         # print(f"target_local(c) :\n {target_pos_local}")
         # print(f"target_total(c) :\n {target_pos_global + target_pos_local}")
         #
-        ##print(f"global(d) :\n {edge_inv_global}")
-        ##print(f"local(d) :\n {edge_inv_local}")
+        # print(f"global(d) :\n {edge_inv_global}")
+        # print(f"local(d) :\n {edge_inv_local}")
         # print(f"global(c) :\n {node_eq_global}")
         # print(f"local(c) :\n {node_eq_local}")
 
@@ -615,12 +620,14 @@ class DualEncoderEpsNetwork(nn.Module):
         d_perturbed = edge_length
         # Filtering for protein
         train_edge_mask = is_train_edge(edge_index, is_sidechain)
-        d_perturbed = torch.where(train_edge_mask.unsqueeze(-1), d_perturbed, d_gt)
+        d_perturbed = torch.where(
+            train_edge_mask.unsqueeze(-1), d_perturbed, d_gt)
 
         if self.config.edge_encoder == "gaussian":
             # Distances must be greater than 0
             d_sgn = torch.sign(d_perturbed)
-            d_perturbed = torch.clamp(d_perturbed * d_sgn, min=0.01, max=float("inf"))
+            d_perturbed = torch.clamp(
+                d_perturbed * d_sgn, min=0.01, max=float("inf"))
         d_target = (a_edge.sqrt() * d_gt - d_perturbed) / (
             1.0 - a_edge
         ).sqrt()  # (E_global, 1), denoising direction
@@ -628,11 +635,13 @@ class DualEncoderEpsNetwork(nn.Module):
 
         global_mask = torch.logical_and(
             torch.logical_or(
-                d_perturbed <= self.config.cutoff, local_edge_mask.unsqueeze(-1)
+                d_perturbed <= self.config.cutoff, local_edge_mask.unsqueeze(
+                    -1)
             ),
             ~local_edge_mask.unsqueeze(-1),
         )
-        target_d_global = torch.where(global_mask, d_target, torch.zeros_like(d_target))
+        target_d_global = torch.where(
+            global_mask, d_target, torch.zeros_like(d_target))
         edge_inv_global = torch.where(
             global_mask, edge_inv_global, torch.zeros_like(edge_inv_global)
         )
@@ -762,7 +771,8 @@ class DualEncoderEpsNetwork(nn.Module):
     ):
         def compute_alpha(beta, t):
             beta = torch.cat([torch.zeros(1).to(beta.device), beta], dim=0)
-            a = (1 - beta).cumprod(dim=0).index_select(0, t + 1)  # .view(-1, 1, 1, 1)
+            # .view(-1, 1, 1, 1)
+            a = (1 - beta).cumprod(dim=0).index_select(0, t + 1)
             return a
 
         sigmas = (1.0 - self.alphas).sqrt() / self.alphas.sqrt()
@@ -773,7 +783,7 @@ class DualEncoderEpsNetwork(nn.Module):
             # skip = self.num_timesteps // n_steps
             # seq = range(0, self.num_timesteps, skip)
 
-            ## to test sampling with less intermediate diffusion steps
+            # to test sampling with less intermediate diffusion steps
             # n_steps: the num of steps
             seq = range(self.num_timesteps - n_steps, self.num_timesteps)
             seq_next = [-1] + list(seq[:-1])
@@ -843,7 +853,7 @@ class DualEncoderEpsNetwork(nn.Module):
 
                 noise = torch.randn_like(
                     pos
-                )  #  center_pos(torch.randn_like(pos), batch)
+                )  # center_pos(torch.randn_like(pos), batch)
                 if (
                     sampling_type == "generalized"
                     or sampling_type == "ddpm_noisy"
@@ -857,19 +867,21 @@ class DualEncoderEpsNetwork(nn.Module):
                     if sampling_type == "generalized":
                         eta = kwargs.get("eta", 1.0)
                         et = -eps_pos
-                        ## original
+                        # original
                         # pos0_t = (pos - et * (1 - at).sqrt()) / at.sqrt()
-                        ## reweighted
+                        # reweighted
                         # pos0_t = pos - et * (1 - at).sqrt() / at.sqrt()
                         c1 = (
-                            eta * ((1 - at / at_next) * (1 - at_next) / (1 - at)).sqrt()
+                            eta * ((1 - at / at_next) *
+                                   (1 - at_next) / (1 - at)).sqrt()
                         )
                         c2 = ((1 - at_next) - c1**2).sqrt()
                         # pos_next = at_next.sqrt() * pos0_t + c1 * noise + c2 * et
                         # pos_next = pos0_t + c1 * noise / at_next.sqrt() + c2 * et / at_next.sqrt()
 
                         # pos_next = pos + et * (c2 / at_next.sqrt() - (1 - at).sqrt() / at.sqrt()) + noise * c1 / at_next.sqrt()
-                        step_size_pos_ld = step_lr * (sigmas[i] / 0.01) ** 2 / sigmas[i]
+                        step_size_pos_ld = step_lr * \
+                            (sigmas[i] / 0.01) ** 2 / sigmas[i]
                         step_size_pos_generalized = 5 * (
                             (1 - at).sqrt() / at.sqrt() - c2 / at_next.sqrt()
                         )
@@ -906,7 +918,8 @@ class DualEncoderEpsNetwork(nn.Module):
                         mask = 1 - (t == 0).float()
                         logvar = (beta_t * (1 - atm1) / (1 - at)).log()
 
-                        pos_next = mean + mask * torch.exp(0.5 * logvar) * noise
+                        pos_next = mean + mask * \
+                            torch.exp(0.5 * logvar) * noise
 
                     elif sampling_type == "ddpm_noisy":
                         atm1 = at_next
@@ -923,7 +936,8 @@ class DualEncoderEpsNetwork(nn.Module):
                         mask = 1 - (t == 0).float()
                         logvar = beta_t.log()
 
-                        pos_next = mean + mask * torch.exp(0.5 * logvar) * noise
+                        pos_next = mean + mask * \
+                            torch.exp(0.5 * logvar) * noise
 
                 elif sampling_type == "ld":
                     step_size = step_lr * (sigmas[i] / 0.01) ** 2
@@ -977,7 +991,8 @@ class DualEncoderEpsNetwork(nn.Module):
         ]
         noise_levels = self.sigmas.index_select(0, time_step)  # (G, )
         # Perterb pos
-        sigmas_pos = noise_levels.index_select(0, node2graph).unsqueeze(-1)  # (E, 1)
+        sigmas_pos = noise_levels.index_select(
+            0, node2graph).unsqueeze(-1)  # (E, 1)
         pos_noise = torch.zeros(size=pos.size(), device=pos.device)
         pos_noise.normal_()
         pos_perturbed = pos + pos_noise * sigmas_pos
@@ -1005,30 +1020,35 @@ class DualEncoderEpsNetwork(nn.Module):
 
         edge2graph = node2graph.index_select(0, edge_index[0])
         # Compute sigmas_edge
-        sigmas_edge = noise_levels.index_select(0, edge2graph).unsqueeze(-1)  # (E, 1)
+        sigmas_edge = noise_levels.index_select(
+            0, edge2graph).unsqueeze(-1)  # (E, 1)
 
         # Compute original and perturbed distances
         d_gt = get_distance(pos, edge_index).unsqueeze(-1)  # (E, 1)
         d_perturbed = edge_length
         # Filtering for protein
         train_edge_mask = is_train_edge(edge_index, is_sidechain)
-        d_perturbed = torch.where(train_edge_mask.unsqueeze(-1), d_perturbed, d_gt)
+        d_perturbed = torch.where(
+            train_edge_mask.unsqueeze(-1), d_perturbed, d_gt)
 
         if self.config.edge_encoder == "gaussian":
             # Distances must be greater than 0
             d_sgn = torch.sign(d_perturbed)
-            d_perturbed = torch.clamp(d_perturbed * d_sgn, min=0.01, max=float("inf"))
+            d_perturbed = torch.clamp(
+                d_perturbed * d_sgn, min=0.01, max=float("inf"))
         d_target = (
             1.0 / (sigmas_edge**2) * (d_gt - d_perturbed)
         )  # (E_global, 1), denoising direction
 
         global_mask = torch.logical_and(
             torch.logical_or(
-                d_perturbed <= self.config.cutoff, local_edge_mask.unsqueeze(-1)
+                d_perturbed <= self.config.cutoff, local_edge_mask.unsqueeze(
+                    -1)
             ),
             ~local_edge_mask.unsqueeze(-1),
         )
-        target_d_global = torch.where(global_mask, d_target, torch.zeros_like(d_target))
+        target_d_global = torch.where(
+            global_mask, d_target, torch.zeros_like(d_target))
         edge_inv_global = torch.where(
             global_mask, edge_inv_global, torch.zeros_like(edge_inv_global)
         )
@@ -1144,7 +1164,8 @@ class DualEncoderEpsNetwork(nn.Module):
                         edge_length[local_edge_mask],
                     )
                     if clip_local is not None:
-                        node_eq_local = clip_norm(node_eq_local, limit=clip_local)
+                        node_eq_local = clip_norm(
+                            node_eq_local, limit=clip_local)
                     # Global
                     if sigma < global_start_sigma:
                         edge_inv_global = edge_inv_global * (

@@ -57,7 +57,6 @@ def get_beta_schedule(beta_schedule, *, beta_start, beta_end, num_diffusion_time
     assert betas.shape == (num_diffusion_timesteps,)
     return betas
 
-
 class DualEncoderEpsNetwork(nn.Module):
     def __init__(self, config):
         super().__init__()

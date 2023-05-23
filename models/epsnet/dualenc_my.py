@@ -1221,4 +1221,5 @@ def center_pos(pos, batch):
 def clip_norm(vec, limit, p=2):
     norm = torch.norm(vec, dim=-1, p=2, keepdim=True)
     denom = torch.where(norm > limit, limit / norm, torch.ones_like(norm))
+
     return vec * denom
