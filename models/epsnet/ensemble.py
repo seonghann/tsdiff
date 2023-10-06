@@ -92,7 +92,6 @@ class EnsembleNetwork(nn.Module):
             bond_type:  Bond types, (E, ).
             batch:      Node index to graph index, (N, ).
         """
-        
         out = self.models[0].forward(
                 atom_type, 
                 r_feat, 
@@ -286,7 +285,7 @@ class EnsembleNetwork(nn.Module):
 
             if is_sidechain is not None:
                 pos[~is_sidechain] = pos_gt[~is_sidechain]
-            #for i, j in zip(reversed(seq), reversed(seq_next)):
+            # for i, j in zip(reversed(seq), reversed(seq_next)):
             for i, j in tqdm(zip(reversed(seq), reversed(seq_next)), desc="sample"):
                 t = torch.full(
                     size=(num_graphs,),
@@ -324,7 +323,7 @@ class EnsembleNetwork(nn.Module):
                     edge_inv_global, pos, edge_index_global, edge_length_global
                 )
                 node_eq_global = clip_norm(node_eq_global, limit=clip)
-                
+
                 # Local
                 if self.config.dual_encoding:
                     node_eq_local = eq_transform(
@@ -347,7 +346,7 @@ class EnsembleNetwork(nn.Module):
 
                 noise = torch.randn_like(
                     pos
-                )  #  center_pos(torch.randn_like(pos), batch)
+                )
                 if (
                     sampling_type == "generalized"
                     or sampling_type == "ddpm_noisy"
@@ -425,10 +424,8 @@ class EnsembleNetwork(nn.Module):
                         pos
                         + step_size * eps_pos / sigmas[i]
                     )
-            
 
                 pos = pos_next
-
                 if is_sidechain is not None:
                     pos[~is_sidechain] = pos_gt[~is_sidechain]
 

@@ -38,13 +38,12 @@ def batching(iterable, batch_size):
 
 def preprocessing(smarts_list, feat_dict_path="feat_dict.pkl"):
     feat_dict = pickle.load(open(feat_dict_path,"rb"))
-    
+
     data_list = []
     for a_smarts in smarts_list:
         r, p = a_smarts.split(">>")
         data, _ = generate_ts_data2(r, p, None, feat_dict=feat_dict)
         data_list.append(data)
-    
     num_cls = [len(v) for k, v in feat_dict.items()]
     for data in data_list:
         feat_onehot = []
@@ -58,7 +57,7 @@ def preprocessing(smarts_list, feat_dict_path="feat_dict.pkl"):
         for feat, n_cls in zip(feats, num_cls):
             feat_onehot.append(torch.nn.functional.one_hot(feat, num_classes=n_cls))
         data.p_feat = torch.cat(feat_onehot, dim=-1)
-    
+
     return data_list
 
 
@@ -77,8 +76,8 @@ if __name__ == "__main__":
     parser.add_argument("ckpt", type=str, help="path for loading the checkpoint", nargs="+")
     parser.add_argument("--device", type=str, default="cuda")
     parser.add_argument("--batch_size", type=int, default=1)
-    parser.add_argument("--resume", type=str, default=None)
-    
+    parser.add_argument("--resume", action="store_true", default=None)
+
     # IO parameters
     parser.add_argument("--save_traj", action="store_true", default=False, help="whether store the whole trajectory for sampling",)
     parser.add_argument("--save_dir", type=str, required=True)
@@ -96,9 +95,9 @@ if __name__ == "__main__":
 
     # Sampling parameters
     parser.add_argument("--clip", type=float, default=1000.0)
-    parser.add_argument( "--n_steps", type=int, default=5000, help="sampling num steps; for DSM framework, this means num steps for each noise scale",)
+    parser.add_argument("--n_steps", type=int, default=5000, help="sampling num steps; for DSM framework, this means num steps for each noise scale",)
     parser.add_argument("--w_global", type=float, default=1.0, help="weight for global gradients")
-    
+
     # Parameters for DDPM
     parser.add_argument("--sampling_type", type=str, default="ld", help="generalized, ddpm_noisy, ddpm_det, ld: sampling method for DDIM, DDPM or Langevin Dynamics",)
     parser.add_argument("--eta", type=float, default=1.0, help="weight for DDIM and DDPM: 0->DDIM, 1->DDPM",)
@@ -108,11 +107,12 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # Logging
-    log_dir = args.save_dir
+    # log_dir = args.save_dir
+    log_dir = args.save_dir + f"/seed{args.seed}"
     os.system(f"mkdir -p {log_dir}")
     logger = get_logger("test", log_dir)
     logger.info(args)
-    
+
     # Load checkpoint
     ckpts = [torch.load(x) for x in args.ckpt]
     models = []
@@ -130,10 +130,9 @@ if __name__ == "__main__":
 
     with open(config_path, "r") as f:
         config = EasyDict(yaml.safe_load(f))
-    
+
     # seed_all(config.train.seed)
     seed_all(args.seed)
-
 
     # Datasets and loaders
     logger.info("Loading datasets...")
@@ -142,14 +141,15 @@ if __name__ == "__main__":
             CountNodesPerGraph(),
         ]
     )
-    
+
     if ".txt" in args.test_set or ".pck" in args.test_set or ".pkl" in args.test_set:
         if not os.path.isfile(args.test_set):
-            logger.info(f"!!!Test file {args.test_set} is not found!!!\n"*3)       
+            logger.info(f"!!!Test file {args.test_set} is not found!!!\n" * 3)
             exit()
         elif ".txt" in args.test_set:
             logger.info(f"Test file from {args.test_set}.\n Processing smarts...")
-            smarts_list = open(args.test_set,"r").read().strip().split("\n")
+            # smarts_list = open(args.test_set, "r").read().strip().split("\n")
+            smarts_list = open(args.test_set, "r").read().strip().split("\n") * 100
             test_set = preprocessing(smarts_list, feat_dict_path=args.feat_dict)
         else:
             logger.info(f"Test file from {args.test_set}.\n Loading dataset...")
@@ -158,7 +158,7 @@ if __name__ == "__main__":
         logger.info(f"Test smarts : {args.test_set}.\n Processing smarts...")
         smarts_list = [args.test_set]
         test_set = preprocessing(smarts_list, feat_dict_path=args.feat_dict)
-        
+
     # Model
     logger.info("Loading model...")
     test_set_selected = []

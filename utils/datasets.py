@@ -29,7 +29,6 @@ from .chem import BOND_TYPES, mol_to_smiles
 
 
 def prepare_pdb2(scn_dir, data_path):
-
     # step 1: filter and save pdb file.
     train_data = []
     cnt_fail = 0
@@ -381,7 +380,7 @@ def rdmol_to_data(mol: Mol, smiles=None, data_cls=Data):
         rdmol=copy.deepcopy(mol),
         smiles=smiles,
     )
-    # data.nx = to_networkx(data, to_undirected=True)
+    data.nx = to_networkx(data, to_undirected=True)
 
     return data
 
@@ -419,7 +418,6 @@ def generate_ts_data2(
         Chem.SanitizeMol(p)
     else:
         r, p = r_smarts, p_smarts
-    
     N = r.GetNumAtoms()
     if xyz_block is not None:
         if isinstance(xyz_block, str):
