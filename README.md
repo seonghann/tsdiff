@@ -26,17 +26,30 @@ The training and test dataset is from the open-source transition state database 
 
 ### Preprocessed dataset
 We provide the preprocessed datasets calculated with $\omega$b97x-D3 level.
+To reproduce paper you can follow the code.
+```bash
+PARENT_DIR=$(dirname $(pwd))
+export PYTHONPATH="$PARENT_DIR:${PYTHONPATH}"
+python3 preprocessing.py
+ls data/TS/wb97xd3/random_split_42
+```
 
 ### Prepare your own GEOM dataset from scratch (optional)
 
 You can also download origianl full dataset and prepare your own data split. Follow the data preparation code.
 ```bash
-SAVE_DIR="data/path/to/save"
-TS_DATA="data/path/of/ts-xyz.xyz"
-RXN_SMARTS_FILE="data/path/of/smarts.csv"
 PARENT_DIR=$(dirname $(pwd))
 export PYTHONPATH="$PARENT_DIR:${PYTHONPATH}"
-python3 preprocessing.py --feat_dict "" --save_dir $SAVE_DIR --ts_data $TS_DATA --rxn_smarts_file $RXN_SMARTS_FILE --ban_index -1 --seed 2023
+
+SAVE_DIR="data/path/to/save"
+TS_DATA="data/path/of/ts-xyz.xyz"
+# example of ts-xyz.xyz : data/TS/wb97xd3/raw_data/wb97xd3_ts.xyz
+RXN_SMARTS_FILE="data/path/of/smarts.csv"
+# example of rxn_smarts_file.csv : data/TS/wb97xd3/raw_data/wb97xd3_fwd_rev_chemprop.csv
+FEAT_DICT="data/path/of/feat_dict.pkl"
+# if you don't have predefined feat_dict, let it "" (empty)
+
+python3 preprocessing.py --feat_dict $FEAT_DICT --save_dir $SAVE_DIR --ts_data $TS_DATA --rxn_smarts_file $RXN_SMARTS_FILE --ban_index -1 --seed 2023
 ```
 
 ## Training
@@ -47,14 +60,14 @@ You can train the model with the following commands:
 
 ```bash
 # Default settings
-python train_ts.py ./config/train_ts_dv3_newedge_nolocal.yml
+python train.py ./config/train_config.yml
 ```
 
-The model checkpoints, configuration yaml file as well as training log will be saved into a directory specified by `--logdir` in `train_ts.py`.
+The model checkpoints, configuration yaml file as well as training log will be saved into a directory specified by `--logdir` in `train.py`.
 
 ## Generation
 
-We provide the checkpoints of two trained models, i.e., `qm9_default` and `drugs_default` in the [[google drive folder]](https://drive.google.com/drive/folders/1b0kNBtck9VNrLRZxg6mckyVUpJA5rBHh?usp=sharing). Note that, please put the checkpoints `*.pt` into paths like `${log}/${model}/checkpoints/`, and also put corresponding configuration file `*.yml` into the upper level directory `${log}/${model}/`.
+We provide the checkpoints of eight trained models, trained with the $$\omega$$b97x-D3 data. Each of them are same except for the initial model weight (initial seed). Note that, please put the checkpoints `*.pt` into paths like `${log}/${model}/checkpoints/`, and also put corresponding configuration file `*.yml` into the upper level directory `${log}/${model}/`.
 
 <font color="red">Attention</font>: if you want to use pretrained models, please use the code at the [`pretrain`](https://github.com/MinkaiXu/GeoDiff/tree/pretrain) branch, which is the vanilla codebase for reproducing the results with our pretrained models. We recently notice some issue of the codebase and update it, making the `main` branch not compatible well with the previous checkpoints.
 
