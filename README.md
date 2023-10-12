@@ -1,12 +1,9 @@
-# GeoDiff: a Geometric Diffusion Model for Molecular Conformation Generation
+# TSDiff : Diffusion-based Generative AI for Exploring Transition States from 2D Molecular Graphs
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/MinkaiXu/GeoDiff/blob/main/LICENSE)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/seonghann/tsdiff/tree/master/LICENSE)
 
-[[[arXiv](https://arxiv.org/abs/2203.02923)]
-
+Our baseline code is from Geodiff [[arXiv](https://arxiv.org/abs/2203.02923)], [[github](https://github.com/MinkaiXu/GeoDiff)].
 The official implementation of TSDiff: TBA.
-
 ![cover](assets/figure1.png)
 
 ## Environments
@@ -32,7 +29,15 @@ We provide the preprocessed datasets calculated with $\omega$b97x-D3 level.
 
 ### Prepare your own GEOM dataset from scratch (optional)
 
-You can also download origianl GEOM full dataset and prepare your own data split. A guide is available at previous work ConfGF's [[github page]](https://github.com/DeepGraphLearning/ConfGF#prepare-your-own-geom-dataset-from-scratch-optional).
+You can also download origianl full dataset and prepare your own data split. Follow the data preparation code.
+```bash
+SAVE_DIR="data/path/to/save"
+TS_DATA="data/path/of/ts-xyz.xyz"
+RXN_SMARTS_FILE="data/path/of/smarts.csv"
+PARENT_DIR=$(dirname $(pwd))
+export PYTHONPATH="$PARENT_DIR:${PYTHONPATH}"
+python3 preprocessing.py --feat_dict "" --save_dir $SAVE_DIR --ts_data $TS_DATA --rxn_smarts_file $RXN_SMARTS_FILE --ban_index -1 --seed 2023
+```
 
 ## Training
 

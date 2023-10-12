@@ -119,13 +119,15 @@ if __name__ == "__main__":
     rxn_smarts = df.AAM
 
     # set index of source data to be excluded
-    ban_index = args.ban_index
+    if args.ban_index[0] != -1:
+        ban_index = args.ban_index
 
     # set feature types
     # if there exist pre-defined feat_dict, load the feat_dict
-    if args.feat_dict is not None:
+    if os.path.isfile(args.feat_dict):
         feat_dict = pickle.load(open(args.feat_dict, "rb"))
     else:
+        print(args.feat_dict, "is not exist. Use default feat_dict.")
         feat_dict = {
             "GetIsAromatic": {},
             "GetFormalCharge": {},
