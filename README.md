@@ -24,7 +24,7 @@ conda install pytorch-geometric=1.7.2=py37_torch_1.8.0_cu102 -c rusty1s -c conda
 The training and test dataset is from the open-source transition state database of Grambow, Colin A. et al. [[zenodo]](https://zenodo.org/record/3715478) [[paper]](https://www.nature.com/articles/s41597-020-0460-4).
 
 ### Preprocessed dataset
-We provide the preprocessed datasets calculated with $\omega\text{b97x-D3}$ level.
+We provide the datasets used in the paper, which is computed with $\omega\text{b97x-D3}$ level.
 To reproduce paper you can follow the code.
 ```bash
 PARENT_DIR=$(dirname $(pwd))
