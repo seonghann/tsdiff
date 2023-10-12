@@ -65,9 +65,9 @@ python train.py ./config/train_config.yml
 
 The model checkpoints, configuration yaml file as well as training log will be saved into a directory specified by `--logdir` in `train.py`.
 
-## Generation
+## Sampling
 
-We provide the checkpoints of eight trained models, trained with the $$\omega$$b97x-D3 data. Each of them are same except for the initial model weight (initial seed). Note that, please put the checkpoints `*.pt` into paths like `${log}/${model}/checkpoints/`, and also put corresponding configuration file `*.yml` into the upper level directory `${log}/${model}/`.
+We provide the checkpoints of eight trained models, trained with the $$\omega$$ b97x-D3 data. Each of them are same except for the initial model weight (initial seed). Note that, please put the checkpoints `*.pt` into paths like `${log}/${model}/checkpoints/`, and also put corresponding configuration file `*.yml` into the upper level directory `${log}/${model}/`.
 
 <font color="red">Attention</font>: if you want to use pretrained models, please use the code at the [`pretrain`](https://github.com/MinkaiXu/GeoDiff/tree/pretrain) branch, which is the vanilla codebase for reproducing the results with our pretrained models. We recently notice some issue of the codebase and update it, making the `main` branch not compatible well with the previous checkpoints.
 
