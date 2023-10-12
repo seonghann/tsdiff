@@ -83,6 +83,11 @@ done
 ## Citation
 Please consider citing the our paper if you find it helpful. Thank you!
 ```
+@article{kim2023diffusion,
+  title={Diffusion-based Generative AI for Exploring Transition States from 2D Molecular Graphs},
+  author={Kim, Seonghwan and Woo, Jeheon and Kim, Woo Youn},
+  year={2023}
+}
 ```
 
 ## Acknowledgement
