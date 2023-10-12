@@ -1,4 +1,8 @@
 # coding=utf-8
+# This code is based on the original code available at: https://github.com/MinkaiXu/GeoDiff,
+# under the MIT License, Copyright (c) 2022 Minkai Xu
+# TSDiff is distributed under the same MIT license as the original code.
+# Please see the accompanying LICENSE file for further details.
 from typing import Callable, Union
 from torch_geometric.typing import OptPairTensor, Adj, OptTensor, Size
 

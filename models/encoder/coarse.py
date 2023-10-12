@@ -1,3 +1,7 @@
+# This code is based on the original code available at: https://github.com/MinkaiXu/GeoDiff,
+# under the MIT License, Copyright (c) 2022 Minkai Xu
+# TSDiff is distributed under the same MIT license as the original code.
+# Please see the accompanying LICENSE file for further details.
 import torch
 from torch.nn import Module
 from torch_scatter import scatter_add, scatter_mean, scatter_max
