@@ -1,12 +1,13 @@
 # GeoDiff: a Geometric Diffusion Model for Molecular Conformation Generation
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/MinkaiXu/GeoDiff/blob/main/LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/seonghann/tsdiff/tree/master/LICENSE)
 
-[[OpenReview](https://openreview.net/forum?id=PzcvxEMzvQC)] [[arXiv](https://arxiv.org/abs/2203.02923)] [[Code](https://github.com/MinkaiXu/GeoDiff)]
+[[[arXiv](https://arxiv.org/abs/2203.02923)]
 
-The official implementation of GeoDiff: A Geometric Diffusion Model for Molecular Conformation Generation (ICLR 2022 **Oral Presentation [54/3391]**).
+The official implementation of TSDiff: TBA.
 
-![cover](assets/geodiff_framework.png)
+![cover](assets/figure1.png)
 
 ## Environments
 
@@ -16,7 +17,7 @@ The official implementation of GeoDiff: A Geometric Diffusion Model for Molecula
 # Clone the environment
 conda env create -f env.yml
 # Activate the environment
-conda activate geodiff
+conda activate cu102_tsdiff
 # Install PyG
 conda install pytorch-geometric=1.7.2=py37_torch_1.8.0_cu102 -c rusty1s -c conda-forge
 ```
@@ -24,10 +25,10 @@ conda install pytorch-geometric=1.7.2=py37_torch_1.8.0_cu102 -c rusty1s -c conda
 ## Dataset
 
 ### Offical Dataset
-The offical raw GEOM dataset is avaiable [[here]](https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/JNGTDF).
+The training and test dataset is from the open-source transition state database of Grambow, Colin A. et al. [[zenodo]](https://zenodo.org/record/3715478) [[paper]](https://www.nature.com/articles/s41597-020-0460-4).
 
 ### Preprocessed dataset
-We provide the preprocessed datasets (GEOM) in this [[google drive folder]](https://drive.google.com/drive/folders/1b0kNBtck9VNrLRZxg6mckyVUpJA5rBHh?usp=sharing). After downleading the dataset, it should be put into the folder path as specified in the `dataset` variable of config files `./configs/*.yml`.
+We provide the preprocessed datasets calculated with $\omega$b97x-D3 level.
 
 ### Prepare your own GEOM dataset from scratch (optional)
 
