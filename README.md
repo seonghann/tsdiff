@@ -33,24 +33,6 @@ python3 preprocessing.py
 ls data/TS/wb97xd3/random_split_42
 ```
 
-### Prepare your own GEOM dataset from scratch (optional)
-
-You can also download origianl full dataset and prepare your own data split. Follow the data preparation code.
-```bash
-PARENT_DIR=$(dirname $(pwd))
-export PYTHONPATH="$PARENT_DIR:${PYTHONPATH}"
-
-SAVE_DIR="data/path/to/save"
-TS_DATA="data/path/of/ts-xyz.xyz"
-# example of ts-xyz.xyz : data/TS/wb97xd3/raw_data/wb97xd3_ts.xyz
-RXN_SMARTS_FILE="data/path/of/smarts.csv"
-# example of rxn_smarts_file.csv : data/TS/wb97xd3/raw_data/wb97xd3_fwd_rev_chemprop.csv
-FEAT_DICT="data/path/of/feat_dict.pkl"
-# if you don't have predefined feat_dict, let it "" (empty)
-
-python3 preprocessing.py --feat_dict $FEAT_DICT --save_dir $SAVE_DIR --ts_data $TS_DATA --rxn_smarts_file $RXN_SMARTS_FILE --ban_index -1 --seed 2023
-```
-
 ## Training
 
 All hyper-parameters and training details are provided in config files (`./configs/*.yml`), and free feel to tune these parameters.
