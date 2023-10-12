@@ -3,7 +3,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/seonghann/tsdiff/tree/master/LICENSE)
 
 The official implementation of TSDiff: Diffusion-based Generative AI for Exploring Transition States from 2D Molecular Graphs [[arxiv]](https://arxiv.org/abs/2304.12233).
-![cover](assets/figure1.png)
+![cover](assets/Figure1.png)
 
 ## Environments
 
@@ -65,7 +65,7 @@ Here `start_idx` and `end_idx` indicate the range of the test set that we want t
 Examples of generated TS conformers by TSDiff are provided below.
 
 <p align="center">
-  <img src="assets/figure2.png" /> 
+  <img src="assets/Figure3.pdf" /> 
 </p>
 
 ## Clustering
@@ -78,6 +78,11 @@ do python3 sampling.py $CKPTS --start_idx $i --end_idx $((i+1)) --test_set birkh
 python3 clustering.py --save_dir birkholz_benchmark/rxn_${i}/clustering --sample_path birkholz_benchmark/rxn_${i}/samples_all.pkl
 done
 ```
+<p align="center">
+  <img src="assets/FigureS1.pdf" /> 
+</p>
+
+
 
 
 ## Citation
