@@ -6,14 +6,9 @@ __pycache__/
 # C extensions
 *.so
 
-logs/
-stdout/
 orca_test/
-noise_attack/
-configs/
 results/
 noise_attack/result*
-data/
 wandb/
 
 # Distribution / packaging
