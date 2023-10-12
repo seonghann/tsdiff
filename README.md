@@ -65,7 +65,7 @@ Here `start_idx` and `end_idx` indicate the range of the test set that we want t
 Examples of generated TS conformers by TSDiff are provided below.
 
 <p align="center">
-  <img src="assets/Figure3.pdf" /> 
+  <img src="assets/Figure3.png" /> 
 </p>
 
 ## Clustering
@@ -79,7 +79,7 @@ python3 clustering.py --save_dir birkholz_benchmark/rxn_${i}/clustering --sample
 done
 ```
 <p align="center">
-  <img src="assets/FigureS1.pdf" /> 
+  <img src="assets/FigureS1.png" /> 
 </p>
 
 
