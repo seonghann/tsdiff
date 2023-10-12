@@ -2,7 +2,6 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/seonghann/tsdiff/tree/master/LICENSE)
 
-Our baseline code is from Geodiff [[arXiv](https://arxiv.org/abs/2203.02923)], [[github](https://github.com/MinkaiXu/GeoDiff)].
 The official implementation of TSDiff: TBA.
 ![cover](assets/figure1.png)
 
@@ -94,7 +93,6 @@ To reproduce it, follows below:
 ```bash
 for ((i=0; i<N; i++));
 do python3 sampling.py $CKPTS --start_idx $i --end_idx $((i+1)) --test_set birkholz_benchmark/selected_rxns.txt --save_dir birkholz_benchmark/rxn_${i}
-
 python3 clustering.py --save_dir birkholz_benchmark/rxn_${i}/clustering --sample_path birkholz_benchmark/rxn_${i}/samples_all.pkl
 done
 ```
@@ -103,25 +101,10 @@ done
 ## Citation
 Please consider citing the our paper if you find it helpful. Thank you!
 ```
-@inproceedings{
-xu2022geodiff,
-title={GeoDiff: A Geometric Diffusion Model for Molecular Conformation Generation},
-author={Minkai Xu and Lantao Yu and Yang Song and Chence Shi and Stefano Ermon and Jian Tang},
-booktitle={International Conference on Learning Representations},
-year={2022},
-url={https://openreview.net/forum?id=PzcvxEMzvQC}
-}
 ```
 
 ## Acknowledgement
-
-This repo is built upon the previous work ConfGF's [[codebase]](https://github.com/DeepGraphLearning/ConfGF#prepare-your-own-geom-dataset-from-scratch-optional). Thanks Chence and Shitong!
+This work is built upon Geodiff : [[arXiv](https://arxiv.org/abs/2203.02923)], [[github](https://github.com/MinkaiXu/GeoDiff)]. Thanks Minkai Xu.
 
 ## Contact
-
-If you have any question, please contact me at minkai.xu@umontreal.ca or xuminkai@mila.quebec.
-
-## Known issues
-
-1. The current codebase is not compatible with more recent torch-geometric versions.
-2. The current processed dataset (with PyD data object) is not compatible with more recent torch-geometric versions.
+If you have any question, please contact me at dmdtka00@kaist.ac.kr.
