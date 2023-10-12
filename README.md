@@ -2,7 +2,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/seonghann/tsdiff/tree/master/LICENSE)
 
-The official implementation of TSDiff: TBA.
+The official implementation of TSDiff: Diffusion-based Generative AI for Exploring Transition States from 2D Molecular Graphs [[arxiv]](https://arxiv.org/abs/2304.12233).
 ![cover](assets/figure1.png)
 
 ## Environments
