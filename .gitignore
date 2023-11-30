@@ -10,6 +10,7 @@ orca_test/
 results/
 noise_attack/result*
 wandb/
+reproducibility/
 
 # Distribution / packaging
 .Python
